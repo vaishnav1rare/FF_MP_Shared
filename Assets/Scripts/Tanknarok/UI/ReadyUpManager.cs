@@ -60,8 +60,8 @@ namespace FusionExamples.Tanknarok
 					indicator = LocalObjectPool.Acquire(_readyPrefab, Vector3.zero, Quaternion.identity, _readyUIParent);
 					_readyUIs.Add(player.PlayerId, indicator);
 				}
-				if(indicator.Refresh(player))
-					_audioEmitter.PlayOneShot();
+				//if(indicator.Refresh(player))
+					//_audioEmitter.PlayOneShot();
 			}
 
 			bool allPlayersReady = readyCount == playerCount;

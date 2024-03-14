@@ -9,7 +9,7 @@ namespace FusionExamples.Tanknarok
 		[SerializeField] private float _countdownFrom;
 		[SerializeField] private AnimationCurve _countdownCurve;
 		[SerializeField] private TextMeshProUGUI _countdownUI;
-		[SerializeField] AudioEmitter _audioEmitter;
+		//[SerializeField] AudioEmitter _audioEmitter;
 
 		private float _countdownTimer;
 
@@ -43,7 +43,7 @@ namespace FusionExamples.Tanknarok
 				{
 					lastCount = currentCount;
 					_countdownUI.text = currentCount.ToString();
-					_audioEmitter.PlayOneShot();
+					//_audioEmitter.PlayOneShot();
 				}
 
 				float x = _countdownTimer - Mathf.Floor(_countdownTimer);

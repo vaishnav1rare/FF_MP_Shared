@@ -20,7 +20,7 @@ namespace FusionExamples.Tanknarok
 		[SerializeField] private CountdownManager _countdownManager;
 		[SerializeField] private CameraStrategy _cameraStrategy;
 		[SerializeField] private CameraScreenFXBehaviour _transitionEffect;
-		[SerializeField] private AudioEmitter _audioEmitter;
+		//[SerializeField] private AudioEmitter _audioEmitter;
 
 		[SerializeField] private int _lobby;
 		[SerializeField] private int[] _levels;
@@ -143,7 +143,7 @@ namespace FusionExamples.Tanknarok
 				yield break;
 			
 			_transitionEffect.ToggleGlitch(true);
-			_audioEmitter.Play();
+			//_audioEmitter.Play();
 			
 			onStatusUpdate?.Invoke( Runner, FusionLauncher.ConnectionStatus.Loading, "");
 
@@ -161,13 +161,13 @@ namespace FusionExamples.Tanknarok
 			_currentLevel = FindObjectOfType<LevelBehaviour>();
 			if(_currentLevel!=null)
 				_currentLevel.Activate();
-			MusicPlayer.instance.SetLowPassTranstionDirection( newScene.AsIndex>_lobby ? 1f : -1f);
+			//MusicPlayer.instance.SetLowPassTranstionDirection( newScene.AsIndex>_lobby ? 1f : -1f);
 
 			yield return new WaitForSeconds(0.3f);
 
 			Debug.Log($"Stop glitching");
 			_transitionEffect.ToggleGlitch(false);
-			_audioEmitter.Stop();
+			//_audioEmitter.Stop();
 
 			GameManager gameManager;
 			while (!Runner.TryGetSingleton(out gameManager))

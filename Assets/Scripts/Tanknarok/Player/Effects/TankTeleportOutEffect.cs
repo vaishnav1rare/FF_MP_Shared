@@ -21,8 +21,8 @@ namespace FusionExamples.Tanknarok
 			
 			_teleportEffect.Stop();
 			
-			if(_audioEmitter.isActiveAndEnabled)
-				_audioEmitter.PlayOneShot();
+			/*if(_audioEmitter.isActiveAndEnabled)
+				_audioEmitter.PlayOneShot();*/
 
 			_dummyTankTurret.rotation = turretRotation;
 			_dummyTankHull.rotation = hullRotation;

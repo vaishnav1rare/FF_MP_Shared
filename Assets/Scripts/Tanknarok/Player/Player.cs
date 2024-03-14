@@ -14,13 +14,13 @@ namespace FusionExamples.Tanknarok
 		private const int MAX_HEALTH = 100;
 
 		[Header("Visuals")] [SerializeField] private Transform _hull;
-		[SerializeField] private Transform _turret;
+		//[SerializeField] private Transform _turret;
 		[SerializeField] private Transform _visualParent;
 		[SerializeField] private Material[] _playerMaterials;
-		[SerializeField] private TankTeleportInEffect _teleportIn;
-		[SerializeField] private TankTeleportOutEffect _teleportOutPrefab;
+		//[SerializeField] private TankTeleportInEffect _teleportIn;
+		//[SerializeField] private TankTeleportOutEffect _teleportOutPrefab;
 
-		[Space(10)] [SerializeField] private GameObject _deathExplosionPrefab;
+		//[Space(10)] [SerializeField] private GameObject _deathExplosionPrefab;
 		[SerializeField] private float _respawnTime;
 		[SerializeField] private WeaponManager weaponManager;
 
@@ -59,9 +59,9 @@ namespace FusionExamples.Tanknarok
 		public Color playerColor { get; set; }
 
 		public Vector3 velocity => Object != null && Object.IsValid ? _cc.Velocity : Vector3.zero;
-		public Vector3 turretPosition => _turret.position;
+		//public Vector3 turretPosition => _turret.position;
 
-		public Quaternion turretRotation => _turret.rotation;
+		//public Quaternion turretRotation => _turret.rotation;
 
 		public Quaternion hullRotation => _hull.rotation;
 		public GameObject cameraTarget => _cc.gameObject;
@@ -110,7 +110,7 @@ namespace FusionExamples.Tanknarok
 			SetMaterial();
 			SetupDeathExplosion();
 
-			_teleportIn.Initialize(this);
+			//_teleportIn.Initialize(this);
 
 			_damageVisuals = GetComponent<TankDamageVisual>();
 			_damageVisuals.Initialize(playerMaterial);
@@ -138,15 +138,15 @@ namespace FusionExamples.Tanknarok
 
 			if (powerup.powerupType == PowerupType.HEALTH)
 				life = MAX_HEALTH;
-			else
-				weaponManager.InstallWeapon(powerup);
+			/*else
+				weaponManager.InstallWeapon(powerup);*/
 		}
 
 		void SetupDeathExplosion()
 		{
-			_deathExplosionInstance = Instantiate(_deathExplosionPrefab, transform.parent);
-			_deathExplosionInstance.SetActive(false);
-			ColorChanger.ChangeColor(_deathExplosionInstance.transform, playerColor);
+			//_deathExplosionInstance = Instantiate(_deathExplosionPrefab, transform.parent);
+			//_deathExplosionInstance.SetActive(false);
+			//ColorChanger.ChangeColor(_deathExplosionInstance.transform, playerColor);
 		}
 
 		public override void FixedUpdateNetwork()
@@ -159,11 +159,11 @@ namespace FusionExamples.Tanknarok
 				{
 					SetDirections(input.moveDirection.normalized, input.aimDirection.normalized);
 
-					if (input.IsDown(NetworkInputData.BUTTON_FIRE_PRIMARY))
+					/*if (input.IsDown(NetworkInputData.BUTTON_FIRE_PRIMARY))
 						weaponManager.FireWeapon(WeaponManager.WeaponInstallationType.PRIMARY);
 
 					if (input.IsDown(NetworkInputData.BUTTON_FIRE_SECONDARY))
-						weaponManager.FireWeapon(WeaponManager.WeaponInstallationType.SECONDARY);
+						weaponManager.FireWeapon(WeaponManager.WeaponInstallationType.SECONDARY);*/
 
 					// We don't want to predict this because it's a toggle and a mis-prediction due to lost input will double toggle the button
 					if (Object.HasStateAuthority && input.WasPressed(NetworkInputData.BUTTON_TOGGLE_READY, _oldInput))
@@ -203,7 +203,7 @@ namespace FusionExamples.Tanknarok
 			}
 				
 			var interpolated = new NetworkBehaviourBufferInterpolator(this);
-			_turret.rotation = Quaternion.Euler(0, interpolated.Angle(nameof(aimDirection)), 0);
+			//_turret.rotation = Quaternion.Euler(0, interpolated.Angle(nameof(aimDirection)), 0);
 			_damageVisuals.CheckHealth(GetPropertyReader<int>(nameof(life)).Read(interpolated.From), MAX_HEALTH);
 		}
 
@@ -229,9 +229,9 @@ namespace FusionExamples.Tanknarok
 
 			_cc.Move(new Vector3(moveVector.x, 0, moveVector.y));
 
-			if (aimVector.sqrMagnitude > 0)
+			/*if (aimVector.sqrMagnitude > 0)
 				_turret.forward = new Vector3(aimVector.x, 0, aimVector.y);
-			aimDirection = _turret.rotation.eulerAngles.y;
+			aimDirection = _turret.rotation.eulerAngles.y;*/
 		}
 
 		/// <summary>
@@ -332,11 +332,11 @@ namespace FusionExamples.Tanknarok
 			{
 				case Stage.TeleportIn:
 					Debug.Log($"Starting teleport for player {PlayerId} @ {transform.position} cc@ {_cc.Data.Position}, tick={Runner.Tick}");
-					_teleportIn.StartTeleport();
+					//_teleportIn.StartTeleport();
 					break;
 				case Stage.Active:
 					_damageVisuals.CleanUpDebris();
-					_teleportIn.EndTeleport();
+					//_teleportIn.EndTeleport();
 					break;
 				case Stage.Dead:
 					_deathExplosionInstance.transform.position = transform.position;
@@ -360,14 +360,14 @@ namespace FusionExamples.Tanknarok
 
 		private void SpawnTeleportOutFx()
 		{
-			TankTeleportOutEffect teleout = LocalObjectPool.Acquire(_teleportOutPrefab, transform.position, transform.rotation, null);
-			teleout.StartTeleport(playerColor, turretRotation, hullRotation);
+			//TankTeleportOutEffect teleout = LocalObjectPool.Acquire(_teleportOutPrefab, transform.position, transform.rotation, null);
+			//teleout.StartTeleport(playerColor, turretRotation, hullRotation);
 		}
 
 		private void ResetPlayer()
 		{
 			Debug.Log($"Resetting player {PlayerId}, tick={Runner.Tick}, timer={respawnTimer.IsRunning}:{respawnTimer.TargetTick}, life={life}, lives={lives}, hasStateAuth={Object.HasStateAuthority} to state={stage}");
-			weaponManager.ResetAllWeapons();
+			//weaponManager.ResetAllWeapons();
 			stage = Stage.Active;
 		}
 

@@ -62,7 +62,7 @@ namespace FusionExamples.Tanknarok
 			_confetti.transform.position = _finalGameScoreUI[gameManager.matchWinner.PlayerIndex].transform.position + Vector3.up;
 			_confetti.Play();
 
-			_audioEmitter.PlayOneShot();
+			//_audioEmitter.PlayOneShot();
 		}
 
 		public void ResetAllGameScores()

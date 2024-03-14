@@ -103,7 +103,7 @@ namespace FusionExamples.Tanknarok
 
 		public void OnDeath()
 		{
-			_audioEmitter.PlayOneShot(_explosionSnd);
+			//_audioEmitter.PlayOneShot(_explosionSnd);
 			CheckHealth(0,1);
 		}
 
@@ -239,7 +239,7 @@ namespace FusionExamples.Tanknarok
 			if (!isDead && _damageMaterial != null && _active)
 			{
 				StartCoroutine(Flash());
-				_audioEmitter.PlayOneShot(_damageSnd);
+				//_audioEmitter.PlayOneShot(_damageSnd);
 			}
 		}
 

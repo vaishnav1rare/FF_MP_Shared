@@ -5,13 +5,13 @@ namespace FusionExamples.Tanknarok
 {
 	public class WeaponManager : NetworkBehaviour
 	{
-		public enum WeaponInstallationType
+		/*public enum WeaponInstallationType
 		{
 			PRIMARY,
 			SECONDARY,
 			BUFF
 		};
-		
+
 		[SerializeField] private Weapon[] _weapons;
 		[SerializeField] private Player _player;
 
@@ -43,15 +43,15 @@ namespace FusionExamples.Tanknarok
 
 		private void ShowAndHideWeapons()
 		{
-			// Animates the scale of the weapon based on its active status
+			/#1#/ Animates the scale of the weapon based on its active status
 			for (int i = 0; i < _weapons.Length; i++)
 			{
 				_weapons[i].Show(i == selectedPrimaryWeapon || i == selectedSecondaryWeapon);
-			}
+			}#1#
 
 			// Whenever the weapon visual is fully visible, set the weapon to be active - prevents shooting when changing weapon
-			SetWeaponActive(selectedPrimaryWeapon, ref _activePrimaryWeapon);
-			SetWeaponActive(selectedSecondaryWeapon, ref _activeSecondaryWeapon);
+			//SetWeaponActive(selectedPrimaryWeapon, ref _activePrimaryWeapon);
+			//SetWeaponActive(selectedSecondaryWeapon, ref _activeSecondaryWeapon);
 		}
 
 		void SetWeaponActive(byte selectedWeapon, ref byte _activeWeapon)
@@ -67,7 +67,7 @@ namespace FusionExamples.Tanknarok
 		/// <param name="weaponIndex">Index of weapon the _Weapons list for the player</param>
 		public void ActivateWeapon(WeaponInstallationType weaponType, int weaponIndex)
 		{
-			byte selectedWeapon = weaponType == WeaponInstallationType.PRIMARY ? selectedPrimaryWeapon : selectedSecondaryWeapon;
+			/*byte selectedWeapon = weaponType == WeaponInstallationType.PRIMARY ? selectedPrimaryWeapon : selectedSecondaryWeapon;
 			byte activeWeapon = weaponType == WeaponInstallationType.PRIMARY ? _activePrimaryWeapon : _activeSecondaryWeapon;
 
 			if (!_player.isActivated || selectedWeapon != activeWeapon)
@@ -85,7 +85,7 @@ namespace FusionExamples.Tanknarok
 			{
 				selectedSecondaryWeapon = (byte)weaponIndex;
 				secondaryAmmo = _weapons[(byte) weaponIndex].ammo;
-			}
+			}#1#
 		}
 
 		/// <summary>
@@ -121,8 +121,8 @@ namespace FusionExamples.Tanknarok
 					secondaryFireDelay = TickTimer.CreateFromSeconds(Runner, weapon.delay);
 					secondaryAmmo = ammo;
 				}
-					
-				if (/*Object.HasStateAuthority &&*/ ammo == 0)
+
+				if (/*Object.HasStateAuthority &&#1# ammo == 0)
 				{
 					ResetWeapon(weaponType);
 				}
@@ -177,5 +177,6 @@ namespace FusionExamples.Tanknarok
 			Debug.LogError($"Weapon {powerupType} was not found in the weapon list, returning <color=red>0 </color>");
 			return 0;
 		}
+	}*/
 	}
 }

@@ -18,7 +18,7 @@ namespace FusionExamples.Tanknarok
 		private ParticleSystem _destroyedParticle;
 		private GameObject _debris;
 
-		[SerializeField] private AudioEmitter _audioEmitter;
+		//[SerializeField] private AudioEmitter _audioEmitter;
 
 		private void Start()
 		{
@@ -46,8 +46,8 @@ namespace FusionExamples.Tanknarok
 
 		private void DestroyObject()
 		{
-			if (_audioEmitter != null)
-				_audioEmitter.PlayOneShot();
+			/*if (_audioEmitter != null)
+				_audioEmitter.PlayOneShot();*/
 			_destroyedParticle.Play();
 
 			_trigger.enabled = false;

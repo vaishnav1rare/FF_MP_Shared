@@ -68,7 +68,7 @@ namespace FusionExamples.Tanknarok
 
 			// Play the downwards beam
 			_teleportBeamParticle.Play();
-			_audioEmitter.PlayOneShot(_beamAudioClip);
+			//_audioEmitter.PlayOneShot(_beamAudioClip);
 			yield return new WaitForSeconds(_timeDelayImpactParticles);
 
 			// Play impact particle
@@ -78,7 +78,7 @@ namespace FusionExamples.Tanknarok
 
 			// Set the dummy tank
 			_tankDummy.SetActive(true);
-			_tankDummyTurret.rotation = _player.turretRotation;
+			//_tankDummyTurret.rotation = _player.turretRotation;
 			_tankDummyHull.rotation = _player.hullRotation;
 
 			// Waits for the tank to be ready before playing the discharge effect
@@ -87,7 +87,7 @@ namespace FusionExamples.Tanknarok
 
 			_tankDummy.SetActive(false);
 			_energyDischargeParticle.Play();
-			_audioEmitter.PlayOneShot(_dischargeAudioClip);
+			//_audioEmitter.PlayOneShot(_dischargeAudioClip);
 		}
 	}
 }

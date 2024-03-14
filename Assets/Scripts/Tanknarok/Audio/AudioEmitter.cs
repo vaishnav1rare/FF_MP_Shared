@@ -5,7 +5,7 @@ namespace FusionExamples.Tanknarok
 	[RequireComponent(typeof(AudioSource))]
 	public class AudioEmitter : MonoBehaviour
 	{
-		enum State
+		/*enum State
 		{
 			ON_ENABLE,
 			ON_DISABLE,
@@ -27,7 +27,7 @@ namespace FusionExamples.Tanknarok
 				return _audioSource;
 			}
 		}
-		
+
 		private void OnEnable()
 		{
 			CheckState(State.ON_ENABLE);
@@ -84,5 +84,6 @@ namespace FusionExamples.Tanknarok
 		{
 			audioSource.Stop();
 		}
+	}*/
 	}
 }

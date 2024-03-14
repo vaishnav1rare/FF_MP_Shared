@@ -9,7 +9,7 @@ namespace FusionExamples.Tanknarok
 	public class IntermediateLevelScoreUI : MonoBehaviour
 	{
 		[SerializeField] private TextMeshProUGUI _score;
-		[SerializeField] private AudioEmitter _audioEmitter;
+		//[SerializeField] private AudioEmitter _audioEmitter;
 
 		private bool _active;
 
@@ -39,7 +39,7 @@ namespace FusionExamples.Tanknarok
 			_score.text = score.ToString();
 			_score.transform.localScale = Vector3.one * 2f;
 
-			_audioEmitter.PlayOneShot();
+			//_audioEmitter.PlayOneShot();
 
 			yield return new WaitForSeconds(1f);
 

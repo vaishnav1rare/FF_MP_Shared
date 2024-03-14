@@ -40,8 +40,8 @@ namespace FusionExamples.Tanknarok
 		{
 			if ( TryGetStateChanges(out var old, out var current) )
 			{
-				if(old.respawnTimer.TargetTick>0) // Avoid triggering sound effect on initial init
-					_audio.PlayOneShot(GetPowerup(old.activePowerupIndex).pickupSnd);
+				/*if(old.respawnTimer.TargetTick>0) // Avoid triggering sound effect on initial init
+					_audio.PlayOneShot(GetPowerup(old.activePowerupIndex).pickupSnd);*/
 				InitPowerupVisuals();
 			}
 
@@ -73,7 +73,7 @@ namespace FusionExamples.Tanknarok
 			PowerupElement powerup = GetPowerup(State.activePowerupIndex);
 			_renderer.transform.localScale = Vector3.zero;
 			_meshFilter.mesh = powerup.powerupSpawnerMesh;
-			_rechargeCircle.material.color = GetPowerupColor(powerup.weaponInstallationType);
+			//_rechargeCircle.material.color = GetPowerupColor(powerup.weaponInstallationType);
 		}
 
 		private void SetNextPowerup()
@@ -85,7 +85,7 @@ namespace FusionExamples.Tanknarok
 			State.activePowerupIndex = Random.Range(0, _powerupElements.Length);
 		}
 
-		private Color GetPowerupColor(WeaponManager.WeaponInstallationType weaponType)
+		/*private Color GetPowerupColor(WeaponManager.WeaponInstallationType weaponType)
 		{
 			switch (weaponType)
 			{
@@ -94,7 +94,7 @@ namespace FusionExamples.Tanknarok
 				case WeaponManager.WeaponInstallationType.SECONDARY: return _specialPowerupColor;
 				case WeaponManager.WeaponInstallationType.BUFF: return _buffPowerupColor;
 			}
-		}
+		}*/
 		
 		private static PowerupElement[] _powerupElements;
 		public static PowerupElement GetPowerup(int powerupIndex)

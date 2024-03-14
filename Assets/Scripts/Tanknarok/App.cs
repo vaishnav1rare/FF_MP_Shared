@@ -161,8 +161,8 @@ namespace FusionExamples.Tanknarok
 			_uiProgress.SetVisible(progress);
 			_uiGame.SetActive(running);
 			
-			if(intro)
-				MusicPlayer.instance.SetLowPassTranstionDirection( -1f);
+			/*if(intro)
+				MusicPlayer.instance.SetLowPassTranstionDirection( -1f);*/
 		}
 	}
 }
