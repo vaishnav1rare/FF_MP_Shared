@@ -11,11 +11,11 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
+  - MouseRayCollider
+  - PostProcessing
+  - Player
+  - Pickup
+  - Explosion
   - 
   - 
   - 
