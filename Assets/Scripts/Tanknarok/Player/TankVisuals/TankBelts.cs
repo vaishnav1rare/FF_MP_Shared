@@ -54,7 +54,7 @@ namespace FusionExamples.Tanknarok
 
 		void CalculateTreadMovementSimplified(int treadIndex)
 		{
-			float tankMovementMultiplier = _tankBehaviour.velocity.magnitude;
+			/*float tankMovementMultiplier = _tankBehaviour.velocity.magnitude;
 
 			// Only adjust the treads if the tank is moving
 			if (tankMovementMultiplier > 0.05f)
@@ -71,7 +71,7 @@ namespace FusionExamples.Tanknarok
 				UpdateTreadOffset(treadIndex, materialOffset);
 			}
 
-			_lastForward = transform.forward;
+			_lastForward = transform.forward;*/
 		}
 
 		private void UpdateTreadOffset(int treadIndex, float newOffset)

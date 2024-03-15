@@ -79,7 +79,7 @@ namespace FusionExamples.Tanknarok
 			// Set the dummy tank
 			_tankDummy.SetActive(true);
 			//_tankDummyTurret.rotation = _player.turretRotation;
-			_tankDummyHull.rotation = _player.hullRotation;
+			//_tankDummyHull.rotation = _player.hullRotation;
 
 			// Waits for the tank to be ready before playing the discharge effect
 			while (!_endTeleportation)

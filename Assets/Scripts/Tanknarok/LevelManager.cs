@@ -18,8 +18,8 @@ namespace FusionExamples.Tanknarok
 		[SerializeField] private ScoreManager _scoreManager;
 		[FormerlySerializedAs("_readyupManager")] [SerializeField] private ReadyUpManager _readyUpManager;
 		[SerializeField] private CountdownManager _countdownManager;
-		[SerializeField] private CameraStrategy _cameraStrategy;
-		[SerializeField] private CameraScreenFXBehaviour _transitionEffect;
+		//[SerializeField] private CameraStrategy _cameraStrategy;
+		//[SerializeField] private CameraScreenFXBehaviour _transitionEffect;
 		//[SerializeField] private AudioEmitter _audioEmitter;
 
 		[SerializeField] private int _lobby;
@@ -29,7 +29,6 @@ namespace FusionExamples.Tanknarok
 		private SceneRef _loadedScene = SceneRef.None;
 
 		public Action<NetworkRunner,FusionLauncher.ConnectionStatus, string> onStatusUpdate { get; set; }
-		public CameraStrategy cameraStrategy => _cameraStrategy;
 		public ReadyUpManager readyUpManager => _readyUpManager;
 
 		private void Awake()
@@ -142,7 +141,6 @@ namespace FusionExamples.Tanknarok
 			if (newScene.AsIndex == 0)
 				yield break;
 			
-			_transitionEffect.ToggleGlitch(true);
 			//_audioEmitter.Play();
 			
 			onStatusUpdate?.Invoke( Runner, FusionLauncher.ConnectionStatus.Loading, "");
@@ -166,7 +164,6 @@ namespace FusionExamples.Tanknarok
 			yield return new WaitForSeconds(0.3f);
 
 			Debug.Log($"Stop glitching");
-			_transitionEffect.ToggleGlitch(false);
 			//_audioEmitter.Stop();
 
 			GameManager gameManager;

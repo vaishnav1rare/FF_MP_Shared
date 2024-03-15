@@ -7,23 +7,16 @@ namespace FusionExamples.Tanknarok
 	/// <summary>
 	/// The Player class represent the players avatar - in this case the Tank.
 	/// </summary>
-	[RequireComponent(typeof(NetworkCharacterController))]
+	//[RequireComponent(typeof(NetworkCharacterController))]
 	public class Player : FusionPlayer
 	{
 		private const int MAX_LIVES = 3;
 		private const int MAX_HEALTH = 100;
 
-		[Header("Visuals")] [SerializeField] private Transform _hull;
-		//[SerializeField] private Transform _turret;
+		//[Header("Visuals")] [SerializeField] private Transform _hull;
 		[SerializeField] private Transform _visualParent;
 		[SerializeField] private Material[] _playerMaterials;
-		//[SerializeField] private TankTeleportInEffect _teleportIn;
-		//[SerializeField] private TankTeleportOutEffect _teleportOutPrefab;
-
-		//[Space(10)] [SerializeField] private GameObject _deathExplosionPrefab;
 		[SerializeField] private float _respawnTime;
-		[SerializeField] private WeaponManager weaponManager;
-
 		public struct DamageEvent : INetworkEvent
 		{
 			public Vector3 impulse;
@@ -37,7 +30,6 @@ namespace FusionExamples.Tanknarok
 
 		[Networked] public Stage stage { get; set; }
 		[Networked] private int life { get; set; }
-		[Networked] private Angle aimDirection { get; set; }
 		[Networked] private TickTimer respawnTimer { get; set; }
 		[Networked] private TickTimer invulnerabilityTimer { get; set; }
 		[Networked] public int lives { get; set; }
@@ -58,21 +50,17 @@ namespace FusionExamples.Tanknarok
 		public Material playerMaterial { get; set; }
 		public Color playerColor { get; set; }
 
-		public Vector3 velocity => Object != null && Object.IsValid ? _cc.Velocity : Vector3.zero;
-		//public Vector3 turretPosition => _turret.position;
+		//public Vector3 velocity => Object != null && Object.IsValid ? _cc.Velocity : Vector3.zero;
+		//public Quaternion hullRotation => _hull.rotation;
+		//public GameObject cameraTarget => _cc.gameObject;
 
-		//public Quaternion turretRotation => _turret.rotation;
-
-		public Quaternion hullRotation => _hull.rotation;
-		public GameObject cameraTarget => _cc.gameObject;
-
-		private NetworkCharacterController _cc;
+		//private NetworkCharacterController _cc;
 		private Collider _collider;
 		private GameObject _deathExplosionInstance;
-		private TankDamageVisual _damageVisuals;
 		private float _respawnInSeconds = -1;
 		private ChangeDetector _changes;
 		private NetworkInputData _oldInput;
+		private Camera camera;
 
 		public void ToggleReady()
 		{
@@ -86,7 +74,7 @@ namespace FusionExamples.Tanknarok
 
 		private void Awake()
 		{
-			_cc = GetComponent<NetworkCharacterController>();
+			//_cc = GetComponent<NetworkCharacterController>();
 			_collider = GetComponentInChildren<Collider>();
 		}
 
@@ -108,13 +96,6 @@ namespace FusionExamples.Tanknarok
 			ready = false;
 
 			SetMaterial();
-			SetupDeathExplosion();
-
-			//_teleportIn.Initialize(this);
-
-			_damageVisuals = GetComponent<TankDamageVisual>();
-			_damageVisuals.Initialize(playerMaterial);
-
 			// Proxies may not be in state "NEW" when they spawn, so make sure we handle the state properly, regardless of what it is
 			OnStageChanged();
 
@@ -122,6 +103,11 @@ namespace FusionExamples.Tanknarok
 			
 			RegisterEventListener( (DamageEvent evt) => ApplyAreaDamage(evt.impulse, evt.damage) );
 			RegisterEventListener( (PickupEvent evt) => OnPickup(evt));
+			if (Object.HasStateAuthority)
+			{
+				camera = Camera.main;
+				if (camera != null) camera.GetComponent<MultiplayerCameraController>().target = transform;
+			}
 		}
 
 		public override void Despawned(NetworkRunner runner, bool hasState)
@@ -141,14 +127,7 @@ namespace FusionExamples.Tanknarok
 			/*else
 				weaponManager.InstallWeapon(powerup);*/
 		}
-
-		void SetupDeathExplosion()
-		{
-			//_deathExplosionInstance = Instantiate(_deathExplosionPrefab, transform.parent);
-			//_deathExplosionInstance.SetActive(false);
-			//ColorChanger.ChangeColor(_deathExplosionInstance.transform, playerColor);
-		}
-
+		
 		public override void FixedUpdateNetwork()
 		{
 			if (InputController.fetchInput)
@@ -157,14 +136,8 @@ namespace FusionExamples.Tanknarok
 				// have Input or State Authority - meaning on the controlling player or the server.
 				if (GetInput(out NetworkInputData input))
 				{
-					SetDirections(input.moveDirection.normalized, input.aimDirection.normalized);
-
-					/*if (input.IsDown(NetworkInputData.BUTTON_FIRE_PRIMARY))
-						weaponManager.FireWeapon(WeaponManager.WeaponInstallationType.PRIMARY);
-
-					if (input.IsDown(NetworkInputData.BUTTON_FIRE_SECONDARY))
-						weaponManager.FireWeapon(WeaponManager.WeaponInstallationType.SECONDARY);*/
-
+					SetDirections(input.moveDirection.normalized);
+					
 					// We don't want to predict this because it's a toggle and a mis-prediction due to lost input will double toggle the button
 					if (Object.HasStateAuthority && input.WasPressed(NetworkInputData.BUTTON_TOGGLE_READY, _oldInput))
 						ToggleReady();
@@ -203,8 +176,6 @@ namespace FusionExamples.Tanknarok
 			}
 				
 			var interpolated = new NetworkBehaviourBufferInterpolator(this);
-			//_turret.rotation = Quaternion.Euler(0, interpolated.Angle(nameof(aimDirection)), 0);
-			_damageVisuals.CheckHealth(GetPropertyReader<int>(nameof(life)).Read(interpolated.From), MAX_HEALTH);
 		}
 
 		private void SetMaterial()
@@ -222,18 +193,110 @@ namespace FusionExamples.Tanknarok
 		/// <summary>
 		/// Set the direction of movement and aim
 		/// </summary>
-		private void SetDirections(Vector2 moveVector, Vector2 aimVector)
+		private void SetDirections(Vector2 moveVector)
 		{
 			if (!isActivated)
 				return;
 
-			_cc.Move(new Vector3(moveVector.x, 0, moveVector.y));
-
-			/*if (aimVector.sqrMagnitude > 0)
-				_turret.forward = new Vector3(aimVector.x, 0, aimVector.y);
-			aimDirection = _turret.rotation.eulerAngles.y;*/
+			//_cc.Move(new Vector3(moveVector.x, 0, moveVector.y));
+			Move(new Vector3(0, 0, moveVector.y));
+			Steer(new Vector3(moveVector.x, 0, 0));
 		}
+		[Networked] public float AppliedSpeed { get; set; }
+		[Networked] public float MaxSpeed { get; set; }
+		public Rigidbody Rigidbody;
+		public float acceleration;
+		public float reverseSpeed;
+		public float deceleration;
+		public float CurrentSpeed;
+		public float CurrentSpeed01;
+		private float inputDeadZoneValue = 0.001f;
+		private void Move(Vector3 input)
+		{
+			
+			if (input.z>0)
+			{
+				AppliedSpeed = Mathf.Lerp(AppliedSpeed, MaxSpeed, acceleration * Runner.DeltaTime);
+			}
+			else if (input.z<0)
+			{
+				AppliedSpeed = Mathf.Lerp(AppliedSpeed, -reverseSpeed, acceleration * Runner.DeltaTime);
+			}
+			else
+			{
+				AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);
+			}
+		
+			/*var resistance = 1 - (IsGrounded ? GroundResistance : 0);
+			if (resistance < 1)
+			{
+				AppliedSpeed = Mathf.Lerp(AppliedSpeed, AppliedSpeed * resistance, Runner.DeltaTime * (IsDrifting ? 8 : 2));
+			}*/
 
+			// transform.forward is not reliable when using NetworkedRigidbody - instead use: NetworkRigidbody.Rigidbody.rotation * Vector3.forward
+			var vel = (Rigidbody.rotation * Vector3.forward) * AppliedSpeed;
+			vel.y = Rigidbody.velocity.y;
+			Rigidbody.velocity = vel;
+		
+			CurrentSpeed = Rigidbody.velocity.magnitude;
+			CurrentSpeed01 = CurrentSpeed / MaxSpeed;
+			if (CurrentSpeed < inputDeadZoneValue) CurrentSpeed01 = CurrentSpeed = 0;
+			/*Rigidbody.AddForce(( AppliedSpeed) * 5f * transform.forward, ForceMode.Acceleration);
+			Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, MaxSpeed);*/
+		}
+		
+		[Networked] private float SteerAmount { get; set; }
+		public float steerAcceleration;
+		public float steerDeceleration;
+		public bool IsDrifting;
+		public Transform model;
+		public float driftRotationLerpFactor = 10f;
+		public bool CanDrive = true;
+		private void Steer(Vector3 input)
+		{
+		
+			var steerTarget = input.x * CurrentSpeed01 * 45f;;
+			if (SteerAmount != steerTarget)
+			{
+				var steerLerp = Mathf.Abs(SteerAmount) < Mathf.Abs(steerTarget) ? steerAcceleration : steerDeceleration;
+				SteerAmount = Mathf.Lerp(SteerAmount, steerTarget, Runner.DeltaTime * steerLerp);
+			}
+			if (IsDrifting)
+			{
+				model.localEulerAngles = LerpAxis(Axis.Y, model.localEulerAngles, SteerAmount * 2,
+					driftRotationLerpFactor * Runner.DeltaTime);
+			}
+			else
+			{
+				model.localEulerAngles = LerpAxis(Axis.Y, model.localEulerAngles, 0, 6 * Runner.DeltaTime);
+			}
+
+			if (CanDrive)
+			{
+				var rot = Quaternion.Euler(
+					Vector3.Lerp(
+						Rigidbody.rotation.eulerAngles,
+						Rigidbody.rotation.eulerAngles + Vector3.up * SteerAmount,
+						3 * Runner.DeltaTime)
+				);
+
+				Rigidbody.MoveRotation(rot);
+			}
+
+			//HandleTilting(SteerAmount);
+		}
+		private static Vector3 LerpAxis(Axis axis, Vector3 euler, float tgtVal, float t)
+		{
+			if (axis == Axis.X) return new Vector3(Mathf.LerpAngle(euler.x, tgtVal, t), euler.y, euler.z);
+			if (axis == Axis.Y) return new Vector3(euler.x, Mathf.LerpAngle(euler.y, tgtVal, t), euler.z);
+			return new Vector3(euler.x, euler.y, Mathf.LerpAngle(euler.z, tgtVal, t));
+		}
+		public enum Axis
+		{
+			X,
+			Y,
+			Z
+		}
 		/// <summary>
 		/// Apply damage to Tank with an associated impact impulse
 		/// </summary>
@@ -247,8 +310,8 @@ namespace FusionExamples.Tanknarok
 
 			if (Runner.TryGetSingleton(out GameManager gameManager))
 			{
-				_cc.Velocity += impulse / 10.0f; // Magic constant to compensate for not properly dealing with masses
-				_cc.Move(Vector3.zero); // Velocity property is only used by CC when steering, so pretend we are, without actually steering anywhere
+				//_cc.Velocity += impulse / 10.0f; // Magic constant to compensate for not properly dealing with masses
+				//_cc.Move(Vector3.zero); // Velocity property is only used by CC when steering, so pretend we are, without actually steering anywhere
 
 				if (damage >= life)
 				{
@@ -266,8 +329,7 @@ namespace FusionExamples.Tanknarok
 					life -= (byte)damage;
 					Debug.Log($"Player {PlayerId} took {damage} damage, life = {life}");
 				}
-
-				_damageVisuals.CheckHealth(life , MAX_HEALTH);
+				
 			}
 
 			invulnerabilityTimer = TickTimer.CreateFromSeconds(Runner, 0.1f);
@@ -315,7 +377,7 @@ namespace FusionExamples.Tanknarok
 
 					// Place the tank at its spawn point. This has to be done in FUN() because the transform gets reset otherwise
 					Transform spawn = spawnpt.transform;
-					_cc.Teleport( spawn.position, spawn.rotation );
+					//_cc.Teleport( spawn.position, spawn.rotation );
 
 					// If the player was already here when we joined, it might already be active, in which case we don't want to trigger any spawn FX, so just leave it ACTIVE
 					if (stage != Stage.Active)
@@ -331,12 +393,9 @@ namespace FusionExamples.Tanknarok
 			switch (stage)
 			{
 				case Stage.TeleportIn:
-					Debug.Log($"Starting teleport for player {PlayerId} @ {transform.position} cc@ {_cc.Data.Position}, tick={Runner.Tick}");
-					//_teleportIn.StartTeleport();
+					//Debug.Log($"Starting teleport for player {PlayerId} @ {transform.position} cc@ {_cc.Data.Position}, tick={Runner.Tick}");
 					break;
 				case Stage.Active:
-					_damageVisuals.CleanUpDebris();
-					//_teleportIn.EndTeleport();
 					break;
 				case Stage.Dead:
 					_deathExplosionInstance.transform.position = transform.position;
@@ -344,8 +403,6 @@ namespace FusionExamples.Tanknarok
 					_deathExplosionInstance.SetActive(true);
 
 					_visualParent.gameObject.SetActive(false);
-					_damageVisuals.OnDeath();
-					
 					if(Runner.TryGetSingleton( out GameManager gameManager))
 						gameManager.OnTankDeath();
 
