@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace FusionExamples.Tanknarok
 {
@@ -13,22 +14,15 @@ namespace FusionExamples.Tanknarok
 	public class InputController : NetworkBehaviour, INetworkRunnerCallbacks
 	{
 		[SerializeField] private LayerMask _mouseRayMask;
-
+		[SerializeField] private InputAction accelerate;
+		[SerializeField] private InputAction reverse;
+		[SerializeField] private InputAction steer;
 		public static bool fetchInput = true;
 
 		private Player _player;
 		private NetworkInputData _inputData = new NetworkInputData();
-		private Vector2 _moveDelta;
-		//private Vector2 _aimDelta;
-		private Vector2 _leftPos;
-		private Vector2 _leftDown;
-		private Vector2 _rightPos;
-		private Vector2 _rightDown;
-		//private bool _leftTouchWasDown;
-		//private bool _rightTouchWasDown;
-
-		//private MobileInput _mobileInput;
-
+		public Gamepad gamepad;
+		
 		private uint _buttonReset;
 		private uint _buttonSample;
 
@@ -46,7 +40,25 @@ namespace FusionExamples.Tanknarok
 				Runner.AddCallbacks(this);
 			}
 
+			accelerate = accelerate.Clone();
+			reverse = reverse.Clone();
+			steer = steer.Clone();
+			
+			accelerate.Enable();
+			reverse.Enable();
+			steer.Enable();
 			Debug.Log("Spawned [" + this + "] IsClient=" + Runner.IsClient + " IsServer=" + Runner.IsServer + " IsInputSrc=" + Object.HasInputAuthority + " IsStateSrc=" + Object.HasStateAuthority);
+		}
+
+		private void Update()
+		{
+			_buttonSample &= ~_buttonReset;
+			if (Input.GetKey(KeyCode.R))
+			{
+				_buttonSample |= NetworkInputData.BUTTON_TOGGLE_READY;
+				Debug.Log("R Key Pressed");
+			}
+			
 		}
 
 		/// <summary>
@@ -56,91 +68,48 @@ namespace FusionExamples.Tanknarok
 		/// <param name="input">The target input handler that we'll pass our data to</param>
 		public void OnInput(NetworkRunner runner, NetworkInput input)
 		{
+			gamepad = Gamepad.current;
+			
+			var userInput = new NetworkInputData();
 			if (_player!=null && _player.Object!=null && _player.stage == Player.Stage.Active)
 			{
-				//_inputData.aimDirection = _aimDelta.normalized;
-				_inputData.moveDirection = _moveDelta.normalized;
-				_inputData.Buttons = _buttonSample;
+				userInput.Buttons = _buttonSample; 
 				_buttonReset |= _buttonSample; // This effectively delays the reset of the read button flags until next Update() in case we're ticking faster than we're rendering
 			}
-
-			// Hand over the data to Fusion
-			input.Set(_inputData);
-			_inputData.Buttons = 0;
+			if ( ReadBool(accelerate) ) userInput.Buttons |= NetworkInputData.ButtonAccelerate;
+			if ( ReadBool(reverse) ) userInput.Buttons |= NetworkInputData.ButtonReverse;
+			userInput.Steer = ReadFloat(steer);
+			input.Set(userInput);
 		}
-		
-		private void Update()
+		public override void Despawned(NetworkRunner runner, bool hasState)
 		{
-			_buttonSample &= ~_buttonReset;
-
-			if (Input.mousePresent)
-			{
-				if (Input.GetKey(KeyCode.R))
-					_buttonSample |= NetworkInputData.BUTTON_TOGGLE_READY;
-
-				_moveDelta = Vector2.zero;
-				
-				if (Input.GetKey(KeyCode.W))
-					_moveDelta += Vector2.up;
-
-				if (Input.GetKey(KeyCode.S))
-					_moveDelta += Vector2.down;
-
-				if (Input.GetKey(KeyCode.A))
-					_moveDelta += Vector2.left;
-
-				if (Input.GetKey(KeyCode.D))
-					_moveDelta += Vector2.right;
-			}
-			/*else if (Input.touchSupported)
-			{
-				bool leftIsDown = false;
-				bool rightIsDown = false;
-
-				foreach (Touch touch in Input.touches)
-				{
-					if (touch.position.x < Screen.width / 2)
-					{
-						leftIsDown = true;
-						_leftPos = touch.position;
-						if (_leftTouchWasDown)
-							_moveDelta += 10.0f * touch.deltaPosition / Screen.dpi;
-						else
-							_leftDown = touch.position;
-					}
-					else
-					{
-						rightIsDown = true;
-						_rightPos = touch.position;
-						if (_rightTouchWasDown && (touch.position-_rightDown).magnitude>(0.01f*Screen.dpi))
-							_aimDelta = (10.0f / Screen.dpi) * (touch.position-_rightDown);
-						else
-							_rightDown = touch.position;
-					}
-				}
-				if (_rightTouchWasDown && !rightIsDown )
-					_buttonSample |= NetworkInputData.BUTTON_FIRE_PRIMARY;
-				if (_leftTouchWasDown && !leftIsDown && _moveDelta.magnitude < 0.01f )
-					_buttonSample |= NetworkInputData.BUTTON_FIRE_SECONDARY;
-
-				if( !leftIsDown )
-					_moveDelta = Vector2.zero;
-			
-				_mobileInput.gameObject.SetActive(true);
-				_mobileInput.SetLeft(leftIsDown, _leftDown, _leftPos);
-				_mobileInput.SetRight(rightIsDown,_rightDown, _rightPos);
-
-				_leftTouchWasDown = leftIsDown;
-				_rightTouchWasDown = rightIsDown;
-			}
-			else
-			{
-				_mobileInput.gameObject.SetActive(false);
-			}*/
+			base.Despawned(runner, hasState);
+        
+			DisposeInputs();
+			Runner.RemoveCallbacks(this);
 		}
 
+		private void OnDestroy()
+		{
+			DisposeInputs();
+		}
+
+		private void DisposeInputs()
+		{
+			accelerate.Dispose();
+			reverse.Dispose();
+			steer.Dispose();
+			// disposal should handle these
+			//useItem.started -= UseItemPressed;
+			//drift.started -= DriftPressed;
+			//pause.started -= PausePressed;
+		}
+		private static bool ReadBool(InputAction action) => action.ReadValue<float>() != 0;
+		private static float ReadFloat(InputAction action) => action.ReadValue<float>();
+		
 		public void ToggleReady()
 		{
+			Debug.Log("R Key Pressed");
 			_buttonSample |= NetworkInputData.BUTTON_TOGGLE_READY;
 		}
 
@@ -169,19 +138,26 @@ namespace FusionExamples.Tanknarok
 	public struct NetworkInputData : INetworkInput
 	{
 		public const uint BUTTON_TOGGLE_READY = 1 << 2;
-
+		public const uint ButtonAccelerate = 1 << 0;
+		public const uint ButtonReverse = 1 << 1;
+        
 		public uint Buttons;
-		public Vector2 moveDirection;
+		public uint OneShots;
 
-		public bool IsUp(uint button)
+		private int _steer;
+		public float Steer
 		{
-			return IsDown(button) == false;
+			get => _steer * .001f;
+			set => _steer = (int)(value * 1000);
 		}
 
-		public bool IsDown(uint button)
-		{
-			return (Buttons & button) == button;
-		}
+		public bool IsUp(uint button) => IsDown(button) == false;
+		public bool IsDown(uint button) => (Buttons & button) == button;
+
+		public bool IsDownThisFrame(uint button) => (OneShots & button) == button;
+        
+		public bool IsAccelerate => IsDown(ButtonAccelerate);
+		public bool IsReverse => IsDown(ButtonReverse);
 
 		public bool WasPressed(uint button, NetworkInputData oldInput)
 		{

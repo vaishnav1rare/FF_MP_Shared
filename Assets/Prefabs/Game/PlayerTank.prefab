@@ -352,7 +352,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _eventRelayPrefab: {fileID: 6216721781973090943, guid: b5b51c12e1e6446af8ad4a576d68eef6, type: 3}
-  _hull: {fileID: 8452678108642866672}
   _visualParent: {fileID: 6674640751963955606}
   _playerMaterials:
   - {fileID: 2100000, guid: 38f56c87a71964902b969f947ab5b868, type: 2}
@@ -360,10 +359,26 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 7e453c08f65900e45ac5cc243a9aef54, type: 2}
   - {fileID: 2100000, guid: c0b5a8092855bc640a66a3f25c3718ef, type: 2}
   _respawnTime: 1
-  weaponManager: {fileID: 0}
   _stage: 0
   _lives: 0
   _ready: 0
+  _AppliedSpeed: 0
+  _MaxSpeed: 0
+  Rigidbody: {fileID: 0}
+  acceleration: 0
+  reverseSpeed: 0
+  deceleration: 0
+  CurrentSpeed: 0
+  CurrentSpeed01: 0
+  steerAcceleration: 0
+  steerDeceleration: 0
+  IsDrifting: 0
+  model: {fileID: 0}
+  driftRotationLerpFactor: 10
+  CanDrive: 1
+  body: {fileID: 0}
+  handle: {fileID: 0}
+  MaxBodyTileAngle: 40
 --- !u!114 &868463730390139289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -379,6 +394,50 @@ MonoBehaviour:
   _mouseRayMask:
     serializedVersion: 2
     m_Bits: 64
+  accelerate:
+    m_Name: Accelerate
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 966d087c-c642-4c47-a016-524acd0e5fdb
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  reverse:
+    m_Name: Reverse
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 26dc7433-1673-48eb-9a65-f34fa695bf6e
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  steer:
+    m_Name: Steer
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: fbb1643c-377c-4307-a78f-3d3575f393cd
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  ready:
+    m_Name: Ready
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 218e9a8b-68ee-46c4-be8e-063ff8f16ba0
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: dce555e7-fe7d-4fb0-9417-b2ab0eb4e577
+      m_Path: <Keyboard>/r
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Ready
+      m_Flags: 0
+    m_Flags: 0
 --- !u!114 &4937990569053503600
 MonoBehaviour:
   m_ObjectHideFlags: 0

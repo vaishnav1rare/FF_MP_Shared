@@ -1,3 +1,4 @@
+using System;
 using Fusion;
 using FusionHelpers;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace FusionExamples.Tanknarok
 		private const int MAX_HEALTH = 100;
 
 		//[Header("Visuals")] [SerializeField] private Transform _hull;
+		[SerializeField] private TrailRenderer primaryWheel;
 		[SerializeField] private Transform _visualParent;
 		[SerializeField] private Material[] _playerMaterials;
 		[SerializeField] private float _respawnTime;
@@ -34,6 +36,8 @@ namespace FusionExamples.Tanknarok
 		[Networked] private TickTimer invulnerabilityTimer { get; set; }
 		[Networked] public int lives { get; set; }
 		[Networked] public bool ready { get; set; }
+		
+		[Networked] private NetworkInputData Inputs { get; set; }
 
 		public enum Stage
 		{
@@ -64,6 +68,7 @@ namespace FusionExamples.Tanknarok
 
 		public void ToggleReady()
 		{
+			Debug.Log("PlayerReady: "+ready);
 			ready = !ready;
 		}
 
@@ -109,6 +114,7 @@ namespace FusionExamples.Tanknarok
 				if (camera != null) camera.GetComponent<MultiplayerCameraController>().target = transform;
 			}
 		}
+		
 
 		public override void Despawned(NetworkRunner runner, bool hasState)
 		{
@@ -130,22 +136,6 @@ namespace FusionExamples.Tanknarok
 		
 		public override void FixedUpdateNetwork()
 		{
-			if (InputController.fetchInput)
-			{
-				// Get our input struct and act accordingly. This method will only return data if we
-				// have Input or State Authority - meaning on the controlling player or the server.
-				if (GetInput(out NetworkInputData input))
-				{
-					SetDirections(input.moveDirection.normalized);
-					
-					// We don't want to predict this because it's a toggle and a mis-prediction due to lost input will double toggle the button
-					if (Object.HasStateAuthority && input.WasPressed(NetworkInputData.BUTTON_TOGGLE_READY, _oldInput))
-						ToggleReady();
-
-					_oldInput = input;
-				}
-			}
-
 			if (Object.HasStateAuthority)
 			{
 				CheckRespawn();
@@ -153,6 +143,26 @@ namespace FusionExamples.Tanknarok
 				if (isRespawningDone)
 					ResetPlayer();
 			}
+			Drift();
+			if (!isActivated)
+				return;
+			if (GetInput(out NetworkInputData input))
+			{
+				// Copy our inputs that we have received, to a [Networked] property, so other clients can predict using our
+				// tick-aligned inputs. This is the core of the Client Prediction system.
+				//
+				// We don't want to predict this because it's a toggle and a mis-prediction due to lost input will double toggle the button
+				/*if (Object.HasStateAuthority && input.WasPressed(NetworkInputData.BUTTON_TOGGLE_READY, _oldInput))
+					ToggleReady();*/
+
+				//_oldInput = input;
+				if (Object.HasStateAuthority && input.WasPressed(NetworkInputData.BUTTON_TOGGLE_READY, Inputs))
+					ToggleReady();
+				
+				Inputs = input;
+			}
+			Move(Inputs);
+			Steer(Inputs);
 		}
 
 		/// <summary>
@@ -189,19 +199,7 @@ namespace FusionExamples.Tanknarok
 				part.SetMaterial(playerMaterial);
 			}
 		}
-
-		/// <summary>
-		/// Set the direction of movement and aim
-		/// </summary>
-		private void SetDirections(Vector2 moveVector)
-		{
-			if (!isActivated)
-				return;
-
-			//_cc.Move(new Vector3(moveVector.x, 0, moveVector.y));
-			Move(new Vector3(0, 0, moveVector.y));
-			Steer(new Vector3(moveVector.x, 0, 0));
-		}
+		
 		[Networked] public float AppliedSpeed { get; set; }
 		[Networked] public float MaxSpeed { get; set; }
 		public Rigidbody Rigidbody;
@@ -211,14 +209,13 @@ namespace FusionExamples.Tanknarok
 		public float CurrentSpeed;
 		public float CurrentSpeed01;
 		private float inputDeadZoneValue = 0.001f;
-		private void Move(Vector3 input)
+		private void Move(NetworkInputData input)
 		{
-			
-			if (input.z>0)
+			if (input.IsAccelerate)
 			{
 				AppliedSpeed = Mathf.Lerp(AppliedSpeed, MaxSpeed, acceleration * Runner.DeltaTime);
 			}
-			else if (input.z<0)
+			else if (input.IsReverse)
 			{
 				AppliedSpeed = Mathf.Lerp(AppliedSpeed, -reverseSpeed, acceleration * Runner.DeltaTime);
 			}
@@ -252,10 +249,10 @@ namespace FusionExamples.Tanknarok
 		public Transform model;
 		public float driftRotationLerpFactor = 10f;
 		public bool CanDrive = true;
-		private void Steer(Vector3 input)
+		private void Steer(NetworkInputData input)
 		{
 		
-			var steerTarget = input.x * CurrentSpeed01 * 45f;;
+			var steerTarget = input.Steer * CurrentSpeed01 * 45f;;
 			if (SteerAmount != steerTarget)
 			{
 				var steerLerp = Mathf.Abs(SteerAmount) < Mathf.Abs(steerTarget) ? steerAcceleration : steerDeceleration;
@@ -283,13 +280,64 @@ namespace FusionExamples.Tanknarok
 				Rigidbody.MoveRotation(rot);
 			}
 
-			//HandleTilting(SteerAmount);
+			HandleTilting(SteerAmount);
 		}
+		private float SI;
+		float _bodyAngle;
+		float _handleAngle;
+		Vector3 currentRotationBody;
+		Vector3 currentRotationHandle;
+		[SerializeField] private Transform body;
+		[SerializeField] private Transform handle;
+		public float MaxBodyTileAngle = 40;
+		private void HandleTilting(float steerInput)
+		{
+			SetMaxBodyAngle();
+
+			SI = steerInput / 20f;
+			if (body)
+			{
+				_bodyAngle = Mathf.Lerp(_bodyAngle, Mathf.Clamp(SI * MaxBodyTileAngle, -MaxBodyTileAngle, MaxBodyTileAngle), Runner.DeltaTime * 10);
+				currentRotationBody = body.eulerAngles;
+				body.eulerAngles = new Vector3(currentRotationBody.x, currentRotationBody.y, -_bodyAngle);
+			}
+
+			if (handle)
+			{
+				_handleAngle = Mathf.Lerp(_handleAngle, Mathf.Clamp(SI * 40, -35, 35), Runner.DeltaTime * 10);
+				currentRotationHandle = handle.localEulerAngles;
+				handle.localEulerAngles = new Vector3(currentRotationHandle.x, currentRotationHandle.y, _handleAngle + 180);
+			}
+		
+		}
+		private void SetMaxBodyAngle() => MaxBodyTileAngle = Mathf.Lerp(10, 40, CurrentSpeed01);
 		private static Vector3 LerpAxis(Axis axis, Vector3 euler, float tgtVal, float t)
 		{
 			if (axis == Axis.X) return new Vector3(Mathf.LerpAngle(euler.x, tgtVal, t), euler.y, euler.z);
 			if (axis == Axis.Y) return new Vector3(euler.x, Mathf.LerpAngle(euler.y, tgtVal, t), euler.z);
 			return new Vector3(euler.x, euler.y, Mathf.LerpAngle(euler.z, tgtVal, t));
+		}
+		
+		
+		public float GetSideVelocity() => Vector3.Dot(Rigidbody.velocity.normalized, transform.right);
+ 
+		public float skidThreshold = 0.002f;
+		Vector3 forwardVelocity;
+		Vector3 sideVelocity;
+		Vector3 finalVelocity;
+		[field: SerializeField] public float DriftFactor { get; private set; }
+		private void Drift()
+		{
+			//if (!IsGrounded) return;
+			forwardVelocity = Vector3.Dot(Rigidbody.velocity, transform.forward) * transform.forward;
+			sideVelocity = Vector3.Dot(Rigidbody.velocity, transform.right) * transform.right;
+			finalVelocity = forwardVelocity + (DriftFactor * sideVelocity);
+			finalVelocity.y = Rigidbody.velocity.y;
+			Rigidbody.velocity = finalVelocity;
+		
+			IsDrifting = /*IsGrounded &&*/ CurrentSpeed01 > 0.1f && HelperFunctions.GetAbs(GetSideVelocity()) > skidThreshold;
+		
+			primaryWheel.emitting = IsDrifting;
 		}
 		public enum Axis
 		{

@@ -1747,6 +1747,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 7815906349323457157}
   - {fileID: 9046562366854110299}
   - {fileID: 9097469178900222328}
   m_Father: {fileID: 0}
@@ -1785,6 +1786,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _eventRelayPrefab: {fileID: 6216721781973090943, guid: b5b51c12e1e6446af8ad4a576d68eef6, type: 3}
+  primaryWheel: {fileID: 830281465571014655}
   _visualParent: {fileID: 9097469178900222328}
   _playerMaterials:
   - {fileID: 2100000, guid: 38f56c87a71964902b969f947ab5b868, type: 2}
@@ -1809,6 +1811,11 @@ MonoBehaviour:
   model: {fileID: 9097469178900222328}
   driftRotationLerpFactor: 10
   CanDrive: 1
+  body: {fileID: 9097469178900222328}
+  handle: {fileID: 5097727341707734566}
+  MaxBodyTileAngle: 30
+  skidThreshold: 0.05
+  <DriftFactor>k__BackingField: 1
 --- !u!114 &868463730390139289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1824,6 +1831,113 @@ MonoBehaviour:
   _mouseRayMask:
     serializedVersion: 2
     m_Bits: 64
+  accelerate:
+    m_Name: Accelerate
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: c6324a97-40b7-4a5a-8e73-ca42034e6914
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 8fc44b41-0da7-4aa5-961d-679d45e4341e
+      m_Path: <Keyboard>/w
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Accelerate
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 797c5cb5-f961-446a-8fba-73c7c046b776
+      m_Path: <Keyboard>/upArrow
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Accelerate
+      m_Flags: 0
+    m_Flags: 0
+  reverse:
+    m_Name: Reverse
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: adf07b40-1eb2-413e-aa58-b54861f4828b
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: ba121867-2df8-4cb4-87e3-2f99681e8cd5
+      m_Path: <Keyboard>/s
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Reverse
+      m_Flags: 0
+    - m_Name: 
+      m_Id: da3c918d-79bc-4598-9c6f-e90419176a5a
+      m_Path: <Keyboard>/downArrow
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Reverse
+      m_Flags: 0
+    m_Flags: 0
+  steer:
+    m_Name: Steer
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 58630876-e588-4b91-9b05-d7e4e31a430d
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: Keyboard Alt
+      m_Id: 8e8e02e7-50ad-481a-a7db-af81d8a0352c
+      m_Path: 1DAxis
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Steer
+      m_Flags: 4
+    - m_Name: negative
+      m_Id: fd25bbaf-fa70-4377-9720-93c40ba772e3
+      m_Path: <Keyboard>/a
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Steer
+      m_Flags: 8
+    - m_Name: positive
+      m_Id: 8a5f34ad-4f8b-4c2f-9f0a-3f0d39728a2e
+      m_Path: <Keyboard>/d
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Steer
+      m_Flags: 8
+    - m_Name: Keyboard
+      m_Id: f5b1b524-040d-4385-a308-ab52831d78a2
+      m_Path: 1DAxis
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Steer
+      m_Flags: 4
+    - m_Name: negative
+      m_Id: 88504021-8737-404e-84f0-7b57d5111bd9
+      m_Path: <Keyboard>/leftArrow
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Steer
+      m_Flags: 8
+    - m_Name: positive
+      m_Id: 3ed9a8ae-8246-43fc-b38f-a52e81f0b415
+      m_Path: <Keyboard>/rightArrow
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Steer
+      m_Flags: 8
+    m_Flags: 0
 --- !u!114 &4937990569053503600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2097,7 +2211,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8433945400198155202}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
   m_ConstrainProportionsScale: 1
@@ -2238,3 +2352,70 @@ Transform:
   - {fileID: 5088709303623546528}
   m_Father: {fileID: 3224894141378490869}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &6983585831853908144
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 7911653039066033918}
+    m_Modifications:
+    - target: {fileID: 908886248301490741, guid: 72a694a53e1c6f34aa6ab283f7b14191, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 908886248301490741, guid: 72a694a53e1c6f34aa6ab283f7b14191, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 908886248301490741, guid: 72a694a53e1c6f34aa6ab283f7b14191, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 908886248301490741, guid: 72a694a53e1c6f34aa6ab283f7b14191, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 908886248301490741, guid: 72a694a53e1c6f34aa6ab283f7b14191, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 908886248301490741, guid: 72a694a53e1c6f34aa6ab283f7b14191, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 908886248301490741, guid: 72a694a53e1c6f34aa6ab283f7b14191, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 908886248301490741, guid: 72a694a53e1c6f34aa6ab283f7b14191, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 908886248301490741, guid: 72a694a53e1c6f34aa6ab283f7b14191, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 908886248301490741, guid: 72a694a53e1c6f34aa6ab283f7b14191, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1692712774664339818, guid: 72a694a53e1c6f34aa6ab283f7b14191, type: 3}
+      propertyPath: m_Name
+      value: PrimaryWheel
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 72a694a53e1c6f34aa6ab283f7b14191, type: 3}
+--- !u!96 &830281465571014655 stripped
+TrailRenderer:
+  m_CorrespondingSourceObject: {fileID: 7741528090633377615, guid: 72a694a53e1c6f34aa6ab283f7b14191, type: 3}
+  m_PrefabInstance: {fileID: 6983585831853908144}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7815906349323457157 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 908886248301490741, guid: 72a694a53e1c6f34aa6ab283f7b14191, type: 3}
+  m_PrefabInstance: {fileID: 6983585831853908144}
+  m_PrefabAsset: {fileID: 0}
