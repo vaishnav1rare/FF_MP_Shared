@@ -19,6 +19,19 @@ namespace FusionExamples.Tanknarok
 		[SerializeField] private Transform _visualParent;
 		[SerializeField] private Material[] _playerMaterials;
 		[SerializeField] private float _respawnTime;
+		
+		[Header("---Order")]
+		[SerializeField] private TMPro.TextMeshPro orderDistanceTMP;
+		[SerializeField] private Vector3 targetOrderTransorm;
+		private float orderRange = 10;
+		private float orderDistance;
+	
+		[Header("---Campass")]
+		[SerializeField] private GameObject orderCampassParent;
+		[SerializeField] private Transform orderCampassCanvasParent;
+		[SerializeField] private Transform orderCampassPivot;
+		[SerializeField] private SpriteRenderer orderCampassSprite;
+		private float campassHeight = 5;
 		public struct DamageEvent : INetworkEvent
 		{
 			public Vector3 impulse;
@@ -81,6 +94,7 @@ namespace FusionExamples.Tanknarok
 		{
 			//_cc = GetComponent<NetworkCharacterController>();
 			_collider = GetComponentInChildren<CapsuleCollider>();
+			orderCampassParent.SetActive(false);
 		}
 
 		public override void InitNetworkState()
@@ -112,6 +126,8 @@ namespace FusionExamples.Tanknarok
 			{
 				camera = Camera.main;
 				if (camera != null) camera.GetComponent<MultiplayerCameraController>().target = transform;
+				orderCampassParent.transform.parent = null;
+				orderCampassParent.transform.rotation = Quaternion.identity;
 			}
 		}
 
@@ -137,8 +153,46 @@ namespace FusionExamples.Tanknarok
 		private void Update()
 		{
 			Drift();
+			UpdateCampass();
 		}
+		private void UpdateDistance()
+		{
+			if (targetOrderTransorm == null) return;
+			orderDistance = HelperFunctions.GetDistance(transform.position, targetOrderTransorm);
+		}
+		Vector3 _orderDirection;
+		bool _activeState;
+		float _orderInterval;
+		private void UpdateCampass()
+		{
+			//if (targetBoosterTransform != null) CampassBooster();
+			if (/*targetOrder == null ||*/ targetOrderTransorm == null) 
+				return;
 
+			orderDistanceTMP.text = $"{Mathf.FloorToInt(orderDistance)}m";
+			/*
+			float _value = targetOrder.OrderTime / _orderInterval;
+			if (GameController.Instance != null) orderCampassSprite.color = _value > 2 ? ColorManager.Instance.Green : _value > 1 ? ColorManager.Instance.Yellow : ColorManager.Instance.Red;
+			*/
+
+
+			// Active State
+			_activeState = orderDistance > orderRange;
+			if (orderCampassParent.activeSelf != _activeState) orderCampassParent.SetActive(_activeState);
+
+			if (!_activeState) return;
+
+			// Position and rotation
+			orderCampassPivot.position = transform.position + Vector3.up * campassHeight;
+			orderDistanceTMP.transform.position = transform.position + Vector3.up * (campassHeight + 2) ;
+			//orderCampassCanvasParent.position = orderCampassPivot.position;
+
+			_orderDirection = targetOrderTransorm - transform.position;
+			_orderDirection.y = orderCampassPivot.localRotation.y;
+			orderCampassPivot.rotation = Quaternion.Slerp(orderCampassPivot.rotation, Quaternion.LookRotation(_orderDirection), Time.deltaTime);
+		}
+	
+	
 		public override void FixedUpdateNetwork()
 		{
 			GroundNormalRotation();
@@ -165,6 +219,7 @@ namespace FusionExamples.Tanknarok
 			}
 			Move(Inputs);
 			Steer(Inputs);
+			UpdateDistance();
 		}
 
 		/// <summary>
