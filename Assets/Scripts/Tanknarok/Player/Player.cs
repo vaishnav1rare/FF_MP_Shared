@@ -157,7 +157,8 @@ namespace FusionExamples.Tanknarok
 		}
 		private void UpdateDistance()
 		{
-			if (targetOrderTransorm == null) return;
+			if(!ChallengeManager.instance)
+				return;
 			orderDistance = HelperFunctions.GetDistance(transform.position, targetOrderTransorm);
 		}
 		Vector3 _orderDirection;
@@ -166,9 +167,7 @@ namespace FusionExamples.Tanknarok
 		private void UpdateCampass()
 		{
 			//if (targetBoosterTransform != null) CampassBooster();
-			if (/*targetOrder == null ||*/ targetOrderTransorm == null) 
-				return;
-
+			
 			orderDistanceTMP.text = $"{Mathf.FloorToInt(orderDistance)}m";
 			/*
 			float _value = targetOrder.OrderTime / _orderInterval;
@@ -177,6 +176,10 @@ namespace FusionExamples.Tanknarok
 
 
 			// Active State
+			/*if (!ChallengeManager.instance)
+			{
+				_activeState = false;
+			}*/
 			_activeState = orderDistance > orderRange;
 			if (orderCampassParent.activeSelf != _activeState) orderCampassParent.SetActive(_activeState);
 
@@ -195,6 +198,10 @@ namespace FusionExamples.Tanknarok
 	
 		public override void FixedUpdateNetwork()
 		{
+			if(ChallengeManager.instance)
+				targetOrderTransorm = ChallengeManager.instance.OrderPosition;
+			
+			
 			GroundNormalRotation();
 			if (Object.HasStateAuthority)
 			{

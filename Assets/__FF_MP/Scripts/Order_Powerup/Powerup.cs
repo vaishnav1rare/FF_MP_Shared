@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Fusion;
+using FusionExamples.Tanknarok;
 using UnityEngine;
 
 public class Powerup : NetworkBehaviour, ICollidable
@@ -10,13 +11,13 @@ public class Powerup : NetworkBehaviour, ICollidable
     public override void Spawned()
     {
         Debug.Log("Order Spawned");
-        transform.position = GlobalManager.Instance.PowerUpSpawnManager.PowerupPosition;
+        //transform.position = GlobalManager.Instance.PowerUpSpawnManager.PowerupPosition;
     }
-    public void Collide(VehicleEntity vehicle)
+    public void Collide(Player player)
     {
-        vehicle.Controller.GiveBoost(true,5);
+        //player.Controller.GiveBoost(true,5);
         
-        if ( vehicle.Object.HasStateAuthority ) {
+        if ( player.Object.HasStateAuthority ) {
             Runner.Despawn(Object);
         }
         

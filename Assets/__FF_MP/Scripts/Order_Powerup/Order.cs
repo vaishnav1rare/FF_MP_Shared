@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using Fusion;
+using FusionExamples.Tanknarok;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,24 +12,44 @@ public class Order : NetworkBehaviour,ICollidable
     private float totalWaitTime = 2f;
     private float currentWaitTime;
     [Networked] public bool IsCollecting { get; set; }
-    [Networked] public VehicleEntity VehicleEntity{ get; set; }
+    [Networked] public Player Player{ get; set; }
     public override void Spawned()
     {
         base.Spawned();
-        transform.position = GlobalManager.Instance.ChallengeManager.OrderPosition;
+        transform.position = ChallengeManager.instance.OrderPosition;
         currentWaitTime = totalWaitTime;
         Debug.Log("!Order Spawned!");
     }
-    public void Collide(VehicleEntity vehicle)
+
+    private void OnTriggerEnter(Collider other)
     {
-        if (IsCollecting || VehicleEntity != null)
+        Debug.Log("Collected: "+other.gameObject.name);
+        if (other.gameObject.TryGetComponent(out Player player))
+        {
+            Collide(player);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        Debug.Log("UnCollected: "+other.gameObject.name);
+        if (other.gameObject.TryGetComponent(out Player player))
+        {
+            UnCollide(player);
+        }
+    }
+    
+    public void Collide(Player player)
+    {
+
+        if (IsCollecting || Player != null)
         {
             Debug.Log("Already Being Collected");
         }
         else
         {
             IsCollecting = true;
-            VehicleEntity = vehicle;
+            Player = player;
             Color materialColor = orderMaterial.color;
             materialColor.a = 0.5f; // Adjust alpha value to make translucent
             orderMaterial.color = materialColor;
@@ -41,16 +63,16 @@ public class Order : NetworkBehaviour,ICollidable
         
     }
 
-    public void UnCollide(VehicleEntity vehicle)
+    public void UnCollide(Player player)
     {
         IsCollecting = false;
         //StopCoroutine(CollectOrderCoroutine(vehicle));
-        VehicleEntity = null;
+        Player = null;
         if (loadingIndicator != null)
         {
             loadingIndicator.fillAmount = 1; // Reset fill amount
         }
-        Debug.Log("UnCollected: "+loadingIndicator.fillAmount);
+        
     }
     private void Update()
     {
@@ -68,15 +90,15 @@ public class Order : NetworkBehaviour,ICollidable
             if (currentWaitTime <= 0f)
             {
                 // Order collection complete
-                if (VehicleEntity)
+                if (Player)
                 {
-                    VehicleEntity.OrderCount++;
-                    if (VehicleEntity.Object.HasStateAuthority)
+                    //Player.OrderCount++;
+                    if (Runner.IsSharedModeMasterClient)
                     {
                         IsCollecting = false;
-                        VehicleEntity = null;
+                        Player = null;
                         Runner.Despawn(Object);
-                        GlobalManager.Instance.ChallengeManager.SpawnNextOrder();
+                        ChallengeManager.instance.SpawnNextOrder();
                     }
                 }
             }
@@ -84,37 +106,5 @@ public class Order : NetworkBehaviour,ICollidable
         
     }
 
-    /*private IEnumerator CollectOrderCoroutine(VehicleEntity vehicleEntity)
-    {
-        if (loadingIndicator != null)
-        {
-            loadingIndicator.fillAmount = 0; // Reset fill amount
-        }
-
-       
-        // Wait for the specified time
-        while (currentWaitTime > 0f && IsCollecting)
-        {
-            yield return new WaitForSeconds(0.1f); // Update UI every 0.1 seconds
-
-            currentWaitTime -= 0.1f;
-            
-            // Update radial UI loading indicator
-            if (loadingIndicator != null)
-            {
-                loadingIndicator.fillAmount = 1 - (currentWaitTime / 2f); // Calculate fill amount
-            }
-        }
-
-        if (vehicleEntity && IsCollecting)
-        {
-            vehicleEntity.OrderCount++;
-            if ( vehicleEntity.Object.HasStateAuthority ) {
-                IsCollecting = false;
-                Runner.Despawn(Object);
-                GlobalManager.Instance.ChallengeManager.SpawnNextOrder();
-            }
-        }
-       
-    }*/
+    
 }

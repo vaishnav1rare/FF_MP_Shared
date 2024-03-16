@@ -18,14 +18,11 @@ namespace FusionExamples.Tanknarok
 		[SerializeField] private ScoreManager _scoreManager;
 		[FormerlySerializedAs("_readyupManager")] [SerializeField] private ReadyUpManager _readyUpManager;
 		[SerializeField] private CountdownManager _countdownManager;
-		//[SerializeField] private CameraStrategy _cameraStrategy;
-		//[SerializeField] private CameraScreenFXBehaviour _transitionEffect;
-		//[SerializeField] private AudioEmitter _audioEmitter;
-
 		[SerializeField] private int _lobby;
 		[SerializeField] private int[] _levels;
 		
 		private LevelBehaviour _currentLevel;
+		private ChallengeManager _challengeManager;
 		private SceneRef _loadedScene = SceneRef.None;
 
 		public Action<NetworkRunner,FusionLauncher.ConnectionStatus, string> onStatusUpdate { get; set; }
@@ -157,10 +154,19 @@ namespace FusionExamples.Tanknarok
 			
 			// Activate the next level
 			_currentLevel = FindObjectOfType<LevelBehaviour>();
+			_challengeManager = FindObjectOfType<ChallengeManager>();
+			
 			if(_currentLevel!=null)
 				_currentLevel.Activate();
 			//MusicPlayer.instance.SetLowPassTranstionDirection( newScene.AsIndex>_lobby ? 1f : -1f);
 
+			if (Runner != null && (Runner.IsServer || Runner.IsSharedModeMasterClient))
+			{
+				if(_challengeManager != null)
+					_challengeManager.StartChallenge(ChallengeType.RaceToDeliveries);
+			}
+			
+			
 			yield return new WaitForSeconds(0.3f);
 
 			Debug.Log($"Stop glitching");

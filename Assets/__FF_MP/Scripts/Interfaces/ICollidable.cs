@@ -1,6 +1,8 @@
 
 
+using FusionExamples.Tanknarok;
+
 public interface ICollidable 
 {
-    void Collide(VehicleEntity vehicle);
+    void Collide(Player player);
 }
