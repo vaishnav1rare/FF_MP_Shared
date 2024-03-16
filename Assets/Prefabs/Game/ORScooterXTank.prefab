@@ -1797,6 +1797,9 @@ MonoBehaviour:
   _stage: 0
   _lives: 0
   _ready: 0
+  _IsGrounded:
+    _value: 0
+  _GroundResistance: 0
   _AppliedSpeed: 0
   _MaxSpeed: 15
   Rigidbody: {fileID: 1549671491458988442}
@@ -1805,11 +1808,11 @@ MonoBehaviour:
   deceleration: 1
   CurrentSpeed: 0
   CurrentSpeed01: 0
-  steerAcceleration: 1.5
-  steerDeceleration: 1.5
+  steerAcceleration: 3
+  steerDeceleration: 3
   IsDrifting: 0
   model: {fileID: 9097469178900222328}
-  driftRotationLerpFactor: 10
+  driftRotationLerpFactor: 5
   CanDrive: 1
   body: {fileID: 9097469178900222328}
   handle: {fileID: 5097727341707734566}

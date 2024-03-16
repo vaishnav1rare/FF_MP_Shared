@@ -36,9 +36,9 @@ namespace FusionExamples.Tanknarok
 		[Networked] private TickTimer invulnerabilityTimer { get; set; }
 		[Networked] public int lives { get; set; }
 		[Networked] public bool ready { get; set; }
-		
+		[Networked] public NetworkBool IsGrounded { get; set; }
 		[Networked] private NetworkInputData Inputs { get; set; }
-
+		[Networked] public float GroundResistance { get; set; }
 		public enum Stage
 		{
 			New,
@@ -59,7 +59,7 @@ namespace FusionExamples.Tanknarok
 		//public GameObject cameraTarget => _cc.gameObject;
 
 		//private NetworkCharacterController _cc;
-		private Collider _collider;
+		private CapsuleCollider _collider;
 		private GameObject _deathExplosionInstance;
 		private float _respawnInSeconds = -1;
 		private ChangeDetector _changes;
@@ -80,7 +80,7 @@ namespace FusionExamples.Tanknarok
 		private void Awake()
 		{
 			//_cc = GetComponent<NetworkCharacterController>();
-			_collider = GetComponentInChildren<Collider>();
+			_collider = GetComponentInChildren<CapsuleCollider>();
 		}
 
 		public override void InitNetworkState()
@@ -114,8 +114,8 @@ namespace FusionExamples.Tanknarok
 				if (camera != null) camera.GetComponent<MultiplayerCameraController>().target = transform;
 			}
 		}
-		
 
+		
 		public override void Despawned(NetworkRunner runner, bool hasState)
 		{
 			Debug.Log($"Despawned PlayerAvatar for PlayerRef {PlayerId}");
@@ -133,9 +133,15 @@ namespace FusionExamples.Tanknarok
 			/*else
 				weaponManager.InstallWeapon(powerup);*/
 		}
-		
+
+		private void Update()
+		{
+			Drift();
+		}
+
 		public override void FixedUpdateNetwork()
 		{
+			GroundNormalRotation();
 			if (Object.HasStateAuthority)
 			{
 				CheckRespawn();
@@ -143,7 +149,7 @@ namespace FusionExamples.Tanknarok
 				if (isRespawningDone)
 					ResetPlayer();
 			}
-			Drift();
+			
 			if (!isActivated)
 				return;
 			if (GetInput(out NetworkInputData input))
@@ -152,10 +158,6 @@ namespace FusionExamples.Tanknarok
 				// tick-aligned inputs. This is the core of the Client Prediction system.
 				//
 				// We don't want to predict this because it's a toggle and a mis-prediction due to lost input will double toggle the button
-				/*if (Object.HasStateAuthority && input.WasPressed(NetworkInputData.BUTTON_TOGGLE_READY, _oldInput))
-					ToggleReady();*/
-
-				//_oldInput = input;
 				if (Object.HasStateAuthority && input.WasPressed(NetworkInputData.BUTTON_TOGGLE_READY, Inputs))
 					ToggleReady();
 				
@@ -186,6 +188,25 @@ namespace FusionExamples.Tanknarok
 			}
 				
 			var interpolated = new NetworkBehaviourBufferInterpolator(this);
+		}
+
+		private void GroundNormalRotation()
+		{
+			//var wasOffroad = IsOffroad;
+
+			IsGrounded = Physics.SphereCast(_collider.transform.TransformPoint(_collider.center), _collider.radius - 0.1f,
+				Vector3.down, out var hit, 0.3f, ~LayerMask.GetMask("Kart"));
+
+			if (IsGrounded)
+			{
+				Debug.DrawRay(hit.point, hit.normal, Color.magenta);
+				GroundResistance = hit.collider.material.dynamicFriction;
+
+				model.transform.rotation = Quaternion.Lerp(
+					model.transform.rotation,
+					Quaternion.FromToRotation(model.transform.up * 2, hit.normal) * model.transform.rotation,
+					7.5f * Time.deltaTime);
+			}
 		}
 
 		private void SetMaterial()
@@ -224,11 +245,11 @@ namespace FusionExamples.Tanknarok
 				AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);
 			}
 		
-			/*var resistance = 1 - (IsGrounded ? GroundResistance : 0);
+			var resistance = 1 - (IsGrounded ? GroundResistance : 0);
 			if (resistance < 1)
 			{
 				AppliedSpeed = Mathf.Lerp(AppliedSpeed, AppliedSpeed * resistance, Runner.DeltaTime * (IsDrifting ? 8 : 2));
-			}*/
+			}
 
 			// transform.forward is not reliable when using NetworkedRigidbody - instead use: NetworkRigidbody.Rigidbody.rotation * Vector3.forward
 			var vel = (Rigidbody.rotation * Vector3.forward) * AppliedSpeed;
@@ -260,7 +281,7 @@ namespace FusionExamples.Tanknarok
 			}
 			if (IsDrifting)
 			{
-				model.localEulerAngles = LerpAxis(Axis.Y, model.localEulerAngles, SteerAmount * 2,
+				model.localEulerAngles = LerpAxis(Axis.Y, model.localEulerAngles, SteerAmount*0.2f,
 					driftRotationLerpFactor * Runner.DeltaTime);
 			}
 			else
@@ -294,7 +315,7 @@ namespace FusionExamples.Tanknarok
 		{
 			SetMaxBodyAngle();
 
-			SI = steerInput / 20f;
+			SI = steerInput / 40f;
 			if (body)
 			{
 				_bodyAngle = Mathf.Lerp(_bodyAngle, Mathf.Clamp(SI * MaxBodyTileAngle, -MaxBodyTileAngle, MaxBodyTileAngle), Runner.DeltaTime * 10);
@@ -328,14 +349,14 @@ namespace FusionExamples.Tanknarok
 		[field: SerializeField] public float DriftFactor { get; private set; }
 		private void Drift()
 		{
-			//if (!IsGrounded) return;
+			if (!IsGrounded) return;
 			forwardVelocity = Vector3.Dot(Rigidbody.velocity, transform.forward) * transform.forward;
 			sideVelocity = Vector3.Dot(Rigidbody.velocity, transform.right) * transform.right;
 			finalVelocity = forwardVelocity + (DriftFactor * sideVelocity);
 			finalVelocity.y = Rigidbody.velocity.y;
 			Rigidbody.velocity = finalVelocity;
 		
-			IsDrifting = /*IsGrounded &&*/ CurrentSpeed01 > 0.1f && HelperFunctions.GetAbs(GetSideVelocity()) > skidThreshold;
+			IsDrifting = IsGrounded && CurrentSpeed01 > 0.1f && HelperFunctions.GetAbs(GetSideVelocity()) > skidThreshold;
 		
 			primaryWheel.emitting = IsDrifting;
 		}
