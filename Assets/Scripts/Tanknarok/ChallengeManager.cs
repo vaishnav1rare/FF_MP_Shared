@@ -28,7 +28,7 @@ public class ChallengeManager : NetworkBehaviour, ISceneLoadDone
     [Networked] public int RandomIndex { get; set; }
     [Networked] public Vector3 OrderPosition { get; set; }
     [Networked] public bool IsMatchOver { get; set; }
-    [Networked] public bool IsMatchStarted { get; set; }
+    [Networked] public bool IsMatchStarted { get; set; } = false;
     private bool _isChallengeActive;
     private ChangeDetector _changeDetector;
     private float _challengeDuration = 150f;
@@ -42,7 +42,6 @@ public class ChallengeManager : NetworkBehaviour, ISceneLoadDone
     public override void Spawned()
     {
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
-        IsMatchOver = false;
     }
     
     public override void Render()
@@ -146,8 +145,8 @@ public class ChallengeManager : NetworkBehaviour, ISceneLoadDone
     }
     private void StartRaceToDeliveries()
     {
-        IsMatchStarted = true;
         SpawnOrder();
+        IsMatchStarted = true;
     }
     
 

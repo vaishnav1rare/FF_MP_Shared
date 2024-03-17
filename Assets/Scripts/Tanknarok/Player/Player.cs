@@ -49,9 +49,9 @@ namespace FusionExamples.Tanknarok
 		[Networked] private TickTimer invulnerabilityTimer { get; set; }
 		[Networked] public int lives { get; set; }
 		[Networked] public bool ready { get; set; }
-		[Networked] public NetworkBool IsGrounded { get; set; }
-		[Networked] private NetworkInputData Inputs { get; set; }
-		[Networked] public float GroundResistance { get; set; }
+		public NetworkBool IsGrounded { get; set; }
+		private NetworkInputData Inputs { get; set; }
+		public float GroundResistance { get; set; }
 		public enum Stage
 		{
 			New,
@@ -198,9 +198,11 @@ namespace FusionExamples.Tanknarok
 	
 		public override void FixedUpdateNetwork()
 		{
-			if(ChallengeManager.instance)
-				targetOrderTransorm = ChallengeManager.instance.OrderPosition;
-			
+			/*if (ChallengeManager.instance)
+			{
+				if(ChallengeManager.instance.IsMatchStarted)
+					targetOrderTransorm = ChallengeManager.instance.OrderPosition;
+			}*/
 			
 			GroundNormalRotation();
 			if (Object.HasStateAuthority)
@@ -508,7 +510,7 @@ namespace FusionExamples.Tanknarok
 
 					// Place the tank at its spawn point. This has to be done in FUN() because the transform gets reset otherwise
 					Transform spawn = spawnpt.transform;
-					//_cc.Teleport( spawn.position, spawn.rotation );
+					Teleport( spawn.position, spawn.rotation );
 
 					// If the player was already here when we joined, it might already be active, in which case we don't want to trigger any spawn FX, so just leave it ACTIVE
 					if (stage != Stage.Active)
@@ -519,6 +521,11 @@ namespace FusionExamples.Tanknarok
 			}
 		}
 
+		void Teleport(Vector3 position, Quaternion rotation)
+		{
+			transform.position = position;
+			transform.rotation = rotation;
+		}
 		public void OnStageChanged()
 		{
 			switch (stage)
