@@ -45,6 +45,8 @@ namespace FusionExamples.Tanknarok
 
 		[Networked] public Stage stage { get; set; }
 		[Networked] private int life { get; set; }
+		
+		[Networked] public int OrderCount { get; set; }
 		[Networked] private TickTimer respawnTimer { get; set; }
 		[Networked] private TickTimer invulnerabilityTimer { get; set; }
 		[Networked] public int lives { get; set; }
@@ -66,6 +68,7 @@ namespace FusionExamples.Tanknarok
 
 		public Material playerMaterial { get; set; }
 		public Color playerColor { get; set; }
+		public event Action<int> OnOrderCountChanged;
 
 		//public Vector3 velocity => Object != null && Object.IsValid ? _cc.Velocity : Vector3.zero;
 		//public Quaternion hullRotation => _hull.rotation;
@@ -78,6 +81,7 @@ namespace FusionExamples.Tanknarok
 		private ChangeDetector _changes;
 		private NetworkInputData _oldInput;
 		private Camera camera;
+		private GameUI _gameUI;
 
 		public void ToggleReady()
 		{
@@ -96,7 +100,10 @@ namespace FusionExamples.Tanknarok
 			_collider = GetComponentInChildren<CapsuleCollider>();
 			orderCampassParent.SetActive(false);
 		}
-
+		private static void OnOrderCountChangedCallback(Player changed)
+		{
+			changed.OnOrderCountChanged?.Invoke(changed.OrderCount);
+		}
 		public override void InitNetworkState()
 		{
 			stage = Stage.New;
@@ -113,6 +120,8 @@ namespace FusionExamples.Tanknarok
 			_changes = GetChangeDetector(ChangeDetector.Source.SimulationState);
 
 			ready = false;
+
+			_gameUI = FindObjectOfType<GameUI>();
 
 			SetMaterial();
 			// Proxies may not be in state "NEW" when they spawn, so make sure we handle the state properly, regardless of what it is
@@ -240,6 +249,10 @@ namespace FusionExamples.Tanknarok
 				{
 					case nameof(stage):
 						OnStageChanged();
+						break;
+					case nameof(OrderCount):
+						OnOrderCountChangedCallback(this);
+						_gameUI.UpdateScore(OrderCount);
 						break;
 				}
 			}

@@ -92,7 +92,7 @@ public class Order : NetworkBehaviour,ICollidable
                 // Order collection complete
                 if (Player)
                 {
-                    //Player.OrderCount++;
+                    Player.OrderCount++;
                     if (Runner.IsSharedModeMasterClient)
                     {
                         IsCollecting = false;
