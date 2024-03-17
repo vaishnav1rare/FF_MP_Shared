@@ -160,13 +160,6 @@ namespace FusionExamples.Tanknarok
 				_currentLevel.Activate();
 			//MusicPlayer.instance.SetLowPassTranstionDirection( newScene.AsIndex>_lobby ? 1f : -1f);
 
-			if (Runner != null && (Runner.IsServer || Runner.IsSharedModeMasterClient))
-			{
-				if(_challengeManager != null)
-					_challengeManager.StartChallenge(ChallengeType.RaceToDeliveries);
-			}
-			
-			
 			yield return new WaitForSeconds(0.3f);
 
 			Debug.Log($"Stop glitching");
@@ -218,6 +211,12 @@ namespace FusionExamples.Tanknarok
 					// Enable inputs after countdow finishes
 					InputController.fetchInput = true;
 					//		    Debug.Log($"Switched Scene from {prevScene} to {newScene}");
+					
+					if (Runner != null && (Runner.IsServer || Runner.IsSharedModeMasterClient))
+					{
+						if(_challengeManager != null)
+							_challengeManager.StartChallenge(ChallengeType.RaceToDeliveries);
+					}
 				}));
 			}
 		}

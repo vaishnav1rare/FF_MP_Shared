@@ -73,7 +73,7 @@ public class ChallengeManager : NetworkBehaviour, ISceneLoadDone
         RandomIndex = index;
     }
     public void StartChallenge(ChallengeType challengeType) {
-        if ( Runner.IsSharedModeMasterClient == false)
+       if ( Runner.IsSharedModeMasterClient == false)
             return;
         OnChallengeStarted?.Invoke(challengeType);
         MatchTimer = TickTimer.CreateFromSeconds(Runner, _challengeDuration);

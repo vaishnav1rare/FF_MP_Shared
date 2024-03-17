@@ -22,7 +22,7 @@ namespace FusionExamples.Tanknarok
 		
 		[Header("---Order")]
 		[SerializeField] private TMPro.TextMeshPro orderDistanceTMP;
-		[SerializeField] private Vector3 targetOrderTransorm;
+		private Vector3 targetOrderTransorm;
 		private float orderRange = 10;
 		private float orderDistance;
 	
@@ -173,13 +173,7 @@ namespace FusionExamples.Tanknarok
 			float _value = targetOrder.OrderTime / _orderInterval;
 			if (GameController.Instance != null) orderCampassSprite.color = _value > 2 ? ColorManager.Instance.Green : _value > 1 ? ColorManager.Instance.Yellow : ColorManager.Instance.Red;
 			*/
-
-
-			// Active State
-			/*if (!ChallengeManager.instance)
-			{
-				_activeState = false;
-			}*/
+			
 			_activeState = orderDistance > orderRange;
 			if (orderCampassParent.activeSelf != _activeState) orderCampassParent.SetActive(_activeState);
 
@@ -198,11 +192,6 @@ namespace FusionExamples.Tanknarok
 	
 		public override void FixedUpdateNetwork()
 		{
-			/*if (ChallengeManager.instance)
-			{
-				if(ChallengeManager.instance.IsMatchStarted)
-					targetOrderTransorm = ChallengeManager.instance.OrderPosition;
-			}*/
 			
 			GroundNormalRotation();
 			if (Object.HasStateAuthority)
@@ -229,6 +218,10 @@ namespace FusionExamples.Tanknarok
 			Move(Inputs);
 			Steer(Inputs);
 			UpdateDistance();
+			if (ChallengeManager.instance)
+			{ 
+				targetOrderTransorm = ChallengeManager.instance.OrderPosition;
+			}
 		}
 
 		/// <summary>
