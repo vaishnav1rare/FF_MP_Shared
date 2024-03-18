@@ -191,7 +191,7 @@ namespace FusionExamples.Tanknarok
 							Vector3 impulse = other.transform.position - hitPoint;
 							float l = Mathf.Clamp(_bulletPrefab.AreaRadius - impulse.magnitude, 0, _bulletPrefab.AreaRadius);
 							impulse = _bulletPrefab.AreaImpulse * l * impulse.normalized;
-							target.RaiseEvent(new Player.DamageEvent { impulse=impulse, damage=_bulletPrefab.AreaDamage});
+							target.RaiseEvent(new Player.DamageEvent { Impulse=impulse, Damage=_bulletPrefab.AreaDamage});
 						}
 					}
 				}

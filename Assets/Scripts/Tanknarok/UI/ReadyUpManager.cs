@@ -40,7 +40,7 @@ namespace FusionExamples.Tanknarok
 			foreach (FusionPlayer fusionPlayer in allPlayers)
 			{
 				Player player = (Player) fusionPlayer;
-				if (player.ready)
+				if (player.Ready)
 					readyCount++;
 				playerCount++;
 			}

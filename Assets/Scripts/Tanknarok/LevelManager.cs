@@ -20,7 +20,6 @@ namespace FusionExamples.Tanknarok
 		[SerializeField] private CountdownManager _countdownManager;
 		[SerializeField] private int _lobby;
 		[SerializeField] private int[] _levels;
-		
 		private LevelBehaviour _currentLevel;
 		private ChallengeManager _challengeManager;
 		private SceneRef _loadedScene = SceneRef.None;

@@ -67,7 +67,7 @@ namespace FusionExamples.Tanknarok
 				foreach (FusionPlayer fusionPlayer in AllPlayers)
 				{
 					Player player = (Player) fusionPlayer;
-					if (player.isActivated || player.lives > 0)
+					if (player.isActivated || player.Lives > 0)
 					{
 						lastPlayerStanding = player;
 						playersLeft++;

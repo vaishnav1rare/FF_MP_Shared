@@ -528,7 +528,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 8748892135801146194, guid: d465a87417484ce4182af9b07e178b3e, type: 3}
+  - {fileID: 2100000, guid: 5b658e5e3562cfa48891a7f7b9be2653, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -834,7 +834,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 8748892135801146194, guid: d465a87417484ce4182af9b07e178b3e, type: 3}
+  - {fileID: 2100000, guid: 5b658e5e3562cfa48891a7f7b9be2653, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1591,7 +1591,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 8748892135801146194, guid: d465a87417484ce4182af9b07e178b3e, type: 3}
+  - {fileID: 2100000, guid: 5b658e5e3562cfa48891a7f7b9be2653, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1787,23 +1787,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _eventRelayPrefab: {fileID: 6216721781973090943, guid: b5b51c12e1e6446af8ad4a576d68eef6, type: 3}
+  playerNameTMP: {fileID: 7969514694927070557}
+  hudPrefab: {fileID: 7197810723918016650, guid: 2562ff4bafb44b549b9bdc0de26ba288, type: 3}
   primaryWheel: {fileID: 830281465571014655}
   _visualParent: {fileID: 9097469178900222328}
   _playerMaterials:
-  - {fileID: 2100000, guid: 38f56c87a71964902b969f947ab5b868, type: 2}
-  - {fileID: 2100000, guid: e43600c666b5d694aa39bd661c08434b, type: 2}
-  - {fileID: 2100000, guid: 7e453c08f65900e45ac5cc243a9aef54, type: 2}
-  - {fileID: 2100000, guid: c0b5a8092855bc640a66a3f25c3718ef, type: 2}
+  - {fileID: 2100000, guid: 5b379f5673496b447a56211944a71de3, type: 2}
+  - {fileID: 2100000, guid: f5b91044f1aa196439718585f302e93f, type: 2}
+  - {fileID: 2100000, guid: c26074b95c8402447931f0e6836c1c24, type: 2}
+  - {fileID: 2100000, guid: 68414b27680bf5347af566070e35ac68, type: 2}
   _respawnTime: 1
+  part: {fileID: 7024439863158248975}
   orderDistanceTMP: {fileID: 8105850745161758355}
-  targetOrderTransorm: {x: -100, y: 1, z: 60}
   orderCampassParent: {fileID: 2313715366491141035}
   orderCampassCanvasParent: {fileID: 4056999011645517131}
   orderCampassPivot: {fileID: 92183460705782363}
   orderCampassSprite: {fileID: 4255620149820300347}
+  _Username:
+    _length: 0
+    _data:
+      Data: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   _stage: 0
-  _lives: 0
-  _ready: 0
+  _OrderCount: 0
+  _Lives: 0
+  _Ready: 0
   _AppliedSpeed: 0
   _MaxSpeed: 15
   Rigidbody: {fileID: 1549671491458988442}
@@ -2508,6 +2515,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3004506216723392382, guid: 8f03e7684946e4a44ad1b0954faff227, type: 3}
   m_PrefabInstance: {fileID: 7469368408818211982}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7969514694927070557 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 662558673205225939, guid: 8f03e7684946e4a44ad1b0954faff227, type: 3}
+  m_PrefabInstance: {fileID: 7469368408818211982}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &8105850745161758355 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1717352156787501597, guid: 8f03e7684946e4a44ad1b0954faff227, type: 3}

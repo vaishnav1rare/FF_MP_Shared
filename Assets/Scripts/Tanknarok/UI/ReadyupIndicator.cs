@@ -24,7 +24,7 @@ namespace FusionExamples.Tanknarok
 		public bool Refresh(Player followPlayer)
 		{
 			_camera = Camera.main;
-			_direction = followPlayer.ready ? 1 : -1;
+			_direction = followPlayer.Ready ? 1 : -1;
 			bool changed = _previousState != _direction;
 			_previousState = _direction;
 			_target = followPlayer.transform;

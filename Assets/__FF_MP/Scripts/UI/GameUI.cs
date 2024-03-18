@@ -1,4 +1,5 @@
 using System.Collections;
+using FusionExamples.Tanknarok;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,51 +17,20 @@ public class GameUI : MonoBehaviour
 	[SerializeField] private Text coinCount;
 	[SerializeField] private Text raceTimeText;
 	[SerializeField] private Text healthText;
+	[SerializeField] private Text playerNameText;
+	[SerializeField] private Image playerIcon;
 	
 	private bool _startedCountdown;
-
-	/*
-	public VehicleEntity Vehicle { get; private set; }
-	private VehicleController VehicleController => Vehicle.Controller;
-
-	public void Init(VehicleEntity vehicle)
+	
+	public void Init(Player player)
 	{
-		Vehicle = vehicle;
-
-		var uis = GetComponentsInChildren<IGameUIComponent>(true);
-		foreach (var ui in uis) ui.Init(vehicle);
-
-		//vehicle.LapController.OnLapChanged += SetLapCount;
-
-		var map = Map.Current;
-
-		if (map == null)
-			Debug.LogWarning($"You need to initialize the GameUI on a track for track-specific values to be updated!");
-		else
-		{
-			//introTrackNameText.text = map.definition.trackName;
-		}
-
-		
-		//continueEndButton.gameObject.SetActive(vehicle.Object.HasStateAuthority);
-		
-		vehicle.OnCoinCountChanged += count =>
+		player.OnOrderCountChanged += count =>
 		{
 			//AudioManager.Play("coinSFX", AudioManager.MixerTarget.SFX);
 			coinCount.text = $"{count:00}";
 		};
 	}
-
-	private void OnDestroy()
-	{
-		//Vehicle.LapController.OnLapChanged -= SetLapCount;
-	}
 	
-	public void FinishCountdown()
-	{
-		// Kart.OnRaceStart();
-	}
-
 	public void HideIntro()
 	{
 		introAnimator.SetTrigger("Exit");
@@ -82,35 +52,21 @@ public class GameUI : MonoBehaviour
 		}
 	}
 
-	private void Update()
+	public void UpdateTime(string time)
 	{
-		if (!Vehicle)
-			return;
-
-		if (!_startedCountdown && Map.Current != null && Map.Current.StartRaceTimer.IsRunning)
-		{
-			var remainingTime = Map.Current.StartRaceTimer.RemainingTime(Vehicle.Runner);
-			if (remainingTime != null && remainingTime <= 3.0f)
-			{
-				_startedCountdown = true;
-				HideIntro();
-				FadeIn();
-				GlobalManager.Instance.ChallengeManager.StartChallenge(ChallengeType.RaceToDeliveries);
-				countdownAnimator.SetTrigger("StartCountdown");
-			}
-		}
-
-		raceTimeText.text = GlobalManager.Instance.ChallengeManager.Time;
+		raceTimeText.text = time;
 	}
 
 	public void UpdateHealthText( int health)
 	{
 		healthText.text = health.ToString();
 	}
-	*/
-	public void UpdateScore( int score)
+
+	public void UpdatePlayerNameOnHud(string playerName, Color color)
 	{
-		coinCount.text = score.ToString();
+		playerNameText.text = playerName;
+		playerIcon.color = color;
+		
 	}
 
 }

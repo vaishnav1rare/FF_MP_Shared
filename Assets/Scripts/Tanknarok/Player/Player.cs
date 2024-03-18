@@ -2,6 +2,7 @@ using System;
 using Fusion;
 using FusionHelpers;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace FusionExamples.Tanknarok
 {
@@ -15,11 +16,12 @@ namespace FusionExamples.Tanknarok
 		private const int MAX_HEALTH = 100;
 
 		//[Header("Visuals")] [SerializeField] private Transform _hull;
+		[SerializeField] private GameUI hudPrefab;
 		[SerializeField] private TrailRenderer primaryWheel;
 		[SerializeField] private Transform _visualParent;
 		[SerializeField] private Material[] _playerMaterials;
 		[SerializeField] private float _respawnTime;
-		
+		[SerializeField] private MeshRenderer part;
 		[Header("---Order")]
 		[SerializeField] private TMPro.TextMeshPro orderDistanceTMP;
 		private Vector3 targetOrderTransorm;
@@ -34,23 +36,23 @@ namespace FusionExamples.Tanknarok
 		private float campassHeight = 5;
 		public struct DamageEvent : INetworkEvent
 		{
-			public Vector3 impulse;
-			public int damage;
+			public Vector3 Impulse;
+			public int Damage;
 		}
 		
 		public struct PickupEvent : INetworkEvent
 		{
-			public int powerup;
+			public int Powerup;
 		}
-
+		[Networked] public NetworkString<_32> Username { get; set; }
 		[Networked] public Stage stage { get; set; }
-		[Networked] private int life { get; set; }
+		[Networked] private int Life { get; set; }
 		
 		[Networked] public int OrderCount { get; set; }
-		[Networked] private TickTimer respawnTimer { get; set; }
-		[Networked] private TickTimer invulnerabilityTimer { get; set; }
-		[Networked] public int lives { get; set; }
-		[Networked] public bool ready { get; set; }
+		[Networked] private TickTimer RespawnTimer { get; set; }
+		[Networked] private TickTimer InvulnerabilityTimer { get; set; }
+		[Networked] public int Lives { get; set; }
+		[Networked] public bool Ready { get; set; }
 		public NetworkBool IsGrounded { get; set; }
 		private NetworkInputData Inputs { get; set; }
 		public float GroundResistance { get; set; }
@@ -64,34 +66,28 @@ namespace FusionExamples.Tanknarok
 		}
 
 		public bool isActivated => (gameObject.activeInHierarchy && (stage == Stage.Active || stage == Stage.TeleportIn));
-		public bool isRespawningDone => stage == Stage.TeleportIn && respawnTimer.Expired(Runner);
+		public bool isRespawningDone => stage == Stage.TeleportIn && RespawnTimer.Expired(Runner);
 
 		public Material playerMaterial { get; set; }
 		public Color playerColor { get; set; }
 		public event Action<int> OnOrderCountChanged;
-
-		//public Vector3 velocity => Object != null && Object.IsValid ? _cc.Velocity : Vector3.zero;
-		//public Quaternion hullRotation => _hull.rotation;
-		//public GameObject cameraTarget => _cc.gameObject;
-
-		//private NetworkCharacterController _cc;
 		private CapsuleCollider _collider;
 		private GameObject _deathExplosionInstance;
 		private float _respawnInSeconds = -1;
 		private ChangeDetector _changes;
 		private NetworkInputData _oldInput;
-		private Camera camera;
+		private Camera _camera;
 		private GameUI _gameUI;
 
 		public void ToggleReady()
 		{
-			Debug.Log("PlayerReady: "+ready);
-			ready = !ready;
+			Debug.Log("PlayerReady: "+Ready);
+			Ready = !Ready;
 		}
 
 		public void ResetReady()
 		{
-			ready = false;
+			Ready = false;
 		}
 
 		private void Awake()
@@ -107,40 +103,41 @@ namespace FusionExamples.Tanknarok
 		public override void InitNetworkState()
 		{
 			stage = Stage.New;
-			lives = MAX_LIVES;
-			life = MAX_HEALTH;
+			Lives = MAX_LIVES;
+			Life = MAX_HEALTH;
 		}
 
 		public override void Spawned()
 		{
 			base.Spawned();
-
 			DontDestroyOnLoad(gameObject);
-
 			_changes = GetChangeDetector(ChangeDetector.Source.SimulationState);
-
-			ready = false;
-
-			_gameUI = FindObjectOfType<GameUI>();
-
+			Ready = false;
 			SetMaterial();
-			// Proxies may not be in state "NEW" when they spawn, so make sure we handle the state properly, regardless of what it is
 			OnStageChanged();
-
 			_respawnInSeconds = 0;
 			
-			RegisterEventListener( (DamageEvent evt) => ApplyAreaDamage(evt.impulse, evt.damage) );
+			RegisterEventListener( (DamageEvent evt) => ApplyAreaDamage(evt.Impulse, evt.Damage) );
 			RegisterEventListener( (PickupEvent evt) => OnPickup(evt));
 			if (Object.HasStateAuthority)
 			{
-				camera = Camera.main;
-				if (camera != null) camera.GetComponent<MultiplayerCameraController>().target = transform;
+				_camera = Camera.main;
+				if (_camera != null) _camera.GetComponent<MultiplayerCameraController>().target = transform;
 				orderCampassParent.transform.parent = null;
 				orderCampassParent.transform.rotation = Quaternion.identity;
+				_gameUI = Instantiate(hudPrefab);
+				_gameUI.Init(this);
+				var nickname = UIManager.Instance.GenerateRandomNickname();
+				RPC_SetPlayerStats(nickname);
+				_gameUI.UpdatePlayerNameOnHud(nickname, playerColor);
 			}
 		}
 
-		
+		[Rpc(sources: RpcSources.InputAuthority, targets: RpcTargets.All)]
+		private void RPC_SetPlayerStats(NetworkString<_32> username)
+		{
+			Username = username;
+		}
 		public override void Despawned(NetworkRunner runner, bool hasState)
 		{
 			Debug.Log($"Despawned PlayerAvatar for PlayerRef {PlayerId}");
@@ -151,10 +148,10 @@ namespace FusionExamples.Tanknarok
 
 		private void OnPickup( PickupEvent evt)
 		{
-			PowerupElement powerup = PowerupSpawner.GetPowerup(evt.powerup);
+			PowerupElement powerup = PowerupSpawner.GetPowerup(evt.Powerup);
 
 			if (powerup.powerupType == PowerupType.HEALTH)
-				life = MAX_HEALTH;
+				Life = MAX_HEALTH;
 			/*else
 				weaponManager.InstallWeapon(powerup);*/
 		}
@@ -215,10 +212,6 @@ namespace FusionExamples.Tanknarok
 				return;
 			if (GetInput(out NetworkInputData input))
 			{
-				// Copy our inputs that we have received, to a [Networked] property, so other clients can predict using our
-				// tick-aligned inputs. This is the core of the Client Prediction system.
-				//
-				// We don't want to predict this because it's a toggle and a mis-prediction due to lost input will double toggle the button
 				if (Object.HasStateAuthority && input.WasPressed(NetworkInputData.BUTTON_TOGGLE_READY, Inputs))
 					ToggleReady();
 				
@@ -232,15 +225,7 @@ namespace FusionExamples.Tanknarok
 				targetOrderTransorm = ChallengeManager.instance.OrderPosition;
 			}
 		}
-
-		/// <summary>
-		/// Render is the Fusion equivalent of Unity's Update() and unlike FixedUpdateNetwork which is very different from FixedUpdate,
-		/// Render is in fact exactly the same. It even uses the same Time.deltaTime time steps. The purpose of Render is that
-		/// it is always called *after* FixedUpdateNetwork - so to be safe you should use Render over Update if you're on a
-		/// SimulationBehaviour.
-		///
-		/// Here, we use Render to update visual aspects of the Tank that does not involve changing of networked properties.
-		/// </summary>
+		
 		public override void Render()
 		{
 			foreach (var change in _changes.DetectChanges(this))
@@ -252,7 +237,6 @@ namespace FusionExamples.Tanknarok
 						break;
 					case nameof(OrderCount):
 						OnOrderCountChangedCallback(this);
-						_gameUI.UpdateScore(OrderCount);
 						break;
 				}
 			}
@@ -282,13 +266,10 @@ namespace FusionExamples.Tanknarok
 		private void SetMaterial()
 		{
 			playerMaterial = Instantiate(_playerMaterials[PlayerIndex]);
-			playerColor = playerMaterial.GetColor("_EnergyColor");
+			playerColor = playerMaterial.GetColor("_Color");
 
-			TankPartMesh[] tankParts = GetComponentsInChildren<TankPartMesh>();
-			foreach (TankPartMesh part in tankParts)
-			{
-				part.SetMaterial(playerMaterial);
-			}
+			part.material = playerMaterial; //  SetMaterials(playerMaterial);
+
 		}
 		
 		[Networked] public float AppliedSpeed { get; set; }
@@ -329,8 +310,6 @@ namespace FusionExamples.Tanknarok
 			CurrentSpeed = Rigidbody.velocity.magnitude;
 			CurrentSpeed01 = CurrentSpeed / MaxSpeed;
 			if (CurrentSpeed < inputDeadZoneValue) CurrentSpeed01 = CurrentSpeed = 0;
-			/*Rigidbody.AddForce(( AppliedSpeed) * 5f * transform.forward, ForceMode.Acceleration);
-			Rigidbody.velocity = Vector3.ClampMagnitude(Rigidbody.velocity, MaxSpeed);*/
 		}
 		
 		[Networked] private float SteerAmount { get; set; }
@@ -444,7 +423,7 @@ namespace FusionExamples.Tanknarok
 		/// <param name="attacker"></param>
 		public void ApplyAreaDamage(Vector3 impulse, int damage)
 		{
-			if (!isActivated || !invulnerabilityTimer.Expired(Runner))
+			if (!isActivated || !InvulnerabilityTimer.Expired(Runner))
 				return;
 
 			if (Runner.TryGetSingleton(out GameManager gameManager))
@@ -452,33 +431,33 @@ namespace FusionExamples.Tanknarok
 				//_cc.Velocity += impulse / 10.0f; // Magic constant to compensate for not properly dealing with masses
 				//_cc.Move(Vector3.zero); // Velocity property is only used by CC when steering, so pretend we are, without actually steering anywhere
 
-				if (damage >= life)
+				if (damage >= Life)
 				{
-					life = 0;
+					Life = 0;
 					stage = Stage.Dead;
 
 					if (gameManager.currentPlayState == GameManager.PlayState.LEVEL)
-						lives -= 1;
+						Lives -= 1;
 
-					if (lives > 0)
+					if (Lives > 0)
 						Respawn(_respawnTime);
 				}
 				else
 				{
-					life -= (byte)damage;
-					Debug.Log($"Player {PlayerId} took {damage} damage, life = {life}");
+					Life -= (byte)damage;
+					Debug.Log($"Player {PlayerId} took {damage} damage, life = {Life}");
 				}
 				
 			}
 
-			invulnerabilityTimer = TickTimer.CreateFromSeconds(Runner, 0.1f);
+			InvulnerabilityTimer = TickTimer.CreateFromSeconds(Runner, 0.1f);
 		}
 
 		public void Reset()
 		{
 			Debug.Log($"Resetting player #{PlayerIndex} ID:{PlayerId}");
-			ready = false;
-			lives = MAX_LIVES;
+			Ready = false;
+			Lives = MAX_LIVES;
 		}
 
 		public void Respawn( float inSeconds=0 )
@@ -502,17 +481,17 @@ namespace FusionExamples.Tanknarok
 						return;
 					}
 
-					Debug.Log($"Respawning Player #{PlayerIndex} ID:{PlayerId}, life={life}, lives={lives}, hasStateAuth={Object.HasStateAuthority} from state={stage} @{spawnpt}");
+					Debug.Log($"Respawning Player #{PlayerIndex} ID:{PlayerId}, life={Life}, lives={Lives}, hasStateAuth={Object.HasStateAuthority} from state={stage} @{spawnpt}");
 
 					// Make sure we don't get in here again, even if we hit exactly zero
 					_respawnInSeconds = -1;
 
 					// Restore health
-					life = MAX_HEALTH;
+					Life = MAX_HEALTH;
 
 					// Start the respawn timer and trigger the teleport in effect
-					respawnTimer = TickTimer.CreateFromSeconds(Runner, 1);
-					invulnerabilityTimer = TickTimer.CreateFromSeconds(Runner, 1);
+					RespawnTimer = TickTimer.CreateFromSeconds(Runner, 1);
+					InvulnerabilityTimer = TickTimer.CreateFromSeconds(Runner, 1);
 
 					// Place the tank at its spawn point. This has to be done in FUN() because the transform gets reset otherwise
 					Transform spawn = spawnpt.transform;
@@ -522,7 +501,7 @@ namespace FusionExamples.Tanknarok
 					if (stage != Stage.Active)
 						stage = Stage.TeleportIn;
 
-					Debug.Log($"Respawned player {PlayerId} @ {spawn.position}, tick={Runner.Tick}, timer={respawnTimer.IsRunning}:{respawnTimer.TargetTick}, life={life}, lives={lives}, hasStateAuth={Object.HasStateAuthority} to state={stage}");
+					Debug.Log($"Respawned player {PlayerId} @ {spawn.position}, tick={Runner.Tick}, timer={RespawnTimer.IsRunning}:{RespawnTimer.TargetTick}, life={Life}, lives={Lives}, hasStateAuth={Object.HasStateAuthority} to state={stage}");
 				}
 			}
 		}
@@ -567,7 +546,7 @@ namespace FusionExamples.Tanknarok
 
 		private void ResetPlayer()
 		{
-			Debug.Log($"Resetting player {PlayerId}, tick={Runner.Tick}, timer={respawnTimer.IsRunning}:{respawnTimer.TargetTick}, life={life}, lives={lives}, hasStateAuth={Object.HasStateAuthority} to state={stage}");
+			Debug.Log($"Resetting player {PlayerId}, tick={Runner.Tick}, timer={RespawnTimer.IsRunning}:{RespawnTimer.TargetTick}, life={Life}, lives={Lives}, hasStateAuth={Object.HasStateAuthority} to state={stage}");
 			//weaponManager.ResetAllWeapons();
 			stage = Stage.Active;
 		}

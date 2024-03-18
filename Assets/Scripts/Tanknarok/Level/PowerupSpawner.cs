@@ -63,7 +63,7 @@ namespace FusionExamples.Tanknarok
 				return;
 
 			int powerup = State.activePowerupIndex;
-			player.RaiseEvent( new Player.PickupEvent { powerup = powerup} );
+			player.RaiseEvent( new Player.PickupEvent { Powerup = powerup} );
 
 			SetNextPowerup();
 		}
