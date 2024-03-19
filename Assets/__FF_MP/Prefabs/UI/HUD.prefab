@@ -650,7 +650,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2673396746456985703}
   m_Layer: 5
-  m_Name: ScoreHolder (1)
+  m_Name: Name Holder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1556,15 +1556,15 @@ MonoBehaviour:
     m_FontSize: 36
     m_FontStyle: 1
     m_BestFit: 1
-    m_MinSize: 36
-    m_MaxSize: 40
+    m_MinSize: 32
+    m_MaxSize: 38
     m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Elegant Cheetah
+  m_Text: 
 --- !u!114 &6883614797598070946
 MonoBehaviour:
   m_ObjectHideFlags: 0

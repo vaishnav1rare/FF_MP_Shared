@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Fusion;
 using FusionHelpers;
@@ -519,8 +520,10 @@ namespace FusionExamples.Tanknarok
 			{
 				case Stage.TeleportIn:
 					//Debug.Log($"Starting teleport for player {PlayerId} @ {transform.position} cc@ {_cc.Data.Position}, tick={Runner.Tick}");
+					StartCoroutine("TeleportIn");
 					break;
 				case Stage.Active:
+					EndTeleport();
 					break;
 				case Stage.Dead:
 					_deathExplosionInstance.transform.position = transform.position;
@@ -560,6 +563,21 @@ namespace FusionExamples.Tanknarok
 
 			if (Object.HasStateAuthority)
 				stage = Stage.TeleportOut;
+		}
+		public void EndTeleport()
+		{
+			_endTeleportation = true;
+		}
+		private bool _endTeleportation;
+		private IEnumerator TeleportIn()
+		{
+			
+			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForSeconds(0.2f);
+			
+			// Waits for the tank to be ready before playing the discharge effect
+			while (!_endTeleportation)
+				yield return null;
 		}
 	}
 }

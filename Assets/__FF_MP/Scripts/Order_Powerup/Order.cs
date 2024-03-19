@@ -11,14 +11,34 @@ public class Order : NetworkBehaviour,ICollidable
     public Image loadingIndicator;
     private float totalWaitTime = 2f;
     private float currentWaitTime;
+    private ChangeDetector _changeDetector;
     [Networked] public bool IsCollecting { get; set; }
     [Networked] public Player Player{ get; set; }
     public override void Spawned()
     {
         base.Spawned();
+        _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
         transform.position = ChallengeManager.instance.OrderPosition;
         currentWaitTime = totalWaitTime;
-        Debug.Log("!Order Spawned!");
+    }
+    public override void Render()
+    {
+        foreach (var change in _changeDetector.DetectChanges(this))
+        {
+            switch (change)
+            {
+                case nameof(IsCollecting):
+                {
+                    SetIsCollectingFlag(IsCollecting);
+                    break;
+                }
+            }
+        }
+    }
+    
+    private void SetIsCollectingFlag(bool value)
+    {
+        IsCollecting = value;
     }
 
     private void OnTriggerEnter(Collider other)
