@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using FusionExamples.Tanknarok;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,31 +10,30 @@ public class EndRaceUI : MonoBehaviour
 	public PlayerResultItem resultItemPrefab;
 	public GameObject resultsContainer;
 	public Button continueEndButton;
-	/*public void Init()
+	public void Init()
 	{
-	//
-		continueEndButton.onClick.AddListener(() => LevelManager.LoadMenu());
+		//continueEndButton.onClick.AddListener(() => LevelManager.LoadMenu());
 	}
-
-	
-	public void RedrawResultsList(VehicleComponent vehicleComponent)
+	public void RedrawResultsList()
 	{
 		var parent = resultsContainer.transform;
 		ClearParent(parent);
 
-		var karts = GetFinishedKarts();
+		var karts = GetFinishedPlayers();
 		for (var i = 0; i < karts.Count; i++)
 		{
 			var kart = karts[i];
 
 			Instantiate(resultItemPrefab, parent)
-				.SetResult(kart.Controller.RoomUser.Username.Value, kart.OrderCount, i + 1);
+				.SetResult(kart.Username.ToString(), kart.OrderCount, i + 1);
 		}
 
-		EnsureContinueButton(karts);
+		//EnsureContinueButton(karts);
 	}
-	private static List<VehicleEntity> GetFinishedKarts() =>
-		VehicleEntity.Vehicles
+	
+	
+	private static List<Player> GetFinishedPlayers() =>
+			Player.players
 			.OrderByDescending(x => x.OrderCount)
 			.ToList();
 	private static void ClearParent(Transform parent)
@@ -44,7 +44,7 @@ public class EndRaceUI : MonoBehaviour
 			Destroy(parent.GetChild(i).gameObject);
 		}
 	}
-	private void EnsureContinueButton(List<VehicleEntity> karts)
+	/*private void EnsureContinueButton(List<Player> karts)
 	{
 		var allFinished = karts.Count == VehicleEntity.Vehicles.Count;
 		if (RoomPlayer.Local.IsLeader) {

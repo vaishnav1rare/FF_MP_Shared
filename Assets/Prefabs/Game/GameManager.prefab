@@ -188,6 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5f4017a1e1a8f249b9dfe1b68138737, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  endRaceUIPrefab: {fileID: 8845968426697940815, guid: 18ed7d9b54543bb4897c58396edeb360, type: 3}
 --- !u!1 &2456724581877430572
 GameObject:
   m_ObjectHideFlags: 0

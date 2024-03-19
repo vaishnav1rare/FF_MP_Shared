@@ -3,6 +3,9 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; set; }
+    public EndRaceUI endRaceUI { get; private set; }
+
+    public EndRaceUI endRaceUIPrefab;
     // Start is called before the first frame update
     
     private void Awake()
@@ -19,6 +22,12 @@ public class UIManager : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
+    public void ShowResult()
+    {
+        endRaceUI = Instantiate(endRaceUIPrefab);
+        endRaceUI.Init();
+        endRaceUI.RedrawResultsList();
+    }
     
     private string[] adjectives = { "Good", "Fast", "Hot", "Cute", "Wild", "Cool", "Brave", "Loyal" };
 

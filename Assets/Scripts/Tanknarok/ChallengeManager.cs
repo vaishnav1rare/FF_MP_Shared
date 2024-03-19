@@ -70,10 +70,19 @@ public class ChallengeManager : NetworkBehaviour, ISceneLoadDone
                     SetTime(Time);
                     break;
                 }
+                case nameof(IsMatchOver):
+                {
+                    SetGameOver();
+                    break;
+                }
             }
         }
     }
 
+    void SetGameOver()
+    {
+        UIManager.Instance.ShowResult();
+    }
     private void SetTime(string time)
     {
         _gameUI.UpdateTime(time);

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Fusion;
 using FusionHelpers;
 using UnityEngine;
@@ -78,7 +79,8 @@ namespace FusionExamples.Tanknarok
 		private NetworkInputData _oldInput;
 		private Camera _camera;
 		private GameUI _gameUI;
-
+		public static readonly  List<Player> players = new List<Player>();
+		
 		public void ToggleReady()
 		{
 			Debug.Log("PlayerReady: "+Ready);
@@ -91,8 +93,7 @@ namespace FusionExamples.Tanknarok
 		}
 
 		private void Awake()
-		{
-			//_cc = GetComponent<NetworkCharacterController>();
+		{ 
 			_collider = GetComponentInChildren<CapsuleCollider>();
 			orderCampassParent.SetActive(false);
 		}
@@ -111,6 +112,7 @@ namespace FusionExamples.Tanknarok
 		{
 			base.Spawned();
 			DontDestroyOnLoad(gameObject);
+			players.Add(this);
 			_changes = GetChangeDetector(ChangeDetector.Source.SimulationState);
 			Ready = false;
 			SetMaterial();

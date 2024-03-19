@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Fusion;
 using FusionHelpers;
 using UnityEngine;
@@ -20,9 +21,12 @@ namespace FusionExamples.Tanknarok
 		[SerializeField] private CountdownManager _countdownManager;
 		[SerializeField] private int _lobby;
 		[SerializeField] private int[] _levels;
+		
+		
 		private LevelBehaviour _currentLevel;
 		private ChallengeManager _challengeManager;
 		private SceneRef _loadedScene = SceneRef.None;
+		
 
 		public Action<NetworkRunner,FusionLauncher.ConnectionStatus, string> onStatusUpdate { get; set; }
 		public ReadyUpManager readyUpManager => _readyUpManager;
