@@ -1787,7 +1787,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _eventRelayPrefab: {fileID: 6216721781973090943, guid: b5b51c12e1e6446af8ad4a576d68eef6, type: 3}
-  playerNameTMP: {fileID: 7969514694927070557}
   hudPrefab: {fileID: 7197810723918016650, guid: 2562ff4bafb44b549b9bdc0de26ba288, type: 3}
   primaryWheel: {fileID: 830281465571014655}
   _visualParent: {fileID: 9097469178900222328}
@@ -1798,6 +1797,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 68414b27680bf5347af566070e35ac68, type: 2}
   _respawnTime: 1
   part: {fileID: 7024439863158248975}
+  maxSpeedNormal: 12
+  maxSpeedBoosting: 20
   orderDistanceTMP: {fileID: 8105850745161758355}
   orderCampassParent: {fileID: 2313715366491141035}
   orderCampassCanvasParent: {fileID: 4056999011645517131}
@@ -1812,11 +1813,11 @@ MonoBehaviour:
   _Lives: 0
   _Ready: 0
   _AppliedSpeed: 0
-  _MaxSpeed: 15
+  _MaxSpeed: 12
   Rigidbody: {fileID: 1549671491458988442}
-  acceleration: 1
-  reverseSpeed: 12
-  deceleration: 1
+  acceleration: 0.75
+  reverseSpeed: 9
+  deceleration: 0.6
   CurrentSpeed: 0
   CurrentSpeed01: 0
   steerAcceleration: 3
@@ -1830,6 +1831,8 @@ MonoBehaviour:
   MaxBodyTileAngle: 30
   skidThreshold: 0.05
   <DriftFactor>k__BackingField: 1
+  _BoostEndTick: -1
+  _BoostTierIndex: 0
 --- !u!114 &868463730390139289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2515,17 +2518,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3004506216723392382, guid: 8f03e7684946e4a44ad1b0954faff227, type: 3}
   m_PrefabInstance: {fileID: 7469368408818211982}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7969514694927070557 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 662558673205225939, guid: 8f03e7684946e4a44ad1b0954faff227, type: 3}
-  m_PrefabInstance: {fileID: 7469368408818211982}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &8105850745161758355 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1717352156787501597, guid: 8f03e7684946e4a44ad1b0954faff227, type: 3}

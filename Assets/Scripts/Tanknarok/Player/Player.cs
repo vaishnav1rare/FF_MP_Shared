@@ -24,6 +24,8 @@ namespace FusionExamples.Tanknarok
 		[SerializeField] private Material[] _playerMaterials;
 		[SerializeField] private float _respawnTime;
 		[SerializeField] private MeshRenderer part;
+		[SerializeField] private float maxSpeedNormal;
+		[SerializeField] private float maxSpeedBoosting;
 		[Header("---Order")]
 		[SerializeField] private TMPro.TextMeshPro orderDistanceTMP;
 		private Vector3 targetOrderTransorm;
@@ -114,6 +116,7 @@ namespace FusionExamples.Tanknarok
 			base.Spawned();
 			DontDestroyOnLoad(gameObject);
 			players.Add(this);
+			MaxSpeed = maxSpeedNormal;
 			_changes = GetChangeDetector(ChangeDetector.Source.SimulationState);
 			Ready = false;
 			SetMaterial();
@@ -223,6 +226,7 @@ namespace FusionExamples.Tanknarok
 			Move(Inputs);
 			Steer(Inputs);
 			UpdateDistance();
+			Boost();
 			if (ChallengeManager.instance)
 			{ 
 				targetOrderTransorm = ChallengeManager.instance.OrderPosition;
@@ -578,6 +582,51 @@ namespace FusionExamples.Tanknarok
 			// Waits for the tank to be ready before playing the discharge effect
 			while (!_endTeleportation)
 				yield return null;
+		}
+		
+		
+		[Networked] public TickTimer BoostpadCooldown { get; set; }
+		[Networked] public int BoostEndTick { get; set; } = -1;
+		[Networked] public int BoostTierIndex { get; set; }
+		public float BoostTime => BoostEndTick == -1 ? 0f : (BoostEndTick - Runner.Tick) * Runner.DeltaTime;
+		public void GiveBoost()
+		{
+			/*if (isBoostpad)
+			{
+				//
+				// If we are given a boost from a boostpad, we need to add a cooldown to ensure that we dont get a boost
+				// every frame we are in contact with the boost pad.
+				// 
+				if (!BoostpadCooldown.ExpiredOrNotRunning(Runner))
+					return;
+
+				BoostpadCooldown = TickTimer.CreateFromSeconds(Runner, 2f);
+			}*/
+
+			// set the boost tier to 'tier' only if it's a higher tier than current
+			//BoostTierIndex = BoostTierIndex > tier ? BoostTierIndex : tier;
+
+			if (BoostEndTick == -1) BoostEndTick = Runner.Tick;
+			BoostEndTick += (int) (20f / Runner.DeltaTime);
+		}
+		
+		private void Boost()
+		{
+			if (BoostTime > 0)
+			{
+				MaxSpeed = maxSpeedBoosting;
+				//AppliedSpeed = Mathf.Lerp(AppliedSpeed, MaxSpeed, Runner.DeltaTime);
+			}
+			else if (BoostEndTick != -1)
+			{
+				StopBoosting();
+			}
+		}
+		private void StopBoosting()
+		{
+			BoostTierIndex = 0;
+			BoostEndTick = -1;
+			MaxSpeed = maxSpeedNormal;
 		}
 	}
 }

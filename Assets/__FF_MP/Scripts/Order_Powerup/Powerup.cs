@@ -7,17 +7,27 @@ using UnityEngine;
 public class Powerup : NetworkBehaviour, ICollidable
 {
     private ICollidable _collidableImplementation;
+    private PowerUpSpawnManager _powerUpSpawnManager;
     
     public override void Spawned()
     {
-        Debug.Log("Order Spawned");
-        //transform.position = GlobalManager.Instance.PowerUpSpawnManager.PowerupPosition;
+        _powerUpSpawnManager = FindObjectOfType<PowerUpSpawnManager>();
+        Debug.Log("Booster Spawned");
+        transform.position = _powerUpSpawnManager.PowerupPosition;
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Collected: "+other.gameObject.name);
+        if (other.gameObject.TryGetComponent(out Player player))
+        {
+            Collide(player);
+        }
     }
     public void Collide(Player player)
     {
-        //player.Controller.GiveBoost(true,5);
+        player.GiveBoost();
         
-        if ( player.Object.HasStateAuthority ) {
+        if ( Runner.IsSharedModeMasterClient ) {
             Runner.Despawn(Object);
         }
         

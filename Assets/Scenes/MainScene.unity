@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12731715, g: 0.13414735, b: 0.121078536, a: 1}
+  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.35872698, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3551,6 +3551,7 @@ MonoBehaviour:
   _countdownManager: {fileID: 5203584005505685294}
   _lobby: 1
   _levels: 02000000
+  powerupSpawnManagerPrefab: {fileID: 2381154586566001655, guid: 7d82fb86501398e46a40d1564b509b68, type: 3}
 --- !u!4 &1353448200
 Transform:
   m_ObjectHideFlags: 0
