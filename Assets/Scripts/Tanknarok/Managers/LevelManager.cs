@@ -207,7 +207,7 @@ namespace FusionExamples.Tanknarok
 				StartCoroutine(_countdownManager.Countdown(() =>
 				{
 					_challengeManager = FindObjectOfType<ChallengeManager>();
-					SpawnPowerupSpawner(Runner);
+					
 					// Set state to playing level
 					if (Runner != null && (Runner.IsServer || Runner.IsSharedModeMasterClient))
 					{
@@ -221,6 +221,7 @@ namespace FusionExamples.Tanknarok
 					{
 						if(_challengeManager != null)
 							_challengeManager.StartChallenge(ChallengeType.RaceToDeliveries);
+						SpawnPowerupSpawner(Runner);
 					}
 				}));
 			}

@@ -10,15 +10,16 @@ public class PowerUpSpawnManager : NetworkBehaviour
     [Networked] public Vector3 PowerupPosition { get; set; }
     [Networked] public TickTimer SpawnTimer { get; set; }
     private ChangeDetector _changeDetector;
-   
-    
     
     public override void Spawned()
     {
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
-        SpawnTimer = TickTimer.CreateFromSeconds(Runner, 15f);
-        powerupSpawnPoints = ChallengeManager.instance.orderSpawnPoints;
-        SpawnNextPowerup();
+        if (Runner.IsSharedModeMasterClient)
+        {
+            powerupSpawnPoints = ChallengeManager.instance.orderSpawnPoints;
+            SpawnTimer = TickTimer.CreateFromSeconds(Runner, 30f);
+            SpawnNextPowerup();
+        }
     }
     
     public override void Render()
@@ -59,9 +60,12 @@ public class PowerUpSpawnManager : NetworkBehaviour
 
     void SpawnPowerup()
     {
-        int randomIndex = Random.Range(0, powerupSpawnPoints.Length);
-        Vector3 randomSpawnPosition = powerupSpawnPoints[randomIndex].position;
-        PowerupPosition = randomSpawnPosition;
-        Runner.Spawn(boostPrefab, PowerupPosition, Quaternion.identity);
+        if (Runner.IsSharedModeMasterClient)
+        {
+            int randomIndex = Random.Range(0, powerupSpawnPoints.Length);
+            Vector3 randomSpawnPosition = powerupSpawnPoints[randomIndex].position;
+            PowerupPosition = randomSpawnPosition;
+            Runner.Spawn(boostPrefab, PowerupPosition, Quaternion.identity);
+        }
     }
 }

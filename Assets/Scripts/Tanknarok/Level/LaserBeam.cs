@@ -43,7 +43,7 @@ namespace FusionExamples.Tanknarok
 				Vector3 impulse = _target.transform.position - _targetPoint;
 				float l = Mathf.Clamp(5.0f - impulse.magnitude, 0, 5.0f);
 				impulse = 10.0f * l * impulse.normalized;
-				_target.ApplyAreaDamage(impulse, _damage);
+				//_target.ApplyAreaDamage(impulse, _damage);
 				_target = null;
 			}
 

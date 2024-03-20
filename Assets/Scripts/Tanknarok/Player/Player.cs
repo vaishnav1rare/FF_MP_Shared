@@ -4,20 +4,14 @@ using System.Collections.Generic;
 using Fusion;
 using FusionHelpers;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace FusionExamples.Tanknarok
 {
-	/// <summary>
-	/// The Player class represent the players avatar - in this case the Tank.
-	/// </summary>
-	//[RequireComponent(typeof(NetworkCharacterController))]
-	public class Player : FusionPlayer
+	public class Player : FusionPlayer, ICollidable
 	{
 		private const int MAX_LIVES = 3;
 		private const int MAX_HEALTH = 100;
-
-		//[Header("Visuals")] [SerializeField] private Transform _hull;
+		
 		[SerializeField] private GameUI hudPrefab;
 		[SerializeField] private TrailRenderer primaryWheel;
 		[SerializeField] private Transform _visualParent;
@@ -51,12 +45,12 @@ namespace FusionExamples.Tanknarok
 		[Networked] public NetworkString<_32> Username { get; set; }
 		[Networked] public Stage stage { get; set; }
 		[Networked] private int Life { get; set; }
-		
 		[Networked] public int OrderCount { get; set; }
 		[Networked] private TickTimer RespawnTimer { get; set; }
 		[Networked] private TickTimer InvulnerabilityTimer { get; set; }
 		[Networked] public int Lives { get; set; }
 		[Networked] public bool Ready { get; set; }
+		[Networked] public int Health {get; set; }
 		public NetworkBool IsGrounded { get; set; }
 		private NetworkInputData Inputs { get; set; }
 		public float GroundResistance { get; set; }
@@ -74,7 +68,8 @@ namespace FusionExamples.Tanknarok
 
 		public Material playerMaterial { get; set; }
 		public Color playerColor { get; set; }
-		public event Action<int> OnOrderCountChanged;
+		public event Action<int> OnOrderCountChanged; 
+		public event Action<int> OnHealthChanged; 
 		private CapsuleCollider _collider;
 		private GameObject _deathExplosionInstance;
 		private float _respawnInSeconds = -1;
@@ -104,6 +99,11 @@ namespace FusionExamples.Tanknarok
 		{
 			changed.OnOrderCountChanged?.Invoke(changed.OrderCount);
 		}
+		
+		private static void OnHealthChangedCallback(Player changed)
+		{
+			changed.OnHealthChanged?.Invoke(changed.Health);
+		}
 		public override void InitNetworkState()
 		{
 			stage = Stage.New;
@@ -122,11 +122,9 @@ namespace FusionExamples.Tanknarok
 			SetMaterial();
 			OnStageChanged();
 			_respawnInSeconds = 0;
-			
-			RegisterEventListener( (DamageEvent evt) => ApplyAreaDamage(evt.Impulse, evt.Damage) );
-			RegisterEventListener( (PickupEvent evt) => OnPickup(evt));
 			if (Object.HasStateAuthority)
 			{
+				Health = 100;
 				_camera = Camera.main;
 				if (_camera != null) _camera.GetComponent<MultiplayerCameraController>().target = transform;
 				orderCampassParent.transform.parent = null;
@@ -136,6 +134,7 @@ namespace FusionExamples.Tanknarok
 				var nickname = UIManager.Instance.GenerateRandomNickname();
 				RPC_SetPlayerStats(nickname);
 				_gameUI.UpdatePlayerNameOnHud(nickname, playerColor);
+				_gameUI.UpdateHealthText(Health);
 			}
 		}
 
@@ -151,17 +150,7 @@ namespace FusionExamples.Tanknarok
 			SpawnTeleportOutFx();
 			Destroy(_deathExplosionInstance);
 		}
-
-		private void OnPickup( PickupEvent evt)
-		{
-			PowerupElement powerup = PowerupSpawner.GetPowerup(evt.Powerup);
-
-			if (powerup.powerupType == PowerupType.HEALTH)
-				Life = MAX_HEALTH;
-			/*else
-				weaponManager.InstallWeapon(powerup);*/
-		}
-
+		
 		private void Update()
 		{
 			Drift();
@@ -178,7 +167,6 @@ namespace FusionExamples.Tanknarok
 		float _orderInterval;
 		private void UpdateCampass()
 		{
-			//if (targetBoosterTransform != null) CampassBooster();
 			
 			orderDistanceTMP.text = $"{Mathf.FloorToInt(orderDistance)}m";
 			/*
@@ -194,8 +182,6 @@ namespace FusionExamples.Tanknarok
 			// Position and rotation
 			orderCampassPivot.position = transform.position + Vector3.up * campassHeight;
 			orderDistanceTMP.transform.position = transform.position + Vector3.up * (campassHeight + 2) ;
-			//orderCampassCanvasParent.position = orderCampassPivot.position;
-
 			_orderDirection = targetOrderTransorm - transform.position;
 			_orderDirection.y = orderCampassPivot.localRotation.y;
 			orderCampassPivot.rotation = Quaternion.Slerp(orderCampassPivot.rotation, Quaternion.LookRotation(_orderDirection), Time.deltaTime);
@@ -204,7 +190,6 @@ namespace FusionExamples.Tanknarok
 	
 		public override void FixedUpdateNetwork()
 		{
-			
 			GroundNormalRotation();
 			if (Object.HasStateAuthority)
 			{
@@ -245,10 +230,11 @@ namespace FusionExamples.Tanknarok
 					case nameof(OrderCount):
 						OnOrderCountChangedCallback(this);
 						break;
+					case nameof(Health):
+						OnHealthChangedCallback(this);
+						break;
 				}
 			}
-				
-			var interpolated = new NetworkBehaviourBufferInterpolator(this);
 		}
 
 		private void GroundNormalRotation()
@@ -256,13 +242,13 @@ namespace FusionExamples.Tanknarok
 			//var wasOffroad = IsOffroad;
 
 			IsGrounded = Physics.SphereCast(_collider.transform.TransformPoint(_collider.center), _collider.radius - 0.1f,
-				Vector3.down, out var hit, 0.3f, ~LayerMask.GetMask("Kart"));
+				Vector3.down, out var hit, 0.3f, ~LayerMask.GetMask("Player"));
 
 			if (IsGrounded)
 			{
 				Debug.DrawRay(hit.point, hit.normal, Color.magenta);
 				GroundResistance = hit.collider.material.dynamicFriction;
-
+				Debug.Log("GR: "+GroundResistance);
 				model.transform.rotation = Quaternion.Lerp(
 					model.transform.rotation,
 					Quaternion.FromToRotation(model.transform.up * 2, hit.normal) * model.transform.rotation,
@@ -313,7 +299,7 @@ namespace FusionExamples.Tanknarok
 			var vel = (Rigidbody.rotation * Vector3.forward) * AppliedSpeed;
 			vel.y = Rigidbody.velocity.y;
 			Rigidbody.velocity = vel;
-		
+			
 			CurrentSpeed = Rigidbody.velocity.magnitude;
 			CurrentSpeed01 = CurrentSpeed / MaxSpeed;
 			if (CurrentSpeed < inputDeadZoneValue) CurrentSpeed01 = CurrentSpeed = 0;
@@ -416,50 +402,22 @@ namespace FusionExamples.Tanknarok
 		
 			primaryWheel.emitting = IsDrifting;
 		}
+		private void OnCollisionEnter(Collision other)
+		{
+		
+			if (other.gameObject.TryGetComponent(out ICollidable collidable))
+			{
+				//Rigidbody.constraints = RigidbodyConstraints.FreezePositionY;
+				collidable.Collide(this);
+			}
+		}
 		public enum Axis
 		{
 			X,
 			Y,
 			Z
 		}
-		/// <summary>
-		/// Apply damage to Tank with an associated impact impulse
-		/// </summary>
-		/// <param name="impulse"></param>
-		/// <param name="damage"></param>
-		/// <param name="attacker"></param>
-		public void ApplyAreaDamage(Vector3 impulse, int damage)
-		{
-			if (!isActivated || !InvulnerabilityTimer.Expired(Runner))
-				return;
-
-			if (Runner.TryGetSingleton(out GameManager gameManager))
-			{
-				//_cc.Velocity += impulse / 10.0f; // Magic constant to compensate for not properly dealing with masses
-				//_cc.Move(Vector3.zero); // Velocity property is only used by CC when steering, so pretend we are, without actually steering anywhere
-
-				if (damage >= Life)
-				{
-					Life = 0;
-					stage = Stage.Dead;
-
-					if (gameManager.currentPlayState == GameManager.PlayState.LEVEL)
-						Lives -= 1;
-
-					if (Lives > 0)
-						Respawn(_respawnTime);
-				}
-				else
-				{
-					Life -= (byte)damage;
-					Debug.Log($"Player {PlayerId} took {damage} damage, life = {Life}");
-				}
-				
-			}
-
-			InvulnerabilityTimer = TickTimer.CreateFromSeconds(Runner, 0.1f);
-		}
-
+		
 		public void Reset()
 		{
 			Debug.Log($"Resetting player #{PlayerIndex} ID:{PlayerId}");
@@ -584,28 +542,10 @@ namespace FusionExamples.Tanknarok
 				yield return null;
 		}
 		
-		
-		[Networked] public TickTimer BoostpadCooldown { get; set; }
 		[Networked] public int BoostEndTick { get; set; } = -1;
-		[Networked] public int BoostTierIndex { get; set; }
 		public float BoostTime => BoostEndTick == -1 ? 0f : (BoostEndTick - Runner.Tick) * Runner.DeltaTime;
 		public void GiveBoost()
 		{
-			/*if (isBoostpad)
-			{
-				//
-				// If we are given a boost from a boostpad, we need to add a cooldown to ensure that we dont get a boost
-				// every frame we are in contact with the boost pad.
-				// 
-				if (!BoostpadCooldown.ExpiredOrNotRunning(Runner))
-					return;
-
-				BoostpadCooldown = TickTimer.CreateFromSeconds(Runner, 2f);
-			}*/
-
-			// set the boost tier to 'tier' only if it's a higher tier than current
-			//BoostTierIndex = BoostTierIndex > tier ? BoostTierIndex : tier;
-
 			if (BoostEndTick == -1) BoostEndTick = Runner.Tick;
 			BoostEndTick += (int) (20f / Runner.DeltaTime);
 		}
@@ -624,9 +564,21 @@ namespace FusionExamples.Tanknarok
 		}
 		private void StopBoosting()
 		{
-			BoostTierIndex = 0;
 			BoostEndTick = -1;
 			MaxSpeed = maxSpeedNormal;
+		}
+
+		public void Collide(Player player)
+		{
+			Debug.Log("HEALTH: "+player.gameObject.name);
+			player.ReduceHealth();
+		}
+		public void ReduceHealth()
+		{
+			if(Health>2)
+				Health -= 2;
+		
+			_gameUI.UpdateHealthText(Health);
 		}
 	}
 }
