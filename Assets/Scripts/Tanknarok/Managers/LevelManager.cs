@@ -37,6 +37,7 @@ namespace FusionExamples.Tanknarok
 //			_scoreManager.ResetAllGameScores();
 		}
 
+		
 		public override void Shutdown()
 		{
 			Debug.Log("LevelManager.Shutdown();");
@@ -142,6 +143,7 @@ namespace FusionExamples.Tanknarok
 				yield break;
 			
 			//_audioEmitter.Play();
+			yield return new WaitForSeconds(0.2f);
 			
 			onStatusUpdate?.Invoke( Runner, FusionLauncher.ConnectionStatus.Loading, "");
 
@@ -158,14 +160,11 @@ namespace FusionExamples.Tanknarok
 			// Activate the next level
 			_currentLevel = FindObjectOfType<LevelBehaviour>();
 			
-			
 			if(_currentLevel!=null)
 				_currentLevel.Activate();
 			//MusicPlayer.instance.SetLowPassTranstionDirection( newScene.AsIndex>_lobby ? 1f : -1f);
 
 			yield return new WaitForSeconds(0.3f);
-
-			Debug.Log($"Stop glitching");
 			//_audioEmitter.Stop();
 
 			GameManager gameManager;
@@ -180,7 +179,6 @@ namespace FusionExamples.Tanknarok
 				// Show lobby scores and reset the score ui.
 				_scoreManager.ShowFinalGameScore(gameManager);
 			}
-
 			gameManager.lastPlayerStanding = null;
 			
 			// Respawn with slight delay between each player
@@ -212,17 +210,12 @@ namespace FusionExamples.Tanknarok
 					if (Runner != null && (Runner.IsServer || Runner.IsSharedModeMasterClient))
 					{
 						gameManager.currentPlayState = GameManager.PlayState.LEVEL;
-					}
-					//Enable inputs after countdow finishes
-					InputController.fetchInput = true;
-					//Debug.Log($"Switched Scene from {prevScene} to {newScene}");
-					
-					if (Runner != null && (Runner.IsServer || Runner.IsSharedModeMasterClient))
-					{
 						if(_challengeManager != null)
 							_challengeManager.StartChallenge(ChallengeType.RaceToDeliveries);
 						SpawnPowerupSpawner(Runner);
 					}
+					//Enable inputs after countdow finishes
+					InputController.fetchInput = true;
 				}));
 			}
 		}

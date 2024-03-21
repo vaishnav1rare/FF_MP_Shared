@@ -149,6 +149,8 @@ namespace FusionExamples.Tanknarok
 			base.Despawned(runner, hasState);
 			SpawnTeleportOutFx();
 			Destroy(_deathExplosionInstance);
+			Destroy(_gameUI.gameObject);
+			players.Remove(this);
 		}
 		
 		private void Update()
@@ -533,8 +535,6 @@ namespace FusionExamples.Tanknarok
 		private bool _endTeleportation;
 		private IEnumerator TeleportIn()
 		{
-			
-			yield return new WaitForSeconds(0.1f);
 			yield return new WaitForSeconds(0.2f);
 			
 			// Waits for the tank to be ready before playing the discharge effect
