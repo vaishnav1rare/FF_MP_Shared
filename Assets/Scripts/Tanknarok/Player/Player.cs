@@ -475,8 +475,9 @@ namespace FusionExamples.Tanknarok
 
 		void Teleport(Vector3 position, Quaternion rotation)
 		{
-			transform.position = position;
-			transform.rotation = rotation;
+			Rigidbody.Move(position,rotation);
+			//transform.position = position;
+			//transform.rotation = rotation;
 		}
 		public void OnStageChanged()
 		{
