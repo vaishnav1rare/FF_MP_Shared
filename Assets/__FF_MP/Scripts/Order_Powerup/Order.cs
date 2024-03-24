@@ -31,10 +31,19 @@ public class Order : NetworkBehaviour,ICollidable
                     SetIsCollectingFlag(IsCollecting);
                     break;
                 }
+                case nameof(Player):
+                {
+                    SetPlayer(Player);
+                    break;
+                }
             }
         }
     }
-    
+
+    void SetPlayer(Player player)
+    {
+        Player = player;
+    }
     private void SetIsCollectingFlag(bool value)
     {
         IsCollecting = value;
@@ -43,6 +52,12 @@ public class Order : NetworkBehaviour,ICollidable
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log("Collected: "+other.gameObject.name);
+        if(IsCollecting || Player !=null)
+        {
+            Debug.Log("Already Being Collected");
+            return;
+        }
+            
         if (other.gameObject.TryGetComponent(out Player player))
         {
             Collide(player);
