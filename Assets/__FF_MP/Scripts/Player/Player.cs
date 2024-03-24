@@ -114,7 +114,6 @@ namespace OneRare.FoodFury.Multiplayer
 
         private void Update()
         {
-            playerMovementHandler.Drift();
             UpdateCampass();
         }
 

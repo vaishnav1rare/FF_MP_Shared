@@ -2165,7 +2165,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   primaryWheel: {fileID: 830281465571014655}
   rigidbody: {fileID: 1549671491458988442}
-  skidThreshold: 0.015
+  skidThreshold: 0.05
   acceleration: 0.75
   reverseSpeed: 9
   deceleration: 0.6
@@ -2177,7 +2177,7 @@ MonoBehaviour:
   steerAcceleration: 3
   steerDeceleration: 3
   model: {fileID: 9097469178900222328}
-  driftRotationLerpFactor: 10
+  driftRotationLerpFactor: 15
   <DriftFactor>k__BackingField: 1
   _MaxSpeed: 0
   _BoostEndTick: -1

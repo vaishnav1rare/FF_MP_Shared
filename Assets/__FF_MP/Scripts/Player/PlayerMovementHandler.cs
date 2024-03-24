@@ -54,12 +54,13 @@ public class PlayerMovementHandler : NetworkBehaviour
     public void GroundNormalRotation()
     {
 	    IsGrounded = Physics.SphereCast(_collider.transform.TransformPoint(_collider.center), _collider.radius - 0.1f,
-		    Vector3.down, out var hit, 0.3f, ~LayerMask.GetMask("Player"));
+		    Vector3.down, out var hit, 0.5f, ~LayerMask.GetMask("Player"));
 
 	    if (IsGrounded)
 	    {
 		    GroundResistance = hit.collider.material.dynamicFriction;
-		    Debug.Log("GR: "+GroundResistance);
+		    
+		    Debug.Log(hit.collider.name+" |GR: "+GroundResistance);
 		    model.transform.rotation = Quaternion.Lerp(
 			    model.transform.rotation,
 			    Quaternion.FromToRotation(model.transform.up * 2, hit.normal) * model.transform.rotation,
