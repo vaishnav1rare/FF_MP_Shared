@@ -1789,50 +1789,44 @@ MonoBehaviour:
   _eventRelayPrefab: {fileID: 6216721781973090943, guid: b5b51c12e1e6446af8ad4a576d68eef6, type: 3}
   hudPrefab: {fileID: 7197810723918016650, guid: 2562ff4bafb44b549b9bdc0de26ba288, type: 3}
   primaryWheel: {fileID: 830281465571014655}
-  _visualParent: {fileID: 9097469178900222328}
-  _playerMaterials:
+  visualParent: {fileID: 9097469178900222328}
+  playerMaterials:
   - {fileID: 2100000, guid: 5b379f5673496b447a56211944a71de3, type: 2}
   - {fileID: 2100000, guid: f5b91044f1aa196439718585f302e93f, type: 2}
   - {fileID: 2100000, guid: c26074b95c8402447931f0e6836c1c24, type: 2}
   - {fileID: 2100000, guid: 68414b27680bf5347af566070e35ac68, type: 2}
-  _respawnTime: 1
+  respawnTime: 0
   part: {fileID: 7024439863158248975}
+  rigidbody: {fileID: 1549671491458988442}
+  skidThreshold: 0.05
+  acceleration: 0.75
+  reverseSpeed: 9
+  deceleration: 0.6
   maxSpeedNormal: 12
   maxSpeedBoosting: 20
+  body: {fileID: 9097469178900222328}
+  handle: {fileID: 5097727341707734566}
+  maxBodyTileAngle: 40
+  steerAcceleration: 3
+  steerDeceleration: 3
+  model: {fileID: 9097469178900222328}
+  driftRotationLerpFactor: 5
+  <DriftFactor>k__BackingField: 1
   orderDistanceTMP: {fileID: 8105850745161758355}
   orderCampassParent: {fileID: 2313715366491141035}
-  orderCampassCanvasParent: {fileID: 4056999011645517131}
   orderCampassPivot: {fileID: 92183460705782363}
-  orderCampassSprite: {fileID: 4255620149820300347}
   _Username:
     _length: 0
     _data:
       Data: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  _stage: 0
+  _CurrentStage: 0
   _OrderCount: 0
   _Lives: 0
   _Ready: 0
+  _Health: 0
+  _BoostEndTick: -1
   _AppliedSpeed: 0
   _MaxSpeed: 12
-  Rigidbody: {fileID: 1549671491458988442}
-  acceleration: 0.75
-  reverseSpeed: 9
-  deceleration: 0.6
-  CurrentSpeed: 0
-  CurrentSpeed01: 0
-  steerAcceleration: 3
-  steerDeceleration: 3
-  IsDrifting: 0
-  model: {fileID: 9097469178900222328}
-  driftRotationLerpFactor: 5
-  CanDrive: 1
-  body: {fileID: 9097469178900222328}
-  handle: {fileID: 5097727341707734566}
-  MaxBodyTileAngle: 30
-  skidThreshold: 0.05
-  <DriftFactor>k__BackingField: 1
-  _BoostEndTick: -1
-  _BoostTierIndex: 0
 --- !u!114 &868463730390139289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2501,16 +2495,6 @@ Transform:
 --- !u!1 &2313715366491141035 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5166597581172862757, guid: 8f03e7684946e4a44ad1b0954faff227, type: 3}
-  m_PrefabInstance: {fileID: 7469368408818211982}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &4056999011645517131 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6910173181019926981, guid: 8f03e7684946e4a44ad1b0954faff227, type: 3}
-  m_PrefabInstance: {fileID: 7469368408818211982}
-  m_PrefabAsset: {fileID: 0}
---- !u!212 &4255620149820300347 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 6676156559756279989, guid: 8f03e7684946e4a44ad1b0954faff227, type: 3}
   m_PrefabInstance: {fileID: 7469368408818211982}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &5627987165052042224 stripped
