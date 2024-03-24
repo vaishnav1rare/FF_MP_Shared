@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	/// <summary>
 	/// SpawnPoint is used by the LevelBehaviour to figure out where it can spawn things.

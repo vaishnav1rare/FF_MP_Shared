@@ -1,8 +1,6 @@
-using FusionExamples.Utility;
-using FusionHelpers;
 using UnityEngine;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	public class ReadyupIndicator : MonoBehaviour
 	{
@@ -28,7 +26,7 @@ namespace FusionExamples.Tanknarok
 			bool changed = _previousState != _direction;
 			_previousState = _direction;
 			_target = followPlayer.transform;
-			_readyText.color = followPlayer.playerMaterial.GetColor("_SilhouetteColor");
+			_readyText.color = followPlayer.PlayerMaterial.GetColor("_SilhouetteColor");
 			return changed;
 		}
 

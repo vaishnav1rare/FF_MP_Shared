@@ -1,5 +1,5 @@
 using Fusion;
-using FusionExamples.Tanknarok;
+using OneRare.FoodFury.Multiplayer;
 using UnityEngine;
 
 public class MobileInput : MonoBehaviour

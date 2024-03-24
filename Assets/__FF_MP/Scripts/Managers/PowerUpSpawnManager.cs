@@ -1,16 +1,18 @@
-using System;
 using Fusion;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class PowerUpSpawnManager : NetworkBehaviour
 {
-    [SerializeField] private GameObject boostPrefab;
-    private Transform[] powerupSpawnPoints; 
+    [Header("Powerup Settings")] [SerializeField]
+    private GameObject boostPrefab;
+
+    [SerializeField] private Transform[] powerupSpawnPoints;
     [Networked] public Vector3 PowerupPosition { get; set; }
     [Networked] public TickTimer SpawnTimer { get; set; }
+
     private ChangeDetector _changeDetector;
-    
+
     public override void Spawned()
     {
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
@@ -21,7 +23,7 @@ public class PowerUpSpawnManager : NetworkBehaviour
             SpawnNextPowerup();
         }
     }
-    
+
     public override void Render()
     {
         foreach (var change in _changeDetector.DetectChanges(this))
@@ -36,15 +38,14 @@ public class PowerUpSpawnManager : NetworkBehaviour
             }
         }
     }
-    
+
     public void SetTargetObject(Vector3 newTarget)
     {
-        PowerupPosition =  newTarget;
+        PowerupPosition = newTarget;
     }
-    
+
     public override void FixedUpdateNetwork()
     {
-        
         if (SpawnTimer.Expired(Runner))
         {
             SpawnTimer = TickTimer.None;
@@ -52,7 +53,7 @@ public class PowerUpSpawnManager : NetworkBehaviour
             SpawnNextPowerup();
         }
     }
-    
+
     public void SpawnNextPowerup()
     {
         SpawnPowerup();

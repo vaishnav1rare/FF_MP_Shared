@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	public class CountdownManager : MonoBehaviour
 	{

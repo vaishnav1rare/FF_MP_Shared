@@ -1,7 +1,7 @@
 using FusionHelpers;
 using UnityEngine;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	public abstract class AutoReleasedFx : MonoBehaviour
 	{

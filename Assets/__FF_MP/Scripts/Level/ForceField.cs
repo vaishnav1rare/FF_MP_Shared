@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	public class ForceField : MonoBehaviour
 	{

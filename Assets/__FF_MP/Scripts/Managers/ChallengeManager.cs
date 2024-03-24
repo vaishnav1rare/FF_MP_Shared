@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Fusion;
-using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -14,35 +11,35 @@ public enum ChallengeType {
 }
 
 public class ChallengeManager : NetworkBehaviour, ISceneLoadDone
-{
-      
+{ 
+    public static ChallengeManager instance;
     public event Action<ChallengeType> OnChallengeStarted;
     public event Action OnTimerEnd;
-    
+    [Header("General Settings")]
+    [SerializeField] public Transform[] orderSpawnPoints;
     [SerializeField] private GameObject orderPrefab;
-    [SerializeField] private int deliveryGoal = 3; 
+    [SerializeField] private int deliveryGoal = 3;
     [SerializeField] private int itemGoal = 5;
-    public Transform[] orderSpawnPoints;
+    
+    
+    [field: Header("Networked Properties")]
     [Networked] public string Time { get; set; } = "00:00";
     [Networked] public TickTimer MatchTimer { get; set; }
     [Networked] public int RandomIndex { get; set; }
     [Networked] public Vector3 OrderPosition { get; set; }
     [Networked] public bool IsMatchOver { get; set; }
     [Networked] public bool IsMatchStarted { get; set; } = false;
-    
+
     private bool _isChallengeActive;
     private GameUI _gameUI;
     private ChangeDetector _changeDetector;
     private float _challengeDuration = 150f;
     
-    
-    public static ChallengeManager instance;
-   private void Awake()
-   {
-       instance = this;
-   }
-    
-    
+    private void Awake()
+    {
+        instance = this;
+    }
+
     public override void Spawned()
     {
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
@@ -56,36 +53,19 @@ public class ChallengeManager : NetworkBehaviour, ISceneLoadDone
             switch (change)
             {
                 case nameof(OrderPosition):
-                {
                     SetTargetObject(OrderPosition);
                     break;
-                }
                 case nameof(RandomIndex):
-                {
                     SetRandomIndex(RandomIndex);
                     break;
-                }
                 case nameof(Time):
-                {
                     SetTime(Time);
                     break;
-                }
                 case nameof(IsMatchOver):
-                {
                     SetGameOver();
                     break;
-                }
             }
         }
-    }
-
-    void SetGameOver()
-    {
-        UIManager.Instance.ShowResult();
-    }
-    private void SetTime(string time)
-    {
-        _gameUI.UpdateTime(time);
     }
 
     public void SetTargetObject(Vector3 newTarget)
@@ -97,37 +77,28 @@ public class ChallengeManager : NetworkBehaviour, ISceneLoadDone
     {
         RandomIndex = index;
     }
+
     public void StartChallenge(ChallengeType challengeType) {
-       if ( Runner.IsSharedModeMasterClient == false)
+        if (Runner.IsSharedModeMasterClient == false)
             return;
         OnChallengeStarted?.Invoke(challengeType);
         MatchTimer = TickTimer.CreateFromSeconds(Runner, _challengeDuration);
         switch (challengeType) {
             case ChallengeType.RaceToDeliveries:
-            {
-                Invoke("StartRaceToDeliveries",2f);
+                Invoke("StartRaceToDeliveries", 2f);
                 break;
-            }
             case ChallengeType.RaceToPoints:
-            {
                 StartRaceToPoints();
                 break;
-            }
             case ChallengeType.MostPointsInTime:
-            {
                 StartMostPointsInTime();
                 break;
-            }
             case ChallengeType.RaceToCollectItems:
-            {
                 StartRaceToCollectItems();
                 break;
-            }
             default:
-            {
                 Debug.LogWarning("Unknown challenge type!");
                 break;
-            }
         }
     }
     
@@ -138,11 +109,9 @@ public class ChallengeManager : NetworkBehaviour, ISceneLoadDone
             var timeSpan = TimeSpan.FromSeconds(MatchTimer.RemainingTime(Runner).Value);
             var outPut = $"{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}";
             Time = outPut;
-            
         }
         else if (MatchTimer.Expired(Runner))
         {
-            //MatchIsOver = true;
             MatchTimer = TickTimer.None;
             OnTimerEnd?.Invoke();
             IsMatchOver = true;
@@ -151,7 +120,7 @@ public class ChallengeManager : NetworkBehaviour, ISceneLoadDone
 
     public void SpawnNextOrder()
     {
-      SpawnOrder();
+        SpawnOrder();
     }
 
     void SpawnOrder()
@@ -169,28 +138,37 @@ public class ChallengeManager : NetworkBehaviour, ISceneLoadDone
     {
         OrderPosition = orderPosition;
     }
+
     private void StartRaceToDeliveries()
     {
         SpawnOrder();
         IsMatchStarted = true;
     }
-    
 
     private void StartRaceToPoints() {
-
+        // TODO: Implement
     }
 
     private void StartMostPointsInTime() {
-
+        // TODO: Implement
     }
 
     private void StartRaceToCollectItems() {
-
+        // TODO: Implement
     }
 
-   
     public void SceneLoadDone(in SceneLoadDoneArgs sceneInfo)
     {
         Debug.Log("OnSceneLoadDone");
+    }
+    
+    private void SetGameOver()
+    {
+        UIManager.Instance.ShowResult();
+    }
+
+    private void SetTime(string time)
+    {
+        _gameUI.UpdateTime(time);
     }
 }

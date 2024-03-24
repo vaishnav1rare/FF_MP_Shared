@@ -5,7 +5,7 @@ using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	/// <summary>
 	/// Handle player input by responding to Fusion input polling, filling an input struct and then working with
@@ -13,19 +13,18 @@ namespace FusionExamples.Tanknarok
 	/// </summary>
 	public class InputController : NetworkBehaviour, INetworkRunnerCallbacks
 	{
+		public Gamepad gamepad;
+		
 		[SerializeField] private LayerMask _mouseRayMask;
 		[SerializeField] private InputAction accelerate;
 		[SerializeField] private InputAction reverse;
 		[SerializeField] private InputAction steer;
-		public static bool fetchInput = true;
-
 		private Player _player;
 		private NetworkInputData _inputData = new NetworkInputData();
-		public Gamepad gamepad;
-		
 		private uint _buttonReset;
 		private uint _buttonSample;
-
+		
+		public static bool fetchInput = true;
 		/// <summary>
 		/// Hook up to the Fusion callbacks so we can handle the input polling
 		/// </summary>
@@ -71,7 +70,7 @@ namespace FusionExamples.Tanknarok
 			gamepad = Gamepad.current;
 			
 			var userInput = new NetworkInputData();
-			if (_player!=null && _player.Object!=null && _player.stage == Player.Stage.Active)
+			if (_player!=null && _player.Object!=null && _player.CurrentStage == Player.Stage.Active)
 			{
 				userInput.Buttons = _buttonSample; 
 				_buttonReset |= _buttonSample; // This effectively delays the reset of the read button flags until next Update() in case we're ticking faster than we're rendering

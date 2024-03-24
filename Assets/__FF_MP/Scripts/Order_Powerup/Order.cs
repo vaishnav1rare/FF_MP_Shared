@@ -1,7 +1,6 @@
-using System;
-using System.Collections;
+
 using Fusion;
-using FusionExamples.Tanknarok;
+using OneRare.FoodFury.Multiplayer;
 using UnityEngine;
 using UnityEngine.UI;
 

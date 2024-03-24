@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	[RequireComponent(typeof(AudioSource))]
 	public class AudioEmitter : MonoBehaviour

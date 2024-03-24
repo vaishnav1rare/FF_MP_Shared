@@ -4,23 +4,24 @@ using FusionHelpers;
 using Tanknarok.UI;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	/// <summary>
 	/// App entry point and main UI flow management.
 	/// </summary>
 	public class App : MonoBehaviour
 	{
-		[SerializeField] private LevelManager _levelManager;
-		[SerializeField] private GameManager _gameManagerPrefab;
-		[SerializeField] private TMP_InputField _room;
-		[SerializeField] private TextMeshProUGUI _progress;
-		[SerializeField] private Panel _uiCurtain;
-		[SerializeField] private Panel _uiStart;
-		[SerializeField] private Panel _uiProgress;
-		[SerializeField] private Panel _uiRoom;
-		[SerializeField] private GameObject _uiGame;
+		[FormerlySerializedAs("_levelManager")] [SerializeField] private LevelManager levelManager;
+		[FormerlySerializedAs("_gameManagerPrefab")] [SerializeField] private GameManager gameManagerPrefab;
+		[FormerlySerializedAs("_room")] [SerializeField] private TMP_InputField room;
+		[FormerlySerializedAs("_progress")] [SerializeField] private TextMeshProUGUI progress;
+		[FormerlySerializedAs("_uiCurtain")] [SerializeField] private Panel uiCurtain;
+		[FormerlySerializedAs("_uiStart")] [SerializeField] private Panel uiStart;
+		[FormerlySerializedAs("_uiProgress")] [SerializeField] private Panel uiProgress;
+		[FormerlySerializedAs("_uiRoom")] [SerializeField] private Panel uiRoom;
+		[FormerlySerializedAs("_uiGame")] [SerializeField] private GameObject uiGame;
 
 		private FusionLauncher.ConnectionStatus _status = FusionLauncher.ConnectionStatus.Disconnected;
 		private GameMode _gameMode;
@@ -29,7 +30,7 @@ namespace FusionExamples.Tanknarok
 		private void Awake()
 		{
 			DontDestroyOnLoad(this);
-			_levelManager.onStatusUpdate = OnConnectionStatusUpdate;
+			levelManager.onStatusUpdate = OnConnectionStatusUpdate;
 		}
 
 		private void Start()
@@ -39,7 +40,7 @@ namespace FusionExamples.Tanknarok
 
 		private void Update()
 		{
-			if (_uiProgress.isShowing)
+			if (uiProgress.isShowing)
 			{
 				if (Input.GetKeyUp(KeyCode.Escape))
 				{
@@ -73,15 +74,15 @@ namespace FusionExamples.Tanknarok
 		private void SetGameMode(GameMode gamemode)
 		{
 			_gameMode = gamemode;
-			if (GateUI(_uiStart))
-				_uiRoom.SetVisible(true);
+			if (GateUI(uiStart))
+				uiRoom.SetVisible(true);
 		}
 
 		public void OnEnterRoom()
 		{
-			if (GateUI(_uiRoom))
+			if (GateUI(uiRoom))
 			{
-				FusionLauncher.Launch(_gameMode, _room.text, _gameManagerPrefab, _levelManager, OnConnectionStatusUpdate);
+				FusionLauncher.Launch(_gameMode, room.text, gameManagerPrefab, levelManager, OnConnectionStatusUpdate);
 			}
 		}
 
@@ -132,23 +133,23 @@ namespace FusionExamples.Tanknarok
 			switch (_status)
 			{
 				case FusionLauncher.ConnectionStatus.Disconnected:
-					_progress.text = "Disconnected!";
+					this.progress.text = "Disconnected!";
 					intro = true;
 					break;
 				case FusionLauncher.ConnectionStatus.Failed:
-					_progress.text = "Failed!";
+					this.progress.text = "Failed!";
 					intro = true;
 					break;
 				case FusionLauncher.ConnectionStatus.Connecting:
-					_progress.text = "Connecting";
+					this.progress.text = "Connecting";
 					progress = true;
 					break;
 				case FusionLauncher.ConnectionStatus.Connected:
-					_progress.text = "Connected";
+					this.progress.text = "Connected";
 					progress = true;
 					break;
 				case FusionLauncher.ConnectionStatus.Loading:
-					_progress.text = "Loading";
+					this.progress.text = "Loading";
 					progress = true;
 					break;
 				case FusionLauncher.ConnectionStatus.Loaded:
@@ -156,10 +157,10 @@ namespace FusionExamples.Tanknarok
 					break;
 			}
 
-			_uiCurtain.SetVisible(!running);
-			_uiStart.SetVisible(intro);
-			_uiProgress.SetVisible(progress);
-			_uiGame.SetActive(running);
+			uiCurtain.SetVisible(!running);
+			uiStart.SetVisible(intro);
+			uiProgress.SetVisible(progress);
+			uiGame.SetActive(running);
 			
 			/*if(intro)
 				MusicPlayer.instance.SetLowPassTranstionDirection( -1f);*/

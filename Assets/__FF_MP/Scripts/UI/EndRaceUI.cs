@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using FusionExamples.Tanknarok;
 using UnityEngine;
 using UnityEngine.UI;
-
+using OneRare.FoodFury.Multiplayer;
 
 public class EndRaceUI : MonoBehaviour
 {
@@ -33,7 +32,7 @@ public class EndRaceUI : MonoBehaviour
 	
 	
 	private static List<Player> GetFinishedPlayers() =>
-			Player.players
+			Player.Players
 			.OrderByDescending(x => x.OrderCount)
 			.ToList();
 	private static void ClearParent(Transform parent)

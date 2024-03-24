@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	[RequireComponent(typeof(Player))]
 	public class TankDamageVisual : MonoBehaviour

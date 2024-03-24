@@ -1,6 +1,6 @@
 using Fusion;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	public static class NetworkRunnerStaticRefs
 	{

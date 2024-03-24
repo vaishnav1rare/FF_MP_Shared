@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using Fusion;
-using FusionExamples.Tanknarok;
+using OneRare.FoodFury.Multiplayer;
 using UnityEngine;
 
 public class Powerup : NetworkBehaviour, ICollidable

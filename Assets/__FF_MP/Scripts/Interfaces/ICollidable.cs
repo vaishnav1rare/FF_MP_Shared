@@ -1,6 +1,4 @@
-
-
-using FusionExamples.Tanknarok;
+using OneRare.FoodFury.Multiplayer;
 
 public interface ICollidable 
 {

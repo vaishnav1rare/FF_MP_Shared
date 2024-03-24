@@ -1,9 +1,7 @@
-using FusionExamples.Utility;
-using FusionHelpers;
 using UnityEngine;
 using TMPro;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	public class FinalGameScoreUI : MonoBehaviour
 	{
@@ -15,7 +13,7 @@ namespace FusionExamples.Tanknarok
 		{
 			_playerName.text = $"Player {player.PlayerIndex}";
 
-			Color textColor = player.playerMaterial.GetColor("_SilhouetteColor");
+			Color textColor = player.PlayerMaterial.GetColor("_SilhouetteColor");
 			_score.color = textColor;
 			_playerName.color = textColor;
 		}

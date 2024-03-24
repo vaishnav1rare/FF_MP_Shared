@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	[CreateAssetMenu(fileName = "Tank Damage Step", menuName = "Scriptable Object/Special/Tank Damage Step", order = 1)]
 	public class TankDamageStepVariable : ScriptableObject

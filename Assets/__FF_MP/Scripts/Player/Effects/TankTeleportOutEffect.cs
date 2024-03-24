@@ -1,33 +1,35 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	public class TankTeleportOutEffect : AutoReleasedFx
 	{
-		[SerializeField] private float _duration = 5.0f;
-		[SerializeField] private Transform _dummyTankTurret;
-		[SerializeField] private Transform _dummyTankHull;
+		[FormerlySerializedAs("_duration")] [SerializeField] private float duration = 5.0f;
+		[FormerlySerializedAs("_dummyTankTurret")] [SerializeField] private Transform dummyTankTurret;
+		[FormerlySerializedAs("_dummyTankHull")] [SerializeField] private Transform dummyTankHull;
 
-		[SerializeField] private ParticleSystem _teleportEffect;
+		[FormerlySerializedAs("_teleportEffect")] [SerializeField] private ParticleSystem teleportEffect;
 
+		[FormerlySerializedAs("_audioEmitter")]
 		[Header("Audio")] 
-		[SerializeField] private AudioEmitter _audioEmitter;
+		[SerializeField] private AudioEmitter audioEmitter;
 
-		protected override float Duration => _duration;
+		protected override float Duration => duration;
 		
 		public void StartTeleport(Color color, Quaternion turretRotation, Quaternion hullRotation)
 		{
 			ColorChanger.ChangeColor(transform, color);
 			
-			_teleportEffect.Stop();
+			teleportEffect.Stop();
 			
 			/*if(_audioEmitter.isActiveAndEnabled)
 				_audioEmitter.PlayOneShot();*/
 
-			_dummyTankTurret.rotation = turretRotation;
-			_dummyTankHull.rotation = hullRotation;
+			dummyTankTurret.rotation = turretRotation;
+			dummyTankHull.rotation = hullRotation;
 
-			_teleportEffect.Play();
+			teleportEffect.Play();
 		}
 	}
 }

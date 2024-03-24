@@ -1,17 +1,18 @@
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.Serialization;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	public class MusicPlayer : MonoBehaviour
 	{
-		[SerializeField] private AudioSource _audioSource;
+		[FormerlySerializedAs("_audioSource")] [SerializeField] private AudioSource audioSource;
 		private float _currentVolume;
-		[SerializeField] private float _fadeDuration = 2f;
+		[FormerlySerializedAs("_fadeDuration")] [SerializeField] private float fadeDuration = 2f;
 		private float _fadeSpeed;
 
-		[Header("Audio Mixer")] [SerializeField]
-		private AudioMixer _mixer;
+		[FormerlySerializedAs("_mixer")] [Header("Audio Mixer")] [SerializeField]
+		private AudioMixer mixer;
 
 		private (float min, float max) _lowPassMinMax = (500f, 22000f);
 		private float _lowPassTransitionDuration = 0.5f;
@@ -19,15 +20,15 @@ namespace FusionExamples.Tanknarok
 		private float _lowPassTransitionTimer = 0;
 		private float _lowPassTransitionDirection = -1f;
 
-		private const string LOW_PASS_CUTOFF = "LowPassCutoff";
+		private const string LowPassCutoff = "LowPassCutoff";
 
-		public static MusicPlayer instance = null;
+		public static MusicPlayer Instance = null;
 
 		private void Awake()
 		{
-			if (instance == null)
+			if (Instance == null)
 			{
-				instance = this;
+				Instance = this;
 
 				Initialize();
 			}
@@ -48,8 +49,8 @@ namespace FusionExamples.Tanknarok
 			_currentVolume = 0f;
 			SetVolume();
 
-			_fadeSpeed = 1f / _fadeDuration;
-			_audioSource.Play();
+			_fadeSpeed = 1f / fadeDuration;
+			audioSource.Play();
 		}
 
 		// Update is called once per frame
@@ -69,7 +70,7 @@ namespace FusionExamples.Tanknarok
 			_lowPassTransitionTimer = Mathf.Clamp(_lowPassTransitionTimer + Time.deltaTime * _lowPassTransitionDirection, 0, _lowPassTransitionDuration);
 			float t = _lowPassTransitionTimer / _lowPassTransitionDuration;
 			float lowPassValue = Mathf.Lerp(_lowPassMinMax.min, _lowPassMinMax.max, t);
-			_mixer.SetFloat(LOW_PASS_CUTOFF, lowPassValue);
+			mixer.SetFloat(LowPassCutoff, lowPassValue);
 		}
 
 		private bool LowPassTargetReached()
@@ -85,7 +86,7 @@ namespace FusionExamples.Tanknarok
 
 		void SetVolume()
 		{
-			_audioSource.volume = _currentVolume;
+			audioSource.volume = _currentVolume;
 		}
 
 		public void SetLowPassTranstionDirection(float f)

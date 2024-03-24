@@ -4,21 +4,21 @@ using FusionHelpers;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	public class ScoreManager : MonoBehaviour
 	{
-		[FormerlySerializedAs("_scoreGamePrefab")] [SerializeField] private IntermediateLevelScoreUI _intermediateLevelScorePrefab;
-		[SerializeField] private Transform _uiScoreParent;
+		[FormerlySerializedAs("_intermediateLevelScorePrefab")] [SerializeField] private IntermediateLevelScoreUI intermediateLevelScorePrefab;
+		[FormerlySerializedAs("_uiScoreParent")] [SerializeField] private Transform uiScoreParent;
 
-		[FormerlySerializedAs("_scoreLobbyPrefab")] [SerializeField] private FinalGameScoreUI _finalGameScorePrefab;
-		[SerializeField] private Transform _lobbyScoreParent;
+		[FormerlySerializedAs("_finalGameScorePrefab")] [SerializeField] private FinalGameScoreUI finalGameScorePrefab;
+		[FormerlySerializedAs("_lobbyScoreParent")] [SerializeField] private Transform lobbyScoreParent;
 
-		[SerializeField] private float _singleDigitSpacing;
-		[SerializeField] private float _doubleDigitSpacing;
+		[FormerlySerializedAs("_singleDigitSpacing")] [SerializeField] private float singleDigitSpacing;
+		[FormerlySerializedAs("_doubleDigitSpacing")] [SerializeField] private float doubleDigitSpacing;
 
-		[SerializeField] private ParticleSystem _confetti;
-		[SerializeField] private AudioEmitter _audioEmitter;
+		[FormerlySerializedAs("_confetti")] [SerializeField] private ParticleSystem confetti;
+		[FormerlySerializedAs("_audioEmitter")] [SerializeField] private AudioEmitter audioEmitter;
 
 		private Dictionary<int, FinalGameScoreUI> _finalGameScoreUI = new ();
 		private Dictionary<PlayerRef, IntermediateLevelScoreUI> _intermediateLevelScoreUI = new Dictionary<PlayerRef, IntermediateLevelScoreUI>();
@@ -30,11 +30,11 @@ namespace FusionExamples.Tanknarok
 				Player player = (Player) fusionPlayer;
 				if (!_intermediateLevelScoreUI.TryGetValue(player.PlayerId, out IntermediateLevelScoreUI ui))
 				{
-					ui = LocalObjectPool.Acquire(_intermediateLevelScorePrefab, Vector3.zero, _intermediateLevelScorePrefab.transform.rotation, _uiScoreParent);
+					ui = LocalObjectPool.Acquire(intermediateLevelScorePrefab, Vector3.zero, intermediateLevelScorePrefab.transform.rotation, uiScoreParent);
 					ui.Initialize(player);
 					_intermediateLevelScoreUI[player.PlayerId] = ui;
 				}
-				ui.SetScore(gameManager.GetScore(player), player == gameManager.lastPlayerStanding);
+				ui.SetScore(gameManager.GetScore(player), player == gameManager.LastPlayerStanding);
 			}
 		}
 
@@ -46,12 +46,12 @@ namespace FusionExamples.Tanknarok
 				Player player = (Player) fusionPlayer;
 				if (!_finalGameScoreUI.TryGetValue(player.PlayerIndex, out FinalGameScoreUI scoreLobbyUI))
 				{
-					scoreLobbyUI = LocalObjectPool.Acquire(_finalGameScorePrefab, Vector3.zero, _finalGameScorePrefab.transform.rotation, _lobbyScoreParent);
+					scoreLobbyUI = LocalObjectPool.Acquire(finalGameScorePrefab, Vector3.zero, finalGameScorePrefab.transform.rotation, lobbyScoreParent);
 					scoreLobbyUI.SetPlayerName(player);
 					_finalGameScoreUI[player.PlayerIndex] = scoreLobbyUI;
 				}
 				scoreLobbyUI.SetScore(gameManager.GetScore(player));
-				scoreLobbyUI.ToggleCrown(player == gameManager.matchWinner);
+				scoreLobbyUI.ToggleCrown(player == gameManager.MatchWinner);
 				scoreLobbyUI.gameObject.SetActive(true);
 				playerCount++;
 			}
@@ -59,8 +59,8 @@ namespace FusionExamples.Tanknarok
 			// Organize the scores and celebrate with confetti
 			OrganizeScoreBoards(gameManager);
 
-			_confetti.transform.position = _finalGameScoreUI[gameManager.matchWinner.PlayerIndex].transform.position + Vector3.up;
-			_confetti.Play();
+			confetti.transform.position = _finalGameScoreUI[gameManager.MatchWinner.PlayerIndex].transform.position + Vector3.up;
+			confetti.Play();
 
 			//_audioEmitter.PlayOneShot();
 		}
@@ -74,7 +74,7 @@ namespace FusionExamples.Tanknarok
 			foreach (IntermediateLevelScoreUI ui in _intermediateLevelScoreUI.Values)
 				LocalObjectPool.Release(ui);
 			_intermediateLevelScoreUI.Clear();
-			_confetti.Clear();
+			confetti.Clear();
 		}
 
 		private class ScoreBoard
@@ -95,7 +95,7 @@ namespace FusionExamples.Tanknarok
 				Player player = (Player) fusionPlayer;
 				scoreBoards.Add(new ScoreBoard()
 				{
-					Spacing = (gameManager.GetScore(player) >= 10) ? _doubleDigitSpacing : _singleDigitSpacing,
+					Spacing = (gameManager.GetScore(player) >= 10) ? doubleDigitSpacing : singleDigitSpacing,
 					UI = _finalGameScoreUI[player.PlayerIndex]
 				});
 				playerCount++;

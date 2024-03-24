@@ -4,7 +4,7 @@ using Fusion;
 using FusionHelpers;
 using UnityEngine;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	public class ReadyUpManager : MonoBehaviour
 	{

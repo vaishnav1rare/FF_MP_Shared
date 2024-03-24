@@ -1,21 +1,22 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	public class ScreenShaker : MonoBehaviour
 	{
-		[Header("Rotational")] [SerializeField]
-		private float _maxYaw = 40f;
+		[FormerlySerializedAs("_maxYaw")] [Header("Rotational")] [SerializeField]
+		private float maxYaw = 40f;
 
-		[SerializeField] private float _maxPitch = 20f;
-		[SerializeField] private float _maxRoll = 10f;
+		[FormerlySerializedAs("_maxPitch")] [SerializeField] private float maxPitch = 20f;
+		[FormerlySerializedAs("_maxRoll")] [SerializeField] private float maxRoll = 10f;
 
-		[Header("Positional")] [SerializeField]
-		private float _maxOfs = 2f;
+		[FormerlySerializedAs("_maxOfs")] [Header("Positional")] [SerializeField]
+		private float maxOfs = 2f;
 
-		[Header("Settings")] [SerializeField] private float _speed = 5f;
-		[SerializeField] private float _gravity = 1f;
-		[SerializeField] private int _shakeStrength;
+		[FormerlySerializedAs("_speed")] [Header("Settings")] [SerializeField] private float speed = 5f;
+		[FormerlySerializedAs("_gravity")] [SerializeField] private float gravity = 1f;
+		[FormerlySerializedAs("_shakeStrength")] [SerializeField] private int shakeStrength;
 
 		//-----------------------------------//
 
@@ -40,9 +41,9 @@ namespace FusionExamples.Tanknarok
 
 		void Update()
 		{
-			_modifiedTime = Time.time * _speed;
+			_modifiedTime = Time.time * speed;
 			if (_trauma > 0)
-				_trauma -= Time.deltaTime * _gravity;
+				_trauma -= Time.deltaTime * gravity;
 			else
 				_trauma = 0f;
 
@@ -67,15 +68,15 @@ namespace FusionExamples.Tanknarok
 		{
 			_shake = Mathf.Pow(_trauma, 2);
 			_finalRotationShake = CalculateRotationalShake();
-			_finalPositionalShake = CalculatePotitionalShake() * _shakeStrength;
+			_finalPositionalShake = CalculatePotitionalShake() * shakeStrength;
 		}
 
 		//Calculate the rotational shake amount
 		Quaternion CalculateRotationalShake()
 		{
-			float yaw = (_maxYaw * _shake * GetPerlinNoise(0)) * _shakeStrength;
-			float pitch = (_maxPitch * _shake * GetPerlinNoise(1)) * _shakeStrength;
-			float roll = (_maxRoll * _shake * GetPerlinNoise(2)) * _shakeStrength;
+			float yaw = (maxYaw * _shake * GetPerlinNoise(0)) * shakeStrength;
+			float pitch = (maxPitch * _shake * GetPerlinNoise(1)) * shakeStrength;
+			float roll = (maxRoll * _shake * GetPerlinNoise(2)) * shakeStrength;
 
 			return Quaternion.Euler(yaw, pitch, roll);
 		}
@@ -83,9 +84,9 @@ namespace FusionExamples.Tanknarok
 		//Calculate the positional shake amount
 		Vector3 CalculatePotitionalShake()
 		{
-			float offsetX = _maxOfs * _shake * GetPerlinNoise(3);
-			float offsetY = _maxOfs * _shake * GetPerlinNoise(4);
-			float offsetZ = _maxOfs * _shake * GetPerlinNoise(5);
+			float offsetX = maxOfs * _shake * GetPerlinNoise(3);
+			float offsetY = maxOfs * _shake * GetPerlinNoise(4);
+			float offsetZ = maxOfs * _shake * GetPerlinNoise(5);
 
 			return new Vector3(offsetX, offsetY, offsetZ);
 		}

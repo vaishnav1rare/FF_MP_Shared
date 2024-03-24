@@ -4,7 +4,7 @@ using FusionHelpers;
 using UnityEngine;
 using TMPro;
 
-namespace FusionExamples.Tanknarok
+namespace OneRare.FoodFury.Multiplayer
 {
 	public class IntermediateLevelScoreUI : MonoBehaviour
 	{
@@ -15,7 +15,7 @@ namespace FusionExamples.Tanknarok
 
 		public void Initialize(Player player)
 		{
-			Color scoreColor = player.playerMaterial.GetColor("_SilhouetteColor");
+			Color scoreColor = player.PlayerMaterial.GetColor("_SilhouetteColor");
 			_score.color = scoreColor;
 		}
 
