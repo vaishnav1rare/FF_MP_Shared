@@ -23,7 +23,7 @@ public class Powerup : NetworkBehaviour, ICollidable
     }
     public void Collide(Player player)
     {
-        player.GiveBoost();
+        player.playerMovementHandler.GiveBoost();
         
         if ( Runner.IsSharedModeMasterClient ) {
             Runner.Despawn(Object);
