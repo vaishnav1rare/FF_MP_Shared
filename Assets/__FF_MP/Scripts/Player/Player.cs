@@ -152,9 +152,13 @@ namespace OneRare.FoodFury.Multiplayer
 
             HandleInputs();
 
-            if (ChallengeManager.instance)
+            if (ChallengeManager.instance != null)
             {
                 _targetOrderTransorm = ChallengeManager.instance.OrderPosition;
+                if (ChallengeManager.instance.IsMatchOver)
+                {
+                    CurrentStage = Stage.Dead;
+                }
             }
         }
 
