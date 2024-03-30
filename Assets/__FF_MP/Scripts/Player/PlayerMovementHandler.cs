@@ -59,8 +59,6 @@ public class PlayerMovementHandler : NetworkBehaviour
 	    if (IsGrounded)
 	    {
 		    GroundResistance = hit.collider.material.dynamicFriction;
-		    
-		    Debug.Log(hit.collider.name+" |GR: "+GroundResistance);
 		    model.transform.rotation = Quaternion.Lerp(
 			    model.transform.rotation,
 			    Quaternion.FromToRotation(model.transform.up * 2, hit.normal) * model.transform.rotation,

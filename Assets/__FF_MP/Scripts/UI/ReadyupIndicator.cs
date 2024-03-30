@@ -26,7 +26,7 @@ namespace OneRare.FoodFury.Multiplayer
 			bool changed = _previousState != _direction;
 			_previousState = _direction;
 			_target = followPlayer.transform;
-			_readyText.color = followPlayer.PlayerMaterial.GetColor("_SilhouetteColor");
+			_readyText.color = followPlayer.PlayerMaterial.GetColor("_Color");
 			return changed;
 		}
 
