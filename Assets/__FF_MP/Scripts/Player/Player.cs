@@ -69,7 +69,7 @@ namespace OneRare.FoodFury.Multiplayer
         private NetworkInputData _oldInput;
         public static readonly List<Player> Players = new List<Player>();
         public event Action<int> OnOrderCountChanged;
-
+        public event Action<int> OnBoosterTimeChanged; 
         public enum Stage
         {
             New,
@@ -110,6 +110,7 @@ namespace OneRare.FoodFury.Multiplayer
             {
                 SetUpLocalPlayer();
             }
+            playerMovementHandler.Initialize(this);
         }
 
         private void Update()
@@ -181,6 +182,11 @@ namespace OneRare.FoodFury.Multiplayer
             //changed.OnHealthChanged?.Invoke(changed.Health);
         }
 
+        public void OnBoosterTimeUpdated(int timeLeft)
+        {
+           OnBoosterTimeChanged?.Invoke(timeLeft);
+        }
+        
         public void ToggleReady()
         {
             Debug.Log("PlayerReady: " + Ready);

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using OneRare.FoodFury.Multiplayer;
 using UnityEngine;
@@ -19,7 +20,7 @@ public class GameUI : MonoBehaviour
 	[SerializeField] private Text healthText;
 	[SerializeField] private Text playerNameText;
 	[SerializeField] private Image playerIcon;
-	
+	[SerializeField] private Text boostTimeText;
 	private bool _startedCountdown;
 	
 	public void Init(Player player)
@@ -29,6 +30,15 @@ public class GameUI : MonoBehaviour
 			//AudioManager.Play("coinSFX", AudioManager.MixerTarget.SFX);
 			coinCount.text = $"{count:00}";
 		};
+		player.OnBoosterTimeChanged += time =>
+		{
+			var timeSpan = TimeSpan.FromSeconds(time);
+			var outPut = $"{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}";
+			
+			boostTimeText.text = outPut;
+
+		};
+
 	}
 	
 	public void HideIntro()

@@ -1,3 +1,4 @@
+using System;
 using Fusion;
 using OneRare.FoodFury.Multiplayer;
 using UnityEngine;
@@ -33,6 +34,7 @@ public class PlayerMovementHandler : NetworkBehaviour
     [Networked] public float AppliedSpeed { get; set; }
     [Networked] private float SteerAmount { get; set; }
     public NetworkBool IsGrounded { get; set; }
+    private Player _player = null;
     
     private CapsuleCollider _collider;
     public override void Spawned()
@@ -44,7 +46,10 @@ public class PlayerMovementHandler : NetworkBehaviour
     {
 	    _collider = GetComponentInChildren<CapsuleCollider>();
     }
-    
+    public void Initialize(Player player)
+    {
+	    _player = player;
+    }
 
     private void Update()
     {
@@ -200,10 +205,11 @@ public class PlayerMovementHandler : NetworkBehaviour
     public void GiveBoost()
     {
 	    if (BoostEndTick == -1) BoostEndTick = Runner.Tick;
-	    BoostEndTick += (int) (20f / Runner.DeltaTime);
+	    BoostEndTick += (int) (30f / Runner.DeltaTime);
     }
     public void Boost()
     {
+	    _player.OnBoosterTimeUpdated(Convert.ToInt32(BoostTime));
 	    if (BoostTime > 0)
 	    {
 		    MaxSpeed = maxSpeedBoosting;

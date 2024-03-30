@@ -10,12 +10,10 @@ public class Powerup : NetworkBehaviour, ICollidable
     public override void Spawned()
     {
         _powerUpSpawnManager = FindObjectOfType<PowerUpSpawnManager>();
-        Debug.Log("Booster Spawned");
         transform.position = _powerUpSpawnManager.PowerupPosition;
     }
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Collected: "+other.gameObject.name);
         if (other.gameObject.TryGetComponent(out Player player))
         {
             Collide(player);
