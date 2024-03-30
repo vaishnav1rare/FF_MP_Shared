@@ -124,8 +124,10 @@ public class Order : NetworkBehaviour,ICollidable
             if (currentWaitTime <= 0f)
             {
                 // Order collection complete
+            
                 if (Player)
                 {
+                    UIManager.Instance.ShowOrderCollected(Player.Username.ToString());
                     Player.OrderCount++;
                     if (Runner.IsSharedModeMasterClient)
                     {

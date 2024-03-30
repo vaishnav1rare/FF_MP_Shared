@@ -6,6 +6,8 @@ public class UIManager : MonoBehaviour
     public EndRaceUI endRaceUI { get; private set; }
 
     public EndRaceUI endRaceUIPrefab;
+    private OrderCollectedItem orderCollectedItem;
+    public OrderCollectedItem orderCollectedPrefab;
     // Start is called before the first frame update
     
     private void Awake()
@@ -20,6 +22,12 @@ public class UIManager : MonoBehaviour
         }
         
         DontDestroyOnLoad(this);
+    }
+
+    public void ShowOrderCollected(string playerName)
+    {
+        orderCollectedItem = Instantiate(orderCollectedPrefab);
+        orderCollectedItem.SetResult(playerName);
     }
 
     public void ShowResult()

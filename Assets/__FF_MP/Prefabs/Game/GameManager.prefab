@@ -175,7 +175,7 @@ MonoBehaviour:
   _playerRefByIndex:
     _items: []
   _forceField: {fileID: 6446963794467339659}
-  _currentPlayState: 0
+  _CurrentPlayState: 0
 --- !u!114 &1980378070180654136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,6 +189,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   endRaceUIPrefab: {fileID: 8845968426697940815, guid: 18ed7d9b54543bb4897c58396edeb360, type: 3}
+  orderCollectedPrefab: {fileID: 8019782450471873023, guid: 28441d4ed0bb74b4c9cf5a6afc24a0ea, type: 3}
 --- !u!1 &2456724581877430572
 GameObject:
   m_ObjectHideFlags: 0
