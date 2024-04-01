@@ -202,8 +202,13 @@ public class PlayerMovementHandler : NetworkBehaviour
     // boost
     
     private float BoostTime => BoostEndTick == -1 ? 0f : (BoostEndTick - Runner.Tick) * Runner.DeltaTime;
+    private int _boostCount = 0;
     public void GiveBoost()
     {
+	    if (_boostCount > 0)
+		    return;
+	    
+	    _boostCount++;
 	    if (BoostEndTick == -1) BoostEndTick = Runner.Tick;
 	    BoostEndTick += (int) (30f / Runner.DeltaTime);
     }
