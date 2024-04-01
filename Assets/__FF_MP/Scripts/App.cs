@@ -26,7 +26,7 @@ namespace OneRare.FoodFury.Multiplayer
 		private FusionLauncher.ConnectionStatus _status = FusionLauncher.ConnectionStatus.Disconnected;
 		private GameMode _gameMode;
 		private int _nextPlayerIndex;
-
+		private string _roomName;
 		private void Awake()
 		{
 			DontDestroyOnLoad(this);
@@ -82,8 +82,20 @@ namespace OneRare.FoodFury.Multiplayer
 		{
 			if (GateUI(uiRoom))
 			{
+				_roomName = room.text;
 				FusionLauncher.Launch(_gameMode, room.text, gameManagerPrefab, levelManager, OnConnectionStatusUpdate);
 			}
+		}
+
+		public void ReEnterRoom()
+		{
+			NetworkRunner runner = FindObjectOfType<NetworkRunner>();
+			if (runner != null && !runner.IsShutdown)
+			{
+				// Calling with destroyGameObject false because we do this in the OnShutdown callback on FusionLauncher
+				runner.Shutdown(false);
+			}
+			//FusionLauncher.Launch(_gameMode, _roomName, gameManagerPrefab, levelManager, OnConnectionStatusUpdate);
 		}
 
 		/// <summary>

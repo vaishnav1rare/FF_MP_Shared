@@ -9,9 +9,18 @@ public class EndRaceUI : MonoBehaviour
 	public PlayerResultItem resultItemPrefab;
 	public GameObject resultsContainer;
 	public Button continueEndButton;
+
+	private App _app;
 	public void Init()
 	{
-		//continueEndButton.onClick.AddListener(() => LevelManager.LoadMenu());
+		_app = FindObjectOfType<App>();
+		continueEndButton.onClick.AddListener(ReEnterRoom);
+	}
+
+	void ReEnterRoom()
+	{
+		_app.ReEnterRoom();
+		Destroy(gameObject);
 	}
 	public void RedrawResultsList()
 	{

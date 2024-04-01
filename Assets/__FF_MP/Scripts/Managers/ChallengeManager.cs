@@ -33,7 +33,7 @@ public class ChallengeManager : NetworkBehaviour, ISceneLoadDone
     private bool _isChallengeActive;
     private GameUI _gameUI;
     private ChangeDetector _changeDetector;
-    private float _challengeDuration = 150f;
+    private float _challengeDuration = 180f;
     
     private void Awake()
     {
