@@ -1,6 +1,7 @@
 using UnityEngine;
 using Fusion;
 using FusionHelpers;
+using UnityEngine.SceneManagement;
 
 namespace OneRare.FoodFury.Multiplayer
 {

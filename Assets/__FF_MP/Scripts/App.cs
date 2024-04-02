@@ -95,6 +95,7 @@ namespace OneRare.FoodFury.Multiplayer
 				// Calling with destroyGameObject false because we do this in the OnShutdown callback on FusionLauncher
 				runner.Shutdown(false);
 			}
+			//UpdateUI();
 			//FusionLauncher.Launch(_gameMode, _roomName, gameManagerPrefab, levelManager, OnConnectionStatusUpdate);
 		}
 

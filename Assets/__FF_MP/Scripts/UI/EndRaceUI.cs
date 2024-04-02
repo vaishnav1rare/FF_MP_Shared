@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using Fusion;
 using UnityEngine;
 using UnityEngine.UI;
 using OneRare.FoodFury.Multiplayer;
+using UnityEngine.SceneManagement;
 
 public class EndRaceUI : MonoBehaviour
 {
@@ -15,12 +17,31 @@ public class EndRaceUI : MonoBehaviour
 	{
 		_app = FindObjectOfType<App>();
 		continueEndButton.onClick.AddListener(ReEnterRoom);
+		DontDestroyOnLoad(gameObject);
 	}
 
 	void ReEnterRoom()
 	{
-		_app.ReEnterRoom();
+		int c = SceneManager.sceneCount;
+		for (int i = 0; i < c; i++) {
+			Scene scene = SceneManager.GetSceneAt (i);
+			SceneManager.UnloadSceneAsync (scene);
+			/*if (scene.buildIndex != 0) {
+				SceneManager.UnloadSceneAsync (scene);
+			}*/
+		}
+
+		SceneManager.LoadScene(0);
 		Destroy(gameObject);
+		
+
+		GameObject[] gameObjects = FindObjectsOfType<GameObject>();
+		foreach (GameObject GO in gameObjects)
+		{
+			Destroy(GO);
+		}
+		GameManager gameManager = FindObjectOfType<GameManager>();
+		gameManager.Restart(ShutdownReason.Ok);
 	}
 	public void RedrawResultsList()
 	{
