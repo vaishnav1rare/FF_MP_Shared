@@ -66,15 +66,7 @@ public class Order : NetworkBehaviour,ICollidable
         IsCollecting = value;
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.TryGetComponent(out Player player))
-        {
-            StartCoroutine(CollectOrderCoroutine(player));
-        }
-       
-    }
-
+    
     private IEnumerator CollectOrderCoroutine(Player player)
     {
         IsCollecting = true;
@@ -92,7 +84,6 @@ public class Order : NetworkBehaviour,ICollidable
                 yield break; // Exit coroutine
             }
             
-           
             TimeInsideTrigger += Time.deltaTime;
             yield return null;
         }
@@ -110,31 +101,23 @@ public class Order : NetworkBehaviour,ICollidable
 
         IsCollecting = false;
     }
-    private void OnTriggerExit(Collider other)
-    {
-        Debug.Log("UnCollected: "+other.gameObject.name);
-        if (other.gameObject.TryGetComponent(out Player player))
-        {
-            IsCollecting = false;
-            Player = null;
-            if (loadingIndicator != null)
-            {
-                loadingIndicator.fillAmount = 1; // Reset fill amount
-            }
-        }
-    }
     
     public void Collide(Player player)
     {
-        if (IsCollecting || Player != null)
+        if (!IsCollecting && Player == null)
         {
-            Debug.Log("Already Being Collected");
+            StartCoroutine(CollectOrderCoroutine(player));
         }
     }
 
     public void UnCollide(Player player)
     {
-        Debug.Log("Already Being Collected");
+        IsCollecting = false;
+        Player = null;
+        if (loadingIndicator != null)
+        {
+            loadingIndicator.fillAmount = 1; // Reset fill amount
+        }
     }
     
 }

@@ -290,6 +290,20 @@ namespace OneRare.FoodFury.Multiplayer
                 collidable.Collide(this);
             }
         }
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.gameObject.TryGetComponent(out ICollidable collidable))
+            {
+                collidable.Collide(this);
+            }
+        }
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.gameObject.TryGetComponent(out Order order))
+            {
+                order.UnCollide(this);
+            }
+        }
 
         public void Collide(Player player)
         {

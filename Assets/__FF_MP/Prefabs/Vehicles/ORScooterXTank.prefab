@@ -1726,6 +1726,8 @@ GameObject:
   - component: {fileID: 8455853267459012595}
   - component: {fileID: 6351709247589042195}
   - component: {fileID: 3070308561598135358}
+  - component: {fileID: 4961232972879729820}
+  - component: {fileID: 4452272979249138599}
   m_Layer: 8
   m_Name: ORScooterXTank
   m_TagString: Untagged
@@ -1773,6 +1775,7 @@ MonoBehaviour:
   - {fileID: 868463730390139289}
   - {fileID: 6351709247589042195}
   - {fileID: 3070308561598135358}
+  - {fileID: 4452272979249138599}
 --- !u!114 &-3098922383743760179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2141,6 +2144,44 @@ MonoBehaviour:
   _MaxSpeed: 0
   _BoostEndTick: -1
   _AppliedSpeed: 0
+--- !u!114 &4961232972879729820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7917003752575662290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1014831617, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Type: 1
+  SphereRadius: 0
+  CapsuleRadius: 0
+  BoxExtents: {x: 0.5, y: 0.5, z: 1.6}
+  CapsuleExtents: 0
+  Offset: {x: 0, y: 0, z: 0}
+  Root: {fileID: 0}
+  GizmosColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+--- !u!114 &4452272979249138599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7917003752575662290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1039544458, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Config: 3
+  BroadRadius: 1
+  Offset: {x: 0, y: 0, z: 0}
+  GizmosColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  Hitboxes:
+  - {fileID: 4961232972879729820}
 --- !u!1 &8202694550529234273
 GameObject:
   m_ObjectHideFlags: 0
@@ -2181,6 +2222,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9097469178900222328}
+  - component: {fileID: 5109295308803917092}
   m_Layer: 0
   m_Name: OR_Scooter
   m_TagString: Untagged
@@ -2206,6 +2248,27 @@ Transform:
   - {fileID: 5097727341707734566}
   m_Father: {fileID: 7911653039066033918}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &5109295308803917092
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8433945400198155202}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.5, y: 3, z: 3.5}
+  m_Center: {x: 0, y: 0.66, z: 0}
 --- !u!1 &8551120633902261109
 GameObject:
   m_ObjectHideFlags: 0
