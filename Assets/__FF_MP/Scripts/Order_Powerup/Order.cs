@@ -1,4 +1,5 @@
 
+using System.Collections;
 using Fusion;
 using OneRare.FoodFury.Multiplayer;
 using UnityEngine;
@@ -13,6 +14,7 @@ public class Order : NetworkBehaviour,ICollidable
     private ChangeDetector _changeDetector;
     [Networked] public bool IsCollecting { get; set; }
     [Networked] public Player Player{ get; set; }
+    [Networked] public float TimeInsideTrigger { get; set; }
     public override void Spawned()
     {
         base.Spawned();
@@ -36,10 +38,25 @@ public class Order : NetworkBehaviour,ICollidable
                     SetPlayer(Player);
                     break;
                 }
+                case nameof(TimeInsideTrigger):
+                {
+                    SetTimeInsideTrigger(TimeInsideTrigger);
+                    break;
+                }
             }
         }
-    }
 
+        if (!IsCollecting)
+            loadingIndicator.fillAmount = 1f;
+        else
+        {
+            loadingIndicator.fillAmount = TimeInsideTrigger / 2f;
+        }
+    }
+    void SetTimeInsideTrigger(float time)
+    {
+        TimeInsideTrigger = time;
+    }
     void SetPlayer(Player player)
     {
         Player = player;
@@ -51,96 +68,73 @@ public class Order : NetworkBehaviour,ICollidable
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Collected: "+other.gameObject.name);
-        if(IsCollecting || Player !=null)
-        {
-            Debug.Log("Already Being Collected");
-            return;
-        }
-            
         if (other.gameObject.TryGetComponent(out Player player))
         {
-            Collide(player);
+            StartCoroutine(CollectOrderCoroutine(player));
         }
+       
     }
 
+    private IEnumerator CollectOrderCoroutine(Player player)
+    {
+        IsCollecting = true;
+        // Wait for 2 seconds
+        TimeInsideTrigger = 0f;
+        Color materialColor = orderMaterial.color;
+        materialColor.a = 0.5f; // Adjust alpha value to make translucent
+        orderMaterial.color = materialColor;
+        
+        while (TimeInsideTrigger < 2f)
+        {
+            // Check if the player has left the trigger prematurely
+            if (!IsCollecting)
+            {
+                yield break; // Exit coroutine
+            }
+            
+           
+            TimeInsideTrigger += Time.deltaTime;
+            yield return null;
+        }
+        UIManager.Instance.ShowOrderCollected(player.Username.ToString());
+        player.OrderCount++;
+
+        // Check if the current client is the master client
+        if (Runner.IsSharedModeMasterClient)
+        {
+            //IsCollecting = false;
+            Player = null;
+            Runner.Despawn(Object);
+            ChallengeManager.instance.SpawnNextOrder();
+        }
+
+        IsCollecting = false;
+    }
     private void OnTriggerExit(Collider other)
     {
         Debug.Log("UnCollected: "+other.gameObject.name);
         if (other.gameObject.TryGetComponent(out Player player))
         {
-            UnCollide(player);
+            IsCollecting = false;
+            Player = null;
+            if (loadingIndicator != null)
+            {
+                loadingIndicator.fillAmount = 1; // Reset fill amount
+            }
         }
     }
     
     public void Collide(Player player)
     {
-
         if (IsCollecting || Player != null)
         {
             Debug.Log("Already Being Collected");
         }
-        else
-        {
-            IsCollecting = true;
-            Player = player;
-            Color materialColor = orderMaterial.color;
-            materialColor.a = 0.5f; // Adjust alpha value to make translucent
-            orderMaterial.color = materialColor;
-            currentWaitTime = totalWaitTime;
-            if (loadingIndicator != null)
-            {
-                loadingIndicator.fillAmount = 1; // Reset fill amount
-            }
-            //StartCoroutine(CollectOrderCoroutine(vehicle));
-        }
-        
     }
 
     public void UnCollide(Player player)
     {
-        IsCollecting = false;
-        //StopCoroutine(CollectOrderCoroutine(vehicle));
-        Player = null;
-        if (loadingIndicator != null)
-        {
-            loadingIndicator.fillAmount = 1; // Reset fill amount
-        }
-        
+        Debug.Log("Already Being Collected");
     }
-    private void Update()
-    {
-        if (IsCollecting && currentWaitTime > 0f)
-        {
-            // Update radial UI loading indicator gradually
-            // Calculate the elapsed percentage of time
-            float elapsedPercentage = 1f - (currentWaitTime / totalWaitTime);
-
-            // Update radial UI loading indicator
-            loadingIndicator.fillAmount = elapsedPercentage;
-
-            currentWaitTime -= Time.deltaTime;
-
-            if (currentWaitTime <= 0f)
-            {
-                // Order collection complete
-            
-                if (Player)
-                {
-                    UIManager.Instance.ShowOrderCollected(Player.Username.ToString());
-                    Player.OrderCount++;
-                    if (Runner.IsSharedModeMasterClient)
-                    {
-                        IsCollecting = false;
-                        Player = null;
-                        Runner.Despawn(Object);
-                        ChallengeManager.instance.SpawnNextOrder();
-                    }
-                }
-            }
-        }
-        
-    }
-
     
 }
