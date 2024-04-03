@@ -22,6 +22,7 @@ public class Order : NetworkBehaviour,ICollidable
         transform.position = ChallengeManager.instance.OrderPosition;
         currentWaitTime = totalWaitTime;
     }
+
     public override void Render()
     {
         foreach (var change in _changeDetector.DetectChanges(this))
@@ -46,13 +47,45 @@ public class Order : NetworkBehaviour,ICollidable
             }
         }
 
-        if (!IsCollecting)
+        /*if (!IsCollecting)
             loadingIndicator.fillAmount = 1f;
         else
         {
             loadingIndicator.fillAmount = TimeInsideTrigger / 2f;
+        }*/
+
+        if (IsCollecting && Player != null && currentWaitTime > 0f)
+        {
+            float elapsedPercentage = 1f - (currentWaitTime / totalWaitTime);
+            loadingIndicator.fillAmount = elapsedPercentage;
+
+            currentWaitTime -= Time.deltaTime;
+
+            if (currentWaitTime <= 0f)
+            {
+                // Order collection complete
+                if (Player != null)
+                {
+                    Player.OrderCount++;
+                    UIManager.Instance.ShowOrderCollected(Player.Username.ToString());
+                    if (Runner.IsSharedModeMasterClient)
+                    {
+                        IsCollecting = false;
+                        Player = null;
+                        Runner.Despawn(Object);
+                        ChallengeManager.instance.SpawnNextOrder();
+                    }
+                }
+            }
+        }
+        else
+        {
+            currentWaitTime = totalWaitTime;
+            IsCollecting = false;
+            Player = null;
         }
     }
+
     void SetTimeInsideTrigger(float time)
     {
         TimeInsideTrigger = time;
@@ -67,7 +100,7 @@ public class Order : NetworkBehaviour,ICollidable
     }
 
     
-    private IEnumerator CollectOrderCoroutine(Player player)
+    /*private IEnumerator CollectOrderCoroutine(Player player)
     {
         IsCollecting = true;
         // Wait for 2 seconds
@@ -101,13 +134,26 @@ public class Order : NetworkBehaviour,ICollidable
 
         IsCollecting = false;
     }
+    */
     
     public void Collide(Player player)
     {
+        if(IsCollecting || Player != null)
+            return;
         if (!IsCollecting && Player == null)
         {
-            StartCoroutine(CollectOrderCoroutine(player));
+            IsCollecting = true;
+            Player = player;
+            Color materialColor = orderMaterial.color;
+            materialColor.a = 0.5f; // Adjust alpha value to make translucent
+            orderMaterial.color = materialColor;
+            currentWaitTime = totalWaitTime;
+            if (loadingIndicator != null)
+            {
+                loadingIndicator.fillAmount = 1; // Reset fill amount
+            }
         }
+        
     }
 
     public void UnCollide(Player player)
