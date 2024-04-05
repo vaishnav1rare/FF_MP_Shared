@@ -1,10 +1,12 @@
 using System;
 using Fusion;
+using Fusion.Addons.SimpleKCC;
 using OneRare.FoodFury.Multiplayer;
 using UnityEngine;
 
 public class PlayerMovementHandler : NetworkBehaviour
 {
+	[SerializeField] private SimpleKCC kcc;
 	[SerializeField] private TrailRenderer primaryWheel;
 	[SerializeField] private Rigidbody rigidbody;
 	[Header("---Movement")]
@@ -40,6 +42,7 @@ public class PlayerMovementHandler : NetworkBehaviour
     public override void Spawned()
     {
 	    MaxSpeed = maxSpeedNormal;
+	    
     }
 
     private void Awake()
@@ -87,20 +90,47 @@ public class PlayerMovementHandler : NetworkBehaviour
 	    {
 		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);
 	    }
-		
+	   
+	    Quaternion rotation = transform.rotation;
+	    rotation.eulerAngles = new Vector3(0, rotation.eulerAngles.y, rotation.eulerAngles.z);
+	    transform.rotation = rotation;
+	    
+	    Vector3 localDirection = new Vector3(0, 0, AppliedSpeed );
+	    Vector3 worldDirection = kcc.transform.TransformDirection(localDirection);
+	    kcc.Move(worldDirection * Runner.DeltaTime );
+	    
+	    /*if (input.IsAccelerate)
+	    {
+		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, MaxSpeed, acceleration * Runner.DeltaTime);
+	    }
+	    else if (input.IsReverse)
+	    {
+		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, -reverseSpeed, acceleration * Runner.DeltaTime);
+	    }
+	    else
+	    {
+		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);
+	    }
+
 	    var resistance = 1 - (IsGrounded ? GroundResistance : 0);
 	    if (resistance < 1)
 	    {
 		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, AppliedSpeed * resistance, Runner.DeltaTime * (_isDrifting ? 8 : 2));
 	    }
-			
+
 	    var vel = (rigidbody.rotation * Vector3.forward) * AppliedSpeed;
 	    vel.y = rigidbody.velocity.y;
 	    rigidbody.velocity = vel;
-			
+
 	    _currentSpeed = rigidbody.velocity.magnitude;
 	    _currentSpeed01 = _currentSpeed / MaxSpeed;
-	    if (_currentSpeed < _inputDeadZoneValue) _currentSpeed01 = _currentSpeed = 0;
+	    if (_currentSpeed < _inputDeadZoneValue) _currentSpeed01 = _currentSpeed = 0;*/
+	    
+	    var resistance = 1 - (IsGrounded ? GroundResistance : 0);
+	    if (resistance < 1)
+	    {
+		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, AppliedSpeed * resistance, Runner.DeltaTime * (_isDrifting ? 8 : 2));
+	    }
     }
 
     //Steer
@@ -109,7 +139,7 @@ public class PlayerMovementHandler : NetworkBehaviour
     private bool _isDrifting;
     public void Steer(NetworkInputData input)
     {
-	    var steerTarget = input.Steer * _currentSpeed01 * 45f;;
+	    var steerTarget = input.Steer * AppliedSpeed/3;;
 			
 	    if (SteerAmount != steerTarget)
 	    {
@@ -130,14 +160,22 @@ public class PlayerMovementHandler : NetworkBehaviour
 
 	    if (_canDrive)
 	    {
-		    var rot = Quaternion.Euler(
+		    /*Vector3 localDirection = new Vector3(SteerAmount, 0, AppliedSpeed);
+		    Vector3 worldDirection = kcc.transform.TransformDirection(localDirection);
+		    kcc.Move(worldDirection * Runner.DeltaTime );*/
+		    //float rotationAmount =SteerAmount * Runner.DeltaTime;
+			
+// Apply rotation to the character's transform
+		    //transform.Rotate(0, rotationAmount, 0);
+		    kcc.AddLookRotation(0,SteerAmount * Runner.DeltaTime);
+		    /*var rot = Quaternion.Euler(
 			    Vector3.Lerp(
 				    rigidbody.rotation.eulerAngles,
 				    rigidbody.rotation.eulerAngles + Vector3.up * SteerAmount,
 				    3 * Runner.DeltaTime)
 		    );
 
-		    rigidbody.MoveRotation(rot);
+		    rigidbody.MoveRotation(rot);*/
 	    }
 
 	    HandleTilting(SteerAmount);
@@ -154,18 +192,18 @@ public class PlayerMovementHandler : NetworkBehaviour
     private void HandleTilting(float steerInput)
     {
 	    SetMaxBodyAngle();
-	    _si = steerInput / 40f;
+	    _si = steerInput / 20f;
 			
 	    if (body)
 	    {
-		    _bodyAngle = Mathf.Lerp(_bodyAngle, Mathf.Clamp(_si * maxBodyTileAngle, -maxBodyTileAngle, maxBodyTileAngle), Runner.DeltaTime * 10);
+		    _bodyAngle = Mathf.Lerp(_bodyAngle, Mathf.Clamp(_si * maxBodyTileAngle, -maxBodyTileAngle, maxBodyTileAngle), Runner.DeltaTime * 12);
 		    _currentRotationBody = body.eulerAngles;
-		    body.eulerAngles = new Vector3(_currentRotationBody.x, _currentRotationBody.y, -_bodyAngle);
+		    body.eulerAngles = new Vector3(_currentRotationBody.x, _currentRotationBody.y, -_bodyAngle*2);
 	    }
 
 	    if (handle)
 	    {
-		    _handleAngle = Mathf.Lerp(_handleAngle, Mathf.Clamp(_si * 40, -35, 35), Runner.DeltaTime * 10);
+		    _handleAngle = Mathf.Lerp(_handleAngle, Mathf.Clamp(_si * 40, -35, 35), Runner.DeltaTime * 12);
 		    _currentRotationHandle = handle.localEulerAngles;
 		    handle.localEulerAngles = new Vector3(_currentRotationHandle.x, _currentRotationHandle.y, _handleAngle + 180);
 	    }

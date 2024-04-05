@@ -1718,16 +1718,14 @@ GameObject:
   m_Component:
   - component: {fileID: 7911653039066033918}
   - component: {fileID: 694125818870963258}
+  - component: {fileID: 1549671491458988442}
   - component: {fileID: -3098922383743760179}
   - component: {fileID: 868463730390139289}
   - component: {fileID: 2039004788954265569}
   - component: {fileID: 8616232291554802440}
-  - component: {fileID: 1549671491458988442}
   - component: {fileID: 8455853267459012595}
-  - component: {fileID: 6351709247589042195}
   - component: {fileID: 3070308561598135358}
-  - component: {fileID: 4961232972879729820}
-  - component: {fileID: 4452272979249138599}
+  - component: {fileID: 8649103854165161622}
   m_Layer: 8
   m_Name: ORScooterXTank
   m_TagString: Untagged
@@ -1773,9 +1771,35 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: -3098922383743760179}
   - {fileID: 868463730390139289}
-  - {fileID: 6351709247589042195}
   - {fileID: 3070308561598135358}
-  - {fileID: 4452272979249138599}
+  - {fileID: 8649103854165161622}
+--- !u!54 &1549671491458988442
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7917003752575662290}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.01
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 1
+  m_Constraints: 112
+  m_CollisionDetection: 3
 --- !u!114 &-3098922383743760179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1790,6 +1814,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _eventRelayPrefab: {fileID: 6216721781973090943, guid: b5b51c12e1e6446af8ad4a576d68eef6, type: 3}
   playerMovementHandler: {fileID: 3070308561598135358}
+  kcc: {fileID: 8649103854165161622}
   hudPrefab: {fileID: 7197810723918016650, guid: 2562ff4bafb44b549b9bdc0de26ba288, type: 3}
   visualParent: {fileID: 9097469178900222328}
   playerMaterials:
@@ -2041,33 +2066,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47e89bfba66d3c14585fec1776a5a7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!54 &1549671491458988442
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7917003752575662290}
-  serializedVersion: 4
-  m_Mass: 5
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 1
-  m_Constraints: 112
-  m_CollisionDetection: 3
 --- !u!136 &8455853267459012595
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2091,28 +2089,6 @@ CapsuleCollider:
   m_Height: 3.8
   m_Direction: 2
   m_Center: {x: 0, y: -0.1, z: 0}
---- !u!114 &6351709247589042195
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7917003752575662290}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a591d221a634417e9827eb58e17de84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SyncScale: 0
-  SyncParent: 1
-  _interpolationTarget: {fileID: 9097469178900222328}
-  UsePreciseRotation: 0
-  UseRenderSleepThresholds: 1
-  RenderThresholds:
-    UseEnergy: 1
-    Position: 0.01
-    Rotation: 0.01
-    Scale: 0.01
 --- !u!114 &3070308561598135358
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2125,17 +2101,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d799f33dbe53b13429977d33be028e51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  kcc: {fileID: 8649103854165161622}
   primaryWheel: {fileID: 830281465571014655}
   rigidbody: {fileID: 1549671491458988442}
   skidThreshold: 0.05
-  acceleration: 0.75
-  reverseSpeed: 9
-  deceleration: 0.6
-  maxSpeedNormal: 12
-  maxSpeedBoosting: 20
+  acceleration: 4
+  reverseSpeed: 250
+  deceleration: 2
+  maxSpeedNormal: 280
+  maxSpeedBoosting: 360
   body: {fileID: 9097469178900222328}
   handle: {fileID: 5097727341707734566}
-  maxBodyTileAngle: 30
+  maxBodyTileAngle: 35
   steerAcceleration: 3
   steerDeceleration: 3
   model: {fileID: 9097469178900222328}
@@ -2144,7 +2121,7 @@ MonoBehaviour:
   _MaxSpeed: 0
   _BoostEndTick: -1
   _AppliedSpeed: 0
---- !u!114 &4961232972879729820
+--- !u!114 &8649103854165161622
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2153,35 +2130,32 @@ MonoBehaviour:
   m_GameObject: {fileID: 7917003752575662290}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1014831617, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Script: {fileID: -1869825851, guid: 977dbcf975465374990f471e1497f563, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Type: 1
-  SphereRadius: 0
-  CapsuleRadius: 0
-  BoxExtents: {x: 0.5, y: 0.5, z: 1.6}
-  CapsuleExtents: 0
-  Offset: {x: 0, y: 0, z: 0}
-  Root: {fileID: 0}
-  GizmosColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
---- !u!114 &4452272979249138599
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7917003752575662290}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1039544458, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Config: 3
-  BroadRadius: 1
-  Offset: {x: 0, y: 0, z: 0}
-  GizmosColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  Hitboxes:
-  - {fileID: 4961232972879729820}
+  _settings:
+    Shape: 1
+    IsTrigger: 0
+    Radius: 1.37
+    Height: 2.25
+    Extent: 0.14
+    ColliderLayer: 8
+    CollisionLayerMask:
+      serializedVersion: 2
+      m_Bits: 2305
+    ProxyInterpolationMode: 0
+    TeleportThreshold: 1
+    AntiJitterDistance: {x: 0.025, y: 0.01}
+    CompressNetworkPosition: 0
+    ForcePredictedLookRotation: 0
+    StepHeight: 0.5
+    StepDepth: 0.2
+    StepSpeed: 1
+    StepMinPushBack: 0.5
+    StepGroundCheckRadiusScale: 0.5
+    StepRequireGroundTarget: 0
+    SnapDistance: 0.25
+    SnapSpeed: 4
 --- !u!1 &8202694550529234273
 GameObject:
   m_ObjectHideFlags: 0

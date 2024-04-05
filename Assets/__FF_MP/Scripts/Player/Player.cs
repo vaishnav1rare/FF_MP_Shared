@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Fusion;
+using Fusion.Addons.SimpleKCC;
 using FusionHelpers;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace OneRare.FoodFury.Multiplayer
 {
@@ -14,7 +16,7 @@ namespace OneRare.FoodFury.Multiplayer
 
         [Header("---General Settings")] [SerializeField]
         public PlayerMovementHandler playerMovementHandler;
-
+        [SerializeField] private KCC kcc;
         [SerializeField] private GameUI hudPrefab;
         [SerializeField] private Transform visualParent;
 
@@ -23,8 +25,7 @@ namespace OneRare.FoodFury.Multiplayer
         //[SerializeField] private float respawnTime;
         [SerializeField] private MeshRenderer part;
         [SerializeField] private Rigidbody rigidbody;
-
-
+        
         [Header("---Order")] [SerializeField] private TMPro.TextMeshPro orderDistanceTMP;
         private Vector3 _targetOrderTransorm;
         private float _orderRange = 10;
@@ -60,6 +61,7 @@ namespace OneRare.FoodFury.Multiplayer
         public Color PlayerColor { get; set; }
 
         // Other Private Declarations
+        
         private CapsuleCollider _collider;
         private GameObject _deathExplosionInstance;
         private float _respawnInSeconds = -1;
@@ -113,13 +115,13 @@ namespace OneRare.FoodFury.Multiplayer
             playerMovementHandler.Initialize(this);
         }
 
-        private void Update()
+        /*private void Update()
         {
-            UpdateCampass();
-        }
+            //UpdateCampass();
+        }*/
 
         public override void Render()
-        {
+        {   UpdateCampass();
             foreach (var change in _changes.DetectChanges(this))
             {
                 switch (change)
@@ -139,6 +141,7 @@ namespace OneRare.FoodFury.Multiplayer
 
         public override void FixedUpdateNetwork()
         {
+         
             playerMovementHandler.GroundNormalRotation();
             if (Object.HasStateAuthority)
             {
@@ -272,6 +275,7 @@ namespace OneRare.FoodFury.Multiplayer
 
                 Inputs = input;
             }
+            
 
             playerMovementHandler.Move(Inputs);
             playerMovementHandler.Steer(Inputs);
@@ -424,7 +428,9 @@ namespace OneRare.FoodFury.Multiplayer
 
         void Teleport(Vector3 position, Quaternion rotation)
         {
-            rigidbody.Move(position, rotation);
+            //rigidbody.Move(position, rotation);
+            kcc.SetPosition(position);
+            kcc.SetLookRotation(rotation);
         }
 
         private void SpawnTeleportOutFx()
