@@ -8,7 +8,7 @@ public class PlayerMovementHandler : NetworkBehaviour
 {
 	[SerializeField] private SimpleKCC kcc;
 	[SerializeField] private TrailRenderer primaryWheel;
-	[SerializeField] private Rigidbody rigidbody;
+	//[SerializeField] private Rigidbody rigidbody;
 	[Header("---Movement")]
     [SerializeField] private float skidThreshold = 0.002f;
     [SerializeField] private float acceleration;
@@ -91,46 +91,21 @@ public class PlayerMovementHandler : NetworkBehaviour
 		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);
 	    }
 	   
-	    Quaternion rotation = transform.rotation;
-	    rotation.eulerAngles = new Vector3(0, rotation.eulerAngles.y, rotation.eulerAngles.z);
-	    transform.rotation = rotation;
+	
 	    
-	    Vector3 localDirection = new Vector3(0, 0, AppliedSpeed );
-	    Vector3 worldDirection = kcc.transform.TransformDirection(localDirection);
+	    Vector3 localDirection = new Vector3(0, 0, AppliedSpeed);
+	    Vector3 worldDirection = transform.TransformDirection(localDirection);
 	    kcc.Move(worldDirection * Runner.DeltaTime );
-	    
-	    /*if (input.IsAccelerate)
-	    {
-		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, MaxSpeed, acceleration * Runner.DeltaTime);
-	    }
-	    else if (input.IsReverse)
-	    {
-		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, -reverseSpeed, acceleration * Runner.DeltaTime);
-	    }
-	    else
-	    {
-		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);
-	    }
-
 	    var resistance = 1 - (IsGrounded ? GroundResistance : 0);
 	    if (resistance < 1)
 	    {
 		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, AppliedSpeed * resistance, Runner.DeltaTime * (_isDrifting ? 8 : 2));
 	    }
-
-	    var vel = (rigidbody.rotation * Vector3.forward) * AppliedSpeed;
-	    vel.y = rigidbody.velocity.y;
-	    rigidbody.velocity = vel;
-
-	    _currentSpeed = rigidbody.velocity.magnitude;
+	    /*_currentSpeed = rigidbody.velocity.magnitude;
 	    _currentSpeed01 = _currentSpeed / MaxSpeed;
 	    if (_currentSpeed < _inputDeadZoneValue) _currentSpeed01 = _currentSpeed = 0;*/
 	    
-	    var resistance = 1 - (IsGrounded ? GroundResistance : 0);
-	    if (resistance < 1)
-	    {
-		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, AppliedSpeed * resistance, Runner.DeltaTime * (_isDrifting ? 8 : 2));
-	    }
+	    
     }
 
     //Steer
@@ -147,6 +122,7 @@ public class PlayerMovementHandler : NetworkBehaviour
 		    SteerAmount = Mathf.Lerp(SteerAmount, steerTarget, Runner.DeltaTime * steerLerp);
 	    }
 			
+	    
 	    if (_isDrifting)
 	    {
 		    model.localEulerAngles = LerpAxis(Axis.Y, model.localEulerAngles, SteerAmount*0.2f,
@@ -160,13 +136,6 @@ public class PlayerMovementHandler : NetworkBehaviour
 
 	    if (_canDrive)
 	    {
-		    /*Vector3 localDirection = new Vector3(SteerAmount, 0, AppliedSpeed);
-		    Vector3 worldDirection = kcc.transform.TransformDirection(localDirection);
-		    kcc.Move(worldDirection * Runner.DeltaTime );*/
-		    //float rotationAmount =SteerAmount * Runner.DeltaTime;
-			
-// Apply rotation to the character's transform
-		    //transform.Rotate(0, rotationAmount, 0);
 		    kcc.AddLookRotation(0,SteerAmount * Runner.DeltaTime);
 		    /*var rot = Quaternion.Euler(
 			    Vector3.Lerp(
@@ -218,14 +187,14 @@ public class PlayerMovementHandler : NetworkBehaviour
 	    return new Vector3(euler.x, euler.y, Mathf.LerpAngle(euler.z, tgtVal, t));
     }
 
-    private float GetSideVelocity() => Vector3.Dot(rigidbody.velocity.normalized, transform.right);
+   // private float GetSideVelocity() => Vector3.Dot(rigidbody.velocity.normalized, transform.right);
     Vector3 _forwardVelocity;
     Vector3 _sideVelocity;
     Vector3 _finalVelocity;
 		
     public void Drift()
     {
-	    if (!IsGrounded) return;
+	    /*if (!IsGrounded) return;
 	    _forwardVelocity = Vector3.Dot(rigidbody.velocity, transform.forward) * transform.forward;
 	    _sideVelocity = Vector3.Dot(rigidbody.velocity, transform.right) * transform.right;
 	    _finalVelocity = _forwardVelocity + (DriftFactor * _sideVelocity);
@@ -234,7 +203,7 @@ public class PlayerMovementHandler : NetworkBehaviour
 		
 	    _isDrifting = IsGrounded && _currentSpeed01 > 0.1f && HelperFunctions.GetAbs(GetSideVelocity()) > skidThreshold;
 		
-	    primaryWheel.emitting = _isDrifting;
+	    primaryWheel.emitting = _isDrifting;*/
     }
 
     // boost

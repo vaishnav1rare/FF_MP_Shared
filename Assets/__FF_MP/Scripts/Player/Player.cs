@@ -24,7 +24,7 @@ namespace OneRare.FoodFury.Multiplayer
 
         //[SerializeField] private float respawnTime;
         [SerializeField] private MeshRenderer part;
-        [SerializeField] private Rigidbody rigidbody;
+        //[SerializeField] private Rigidbody rigidbody;
         
         [Header("---Order")] [SerializeField] private TMPro.TextMeshPro orderDistanceTMP;
         private Vector3 _targetOrderTransorm;
@@ -276,9 +276,9 @@ namespace OneRare.FoodFury.Multiplayer
                 Inputs = input;
             }
             
-
-            playerMovementHandler.Move(Inputs);
             playerMovementHandler.Steer(Inputs);
+            playerMovementHandler.Move(Inputs);
+            
             UpdateDistance();
             playerMovementHandler.Boost();
         }
