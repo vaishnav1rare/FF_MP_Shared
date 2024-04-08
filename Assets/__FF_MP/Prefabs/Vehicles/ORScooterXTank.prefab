@@ -1799,7 +1799,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 3
+  m_CollisionDetection: 0
 --- !u!114 &-3098922383743760179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1823,7 +1823,6 @@ MonoBehaviour:
   - {fileID: 2100000, guid: c26074b95c8402447931f0e6836c1c24, type: 2}
   - {fileID: 2100000, guid: 68414b27680bf5347af566070e35ac68, type: 2}
   part: {fileID: 7024439863158248975}
-  rigidbody: {fileID: 1549671491458988442}
   orderDistanceTMP: {fileID: 8105850745161758355}
   orderCampassParent: {fileID: 2313715366491141035}
   orderCampassPivot: {fileID: 92183460705782363}
@@ -2103,13 +2102,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   kcc: {fileID: 8649103854165161622}
   primaryWheel: {fileID: 830281465571014655}
-  rigidbody: {fileID: 1549671491458988442}
   skidThreshold: 0.05
-  acceleration: 4
-  reverseSpeed: 250
+  acceleration: 3
+  reverseSpeed: 320
   deceleration: 2
-  maxSpeedNormal: 280
-  maxSpeedBoosting: 360
+  maxSpeedNormal: 400
+  maxSpeedBoosting: 500
   body: {fileID: 9097469178900222328}
   handle: {fileID: 5097727341707734566}
   maxBodyTileAngle: 35
@@ -2136,18 +2134,18 @@ MonoBehaviour:
   _settings:
     Shape: 1
     IsTrigger: 0
-    Radius: 1.37
-    Height: 2.25
-    Extent: 0.14
+    Radius: 1.4
+    Height: 0.66
+    Extent: 0.54
     ColliderLayer: 8
     CollisionLayerMask:
       serializedVersion: 2
       m_Bits: 2305
     ProxyInterpolationMode: 0
     TeleportThreshold: 1
-    AntiJitterDistance: {x: 0.025, y: 0.01}
+    AntiJitterDistance: {x: 0.01, y: 0.01}
     CompressNetworkPosition: 0
-    ForcePredictedLookRotation: 0
+    ForcePredictedLookRotation: 1
     StepHeight: 0.5
     StepDepth: 0.2
     StepSpeed: 1
