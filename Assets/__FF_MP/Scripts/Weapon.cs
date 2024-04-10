@@ -128,6 +128,8 @@ public class Weapon : NetworkBehaviourWithState<Weapon.NetworkState>
             {
                 impact = runner.GetPhysicsScene().Raycast(exit.position, exit.forward,out var hitinfo, _bulletPrefab.Range, _bulletPrefab.HitMask.value);
                 hitPoint = hitinfo.point;
+                
+                Debug.LogError("HIT IMPACT: "+impact+"  "+hitPoint);
             }
             else
             {
@@ -148,7 +150,9 @@ public class Weapon : NetworkBehaviourWithState<Weapon.NetworkState>
 
     private void ApplyAreaDamage(Vector3 hitPoint)
     {
+        Debug.LogError("ApplyAreaDamage "+hitPoint);
         int cnt = Physics.OverlapSphereNonAlloc(hitPoint, _bulletPrefab.AreaRadius, _areaHits, _bulletPrefab.HitMask.value, QueryTriggerInteraction.Ignore);
+        Debug.LogError("CNT "+cnt);
         if (cnt > 0)
         {
             for (int i = 0; i < cnt; i++)

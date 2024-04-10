@@ -319,7 +319,7 @@ namespace OneRare.FoodFury.Multiplayer
             {
                 if (Object.HasStateAuthority && input.WasPressed(NetworkInputData.BUTTON_TOGGLE_READY, Inputs))
                     ToggleReady();
-                if (input.IsDown(NetworkInputData.BUTTON_FIRE_PRIMARY))
+                if (input.WasPressed(NetworkInputData.BUTTON_FIRE_PRIMARY, Inputs))
                 {
                     Debug.Log("FIRING");
                     weaponManager.FireWeapon(WeaponManager.WeaponInstallationType.PRIMARY);
