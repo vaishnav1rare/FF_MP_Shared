@@ -55,9 +55,12 @@ namespace OneRare.FoodFury.Multiplayer
 			if (Input.GetKey(KeyCode.R))
 			{
 				_buttonSample |= NetworkInputData.BUTTON_TOGGLE_READY;
-				Debug.Log("R Key Pressed");
 			}
-			
+
+			if (Input.GetKey(KeyCode.Space))
+			{
+				_buttonSample |= NetworkInputData.BUTTON_FIRE_PRIMARY;
+			}
 		}
 
 		/// <summary>
@@ -139,7 +142,9 @@ namespace OneRare.FoodFury.Multiplayer
 		public const uint BUTTON_TOGGLE_READY = 1 << 2;
 		public const uint ButtonAccelerate = 1 << 0;
 		public const uint ButtonReverse = 1 << 1;
-        
+		public const uint BUTTON_FIRE_PRIMARY = 1 << 0;
+		
+		
 		public uint Buttons;
 		public uint OneShots;
 
