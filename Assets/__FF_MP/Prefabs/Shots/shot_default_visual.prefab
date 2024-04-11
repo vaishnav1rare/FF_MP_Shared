@@ -115,7 +115,7 @@ MonoBehaviour:
   _hitMask:
     serializedVersion: 2
     m_Bits: 256
-  _range: 100
+  _range: 200
   _areaRadius: 0.5
   _areaImpulse: 40
   _areaDamage: 20

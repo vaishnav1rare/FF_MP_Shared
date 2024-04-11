@@ -129,12 +129,13 @@ public class Weapon : NetworkBehaviourWithState<Weapon.NetworkState>
                 impact = runner.GetPhysicsScene().Raycast(exit.position, exit.forward,out var hitinfo, _bulletPrefab.Range, _bulletPrefab.HitMask.value);
                 hitPoint = hitinfo.point;
                 
-                Debug.LogError("HIT IMPACT: "+impact+"  "+hitPoint);
+               // Debug.LogError("HIT IMPACT: "+impact+"  "+hitPoint);
             }
             else
             {
                 impact = Runner.LagCompensation.Raycast(exit.position, exit.forward, _bulletPrefab.Range, Object.InputAuthority, out var hitinfo, _bulletPrefab.HitMask.value, HitOptions.IgnoreInputAuthority | HitOptions.IncludePhysX);
                 hitPoint = hitinfo.Point;
+               // Debug.LogError("HIT IMPACT: "+impact+"  "+hitPoint);
             }
 				
             if (impact)
@@ -150,23 +151,23 @@ public class Weapon : NetworkBehaviourWithState<Weapon.NetworkState>
 
     private void ApplyAreaDamage(Vector3 hitPoint)
     {
-        Debug.LogError("ApplyAreaDamage "+hitPoint);
         int cnt = Physics.OverlapSphereNonAlloc(hitPoint, _bulletPrefab.AreaRadius, _areaHits, _bulletPrefab.HitMask.value, QueryTriggerInteraction.Ignore);
-        Debug.LogError("CNT "+cnt);
         if (cnt > 0)
         {
             for (int i = 0; i < cnt; i++)
             {
                 GameObject other = _areaHits[i].gameObject;
+               // Debug.LogError("ApplyAreaDamage: "+other);
                 if (other)
                 {
-                    Player target = other.GetComponent<Player>();
+                    Player target = other.GetComponentInParent<Player>();
                     if (target != null && target!=_player )
                     {
                         Vector3 impulse = other.transform.position - hitPoint;
                         float l = Mathf.Clamp(_bulletPrefab.AreaRadius - impulse.magnitude, 0, _bulletPrefab.AreaRadius);
                         impulse = _bulletPrefab.AreaImpulse * l * impulse.normalized;
-                        target.RaiseEvent(new Player.DamageEvent { impulse=impulse, damage=_bulletPrefab.AreaDamage});
+                      //  Debug.LogError("ApplyAreaDamage: TARGET:  "+target+"  "+impulse);
+                        target.RaiseEvent(new Player.DamageEvent { impulse=impulse, damage=20});
                     }
                 }
             }

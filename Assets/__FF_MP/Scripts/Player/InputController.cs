@@ -19,6 +19,7 @@ namespace OneRare.FoodFury.Multiplayer
 		[SerializeField] private InputAction accelerate;
 		[SerializeField] private InputAction reverse;
 		[SerializeField] private InputAction steer;
+		[SerializeField] private InputAction shoot;
 		private Player _player;
 		private NetworkInputData _inputData = new NetworkInputData();
 		private uint _buttonReset;
@@ -42,10 +43,13 @@ namespace OneRare.FoodFury.Multiplayer
 			accelerate = accelerate.Clone();
 			reverse = reverse.Clone();
 			steer = steer.Clone();
+			shoot = shoot.Clone();
 			
 			accelerate.Enable();
 			reverse.Enable();
 			steer.Enable();
+			shoot.Enable();
+			
 			Debug.Log("Spawned [" + this + "] IsClient=" + Runner.IsClient + " IsServer=" + Runner.IsServer + " IsInputSrc=" + Object.HasInputAuthority + " IsStateSrc=" + Object.HasStateAuthority);
 		}
 
@@ -57,7 +61,7 @@ namespace OneRare.FoodFury.Multiplayer
 				_buttonSample |= NetworkInputData.BUTTON_TOGGLE_READY;
 			}
 
-			if (Input.GetKey(KeyCode.Space))
+			if (Input.GetKey(KeyCode.K))
 			{
 				_buttonSample |= NetworkInputData.BUTTON_FIRE_PRIMARY;
 			}
@@ -78,6 +82,8 @@ namespace OneRare.FoodFury.Multiplayer
 				userInput.Buttons = _buttonSample; 
 				_buttonReset |= _buttonSample; // This effectively delays the reset of the read button flags until next Update() in case we're ticking faster than we're rendering
 			}
+
+			if (ReadBool(shoot)) userInput.Buttons |= NetworkInputData.BUTTON_FIRE_PRIMARY;
 			if ( ReadBool(accelerate) ) userInput.Buttons |= NetworkInputData.ButtonAccelerate;
 			if ( ReadBool(reverse) ) userInput.Buttons |= NetworkInputData.ButtonReverse;
 			userInput.Steer = ReadFloat(steer);
@@ -101,6 +107,7 @@ namespace OneRare.FoodFury.Multiplayer
 			accelerate.Dispose();
 			reverse.Dispose();
 			steer.Dispose();
+			shoot.Dispose();
 			// disposal should handle these
 			//useItem.started -= UseItemPressed;
 			//drift.started -= DriftPressed;
@@ -142,7 +149,7 @@ namespace OneRare.FoodFury.Multiplayer
 		public const uint BUTTON_TOGGLE_READY = 1 << 2;
 		public const uint ButtonAccelerate = 1 << 0;
 		public const uint ButtonReverse = 1 << 1;
-		public const uint BUTTON_FIRE_PRIMARY = 1 << 0;
+		public const uint BUTTON_FIRE_PRIMARY = 1 << 3;
 		
 		
 		public uint Buttons;
@@ -159,7 +166,8 @@ namespace OneRare.FoodFury.Multiplayer
 		public bool IsDown(uint button) => (Buttons & button) == button;
 
 		public bool IsDownThisFrame(uint button) => (OneShots & button) == button;
-        
+
+		public bool IsShoot => IsDown(BUTTON_FIRE_PRIMARY);
 		public bool IsAccelerate => IsDown(ButtonAccelerate);
 		public bool IsReverse => IsDown(ButtonReverse);
 

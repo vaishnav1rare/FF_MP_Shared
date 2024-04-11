@@ -26,7 +26,9 @@ namespace OneRare.FoodFury.Multiplayer
         [SerializeField] private MeshRenderer part;
         //[SerializeField] private Rigidbody rigidbody;
         
-        [Header("---Order")] [SerializeField] private TMPro.TextMeshPro orderDistanceTMP;
+        [Header("---Order")] 
+        [SerializeField] private TMPro.TextMeshPro orderDistanceTMP;
+        [SerializeField] private TMPro.TextMeshPro livesTMP;
         private Vector3 _targetOrderTransorm;
         private float _orderRange = 10;
         private float _orderDistance;
@@ -98,6 +100,7 @@ namespace OneRare.FoodFury.Multiplayer
             CurrentStage = Stage.New;
             Lives = MaxLives;
             Life = MaxHealth;
+            livesTMP.text = Life.ToString();
         }
 
         public override void Spawned()
@@ -132,35 +135,38 @@ namespace OneRare.FoodFury.Multiplayer
         }*/
         public void ApplyAreaDamage(Vector3 impulse, int damage)
         {
-            Debug.LogError("APPLY AREA DAMAGE: "+IsActivated+" > "+InvulnerabilityTimer.Expired(Runner));
+            
             if (!IsActivated || !InvulnerabilityTimer.Expired(Runner))
                 return;
 
             if (Runner.TryGetSingleton(out GameManager gameManager))
             {
                 //kcc.ve += impulse / 10.0f; // Magic constant to compensate for not properly dealing with masses
-                kcc.Move(Vector3.zero); // Velocity property is only used by CC when steering, so pretend we are, without actually steering anywhere
-                if (Health > 5)
-                    Health -= 10;
-
-                Debug.LogError("HIT: "+Health);
+               //kcc.Move(Vector3.zero); // Velocity property is only used by CC when steering, so pretend we are, without actually steering anywhere
+                //Debug.LogError($"Player {PlayerId} took {damage} damage, life = {Life}");
+                //ReduceHealth();
                 //_gameUI.UpdateHealthText(Health);
-                /*if (damage >= life)
+                if (damage >= Life) 
                 {
-                    life = 0;
-                    stage = Stage.Dead;
-
-                    if (gameManager.currentPlayState == GameManager.PlayState.LEVEL)
+                    Life = 0;
+                    CurrentStage = Stage.Dead;
+                    livesTMP.text = Life.ToString();
+                    gameObject.SetActive(false);
+                    /*if (Runner.IsSharedModeMasterClient)
+                    {
+                        Runner.Despawn(Object);
+                    }*/
+                    /*if (gameManager.CurrentPlayState == GameManager.PlayState.LEVEL)
                         lives -= 1;
 
                     if (lives > 0)
-                        Respawn(_respawnTime);
+                        Respawn(_respawnTime);*/
                 }
                 else
                 {
-                    life -= (byte)damage;
-                    Debug.Log($"Player {PlayerId} took {damage} damage, life = {life}");
-                }*/
+                    Life -= (byte)damage;
+                    livesTMP.text = Life.ToString();
+                }
 
                 //_damageVisuals.CheckHealth(life , MAX_HEALTH);
             }
@@ -303,6 +309,7 @@ namespace OneRare.FoodFury.Multiplayer
             if (!_activeState) return;
             orderCampassPivot.position = transform.position + Vector3.up * _campassHeight;
             orderDistanceTMP.transform.position = transform.position + Vector3.up * (_campassHeight + 2);
+            livesTMP.transform.position = transform.position + Vector3.up * (_campassHeight + 5);
             _orderDirection = _targetOrderTransorm - transform.position;
             _orderDirection.y = orderCampassPivot.localRotation.y;
             orderCampassPivot.rotation = Quaternion.Slerp(orderCampassPivot.rotation,
@@ -319,7 +326,7 @@ namespace OneRare.FoodFury.Multiplayer
             {
                 if (Object.HasStateAuthority && input.WasPressed(NetworkInputData.BUTTON_TOGGLE_READY, Inputs))
                     ToggleReady();
-                if (input.WasPressed(NetworkInputData.BUTTON_FIRE_PRIMARY, Inputs))
+                if (input.IsShoot)
                 {
                     Debug.Log("FIRING");
                     weaponManager.FireWeapon(WeaponManager.WeaponInstallationType.PRIMARY);
@@ -342,7 +349,7 @@ namespace OneRare.FoodFury.Multiplayer
         private void OnCollisionEnter(Collision other)
         {
             //kcc.SetGravity(Physics.gravity.y * 20f);
-            Debug.LogError("HEALTH: " + other.gameObject.name);
+            //Debug.LogError("HEALTH: " + other.gameObject.name);
             if (other.gameObject.TryGetComponent(out ICollidable collidable))
             {
                 collidable.Collide(this);
