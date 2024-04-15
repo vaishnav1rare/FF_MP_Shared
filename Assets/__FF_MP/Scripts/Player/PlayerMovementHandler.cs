@@ -115,7 +115,7 @@ public class PlayerMovementHandler : NetworkBehaviour
     private bool _isDrifting;
     public void Steer(NetworkInputData input)
     {
-	    var steerTarget = input.Steer * AppliedSpeed/3;;
+	    var steerTarget = input.Steer * AppliedSpeed/3.5f;;
 			
 	    if (SteerAmount != steerTarget)
 	    {
@@ -162,13 +162,13 @@ public class PlayerMovementHandler : NetworkBehaviour
     private void HandleTilting(float steerInput)
     {
 	    SetMaxBodyAngle();
-	    _si = steerInput / 20f;
+	    _si = steerInput / 45f;
 			
 	    if (body)
 	    {
 		    _bodyAngle = Mathf.Lerp(_bodyAngle, Mathf.Clamp(_si * maxBodyTileAngle, -maxBodyTileAngle, maxBodyTileAngle), Runner.DeltaTime * 12);
 		    _currentRotationBody = body.eulerAngles;
-		    body.eulerAngles = new Vector3(_currentRotationBody.x, _currentRotationBody.y, -_bodyAngle*2);
+		    body.eulerAngles = new Vector3(_currentRotationBody.x, _currentRotationBody.y, -_bodyAngle*1.75f);
 	    }
 
 	    if (handle)
