@@ -108,8 +108,8 @@ public class Weapon : NetworkBehaviourWithState<Weapon.NetworkState>
     {
         Transform exit = GetExitPoint(Runner.Tick);
 			
-        Debug.DrawLine(exit.position, exit.position+exit.forward, Color.blue, 1.0f);
-        Debug.Log($"Bullet fired in tick {runner.Tick} from position {exit.position} weapon is at {transform.position}");
+        //Debug.DrawLine(exit.position, exit.position+exit.forward, Color.blue, 1.0f);
+        //Debug.Log($"Bullet fired in tick {runner.Tick} from position {exit.position} weapon is at {transform.position}");
         SpawnNetworkShot(runner, owner, exit, ownerVelocity);
     }
 
@@ -177,6 +177,7 @@ public class Weapon : NetworkBehaviourWithState<Weapon.NetworkState>
     public Transform GetExitPoint(int tick)
     {
         Transform exit = _gunExits[tick% _gunExits.Length];
+        exit.position += (exit.forward * 3f + exit.up *1);
         return exit;
     }
 }

@@ -119,7 +119,7 @@ MonoBehaviour:
   _areaRadius: 0.5
   _areaImpulse: 40
   _areaDamage: 20
-  _timeToLive: 1
+  _timeToLive: 2
   _isHitScan: 0
 --- !u!1 &9128550410504632716
 GameObject:

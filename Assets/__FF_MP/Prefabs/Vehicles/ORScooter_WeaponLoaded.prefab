@@ -1128,9 +1128,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gunExits:
-  - {fileID: 1013057848849671291}
-  _rateOfFire: 0.3
-  _ammo: 10
+  - {fileID: 7911653039066033918}
+  _rateOfFire: 2
+  _ammo: 5
   _infiniteAmmo: 0
   _bulletPrefab: {fileID: 3072811288866673399, guid: a63c5462955c3434b9fae291b57bde73, type: 3}
 --- !u!1 &4676623942002771630

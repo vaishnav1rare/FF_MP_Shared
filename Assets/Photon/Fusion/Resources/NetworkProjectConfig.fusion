@@ -16,7 +16,7 @@
         "InputDataWordCount": 0,
         "ReplicationFeatures": 0,
         "InputTransferMode": 0,
-        "PlayerCount": 4,
+        "PlayerCount": 8,
         "TickRateSelection": {
             "Client": 64,
             "ServerIndex": 0,
