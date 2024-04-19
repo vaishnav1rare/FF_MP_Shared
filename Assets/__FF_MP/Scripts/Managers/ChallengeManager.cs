@@ -1,5 +1,6 @@
 using System;
 using Fusion;
+using OneRare.FoodFury.Multiplayer;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -34,6 +35,7 @@ public class ChallengeManager : NetworkBehaviour, ISceneLoadDone
     private GameUI _gameUI;
     private ChangeDetector _changeDetector;
     private float _challengeDuration = 180f;
+    private GameManager _gameManager;
     
     private void Awake()
     {
@@ -44,6 +46,7 @@ public class ChallengeManager : NetworkBehaviour, ISceneLoadDone
     {
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
         _gameUI = FindObjectOfType<GameUI>();
+        _gameManager = FindObjectOfType<GameManager>();
     }
     
     public override void Render()
@@ -101,7 +104,11 @@ public class ChallengeManager : NetworkBehaviour, ISceneLoadDone
                 break;
         }
     }
-    
+
+    public void ShutDownOnInput()
+    {
+        _gameManager.ShutdownOnInput();
+    }
     public override void FixedUpdateNetwork()
     {
         if (MatchTimer.Expired(Runner) == false && MatchTimer.RemainingTime(Runner).HasValue)

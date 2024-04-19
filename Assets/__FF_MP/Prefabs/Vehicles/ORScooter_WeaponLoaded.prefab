@@ -1870,7 +1870,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7917003752575662290}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 2
   m_Drag: 0
   m_AngularDrag: 0.01
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -1888,7 +1888,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 1
   m_Constraints: 116
-  m_CollisionDetection: 3
+  m_CollisionDetection: 2
 --- !u!114 &-3098922383743760179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2180,7 +2180,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7917003752575662290}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 00c992c6498490641b7e92d59a82284a, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2192,7 +2192,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.4
+  m_Radius: 0.01
   m_Height: 3.8
   m_Direction: 2
   m_Center: {x: 0, y: -0.1, z: 0}
@@ -2241,15 +2241,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _settings:
     Shape: 1
-    IsTrigger: 0
-    Radius: 1.4
-    Height: 0.66
-    Extent: 0.54
+    IsTrigger: 1
+    Radius: 1.19
+    Height: 0.7
+    Extent: 0.1
     ColliderLayer: 8
     CollisionLayerMask:
       serializedVersion: 2
-      m_Bits: 2305
-    ProxyInterpolationMode: 0
+      m_Bits: 6401
+    ProxyInterpolationMode: 1
     TeleportThreshold: 1
     AntiJitterDistance: {x: 0.01, y: 0.01}
     CompressNetworkPosition: 0
@@ -2358,7 +2358,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9097469178900222328}
-  - component: {fileID: 5109295308803917092}
+  - component: {fileID: 8473662569045041490}
   m_Layer: 8
   m_Name: OR_Scooter
   m_TagString: Untagged
@@ -2384,14 +2384,14 @@ Transform:
   - {fileID: 5097727341707734566}
   m_Father: {fileID: 7911653039066033918}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &5109295308803917092
+--- !u!65 &8473662569045041490
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8433945400198155202}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 00c992c6498490641b7e92d59a82284a, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2399,12 +2399,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.5, y: 3, z: 3.5}
-  m_Center: {x: 0, y: 0.66, z: 0}
+  m_Size: {x: 1, y: 1, z: 4}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &8551120633902261109
 GameObject:
   m_ObjectHideFlags: 0
@@ -2653,6 +2653,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3004506216723392382, guid: 8f03e7684946e4a44ad1b0954faff227, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4633746560116245152, guid: 8f03e7684946e4a44ad1b0954faff227, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5166597581172862757, guid: 8f03e7684946e4a44ad1b0954faff227, type: 3}

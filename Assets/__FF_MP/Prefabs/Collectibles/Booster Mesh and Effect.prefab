@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8661652751890023093}
   - component: {fileID: 2029269674821658196}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 3200654557000903729}
   - component: {fileID: 3200654557000903759}
   - component: {fileID: 3200654557000903758}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Description
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -229,7 +229,7 @@ GameObject:
   - component: {fileID: 3200654557459763036}
   - component: {fileID: 3200654557459763034}
   - component: {fileID: 3200654557459763037}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FillImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -305,7 +305,7 @@ GameObject:
   - component: {fileID: 3200654558262256695}
   - component: {fileID: 3200654558262256694}
   - component: {fileID: 3200654558262256697}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -406,7 +406,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2285316749288401364}
   - component: {fileID: 6939857584752023754}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: MinMap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -490,7 +490,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8529344032000951473}
   - component: {fileID: 7119248258021472371}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Booster Mesh and Effect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -545,6 +545,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8529344032000951473}
     m_Modifications:
+    - target: {fileID: 170268992876898388, guid: 9b8f2801bd16d4d4b8fa8fea156427a4, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 850916499900926184, guid: 9b8f2801bd16d4d4b8fa8fea156427a4, type: 3}
       propertyPath: lengthInSec
       value: 3
@@ -601,6 +605,10 @@ PrefabInstance:
       propertyPath: InitialModule.startColor.maxColor.r
       value: 0.055535786
       objectReference: {fileID: 0}
+    - target: {fileID: 5565506353872250326, guid: 9b8f2801bd16d4d4b8fa8fea156427a4, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 5928616802354145377, guid: 9b8f2801bd16d4d4b8fa8fea156427a4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -644,6 +652,10 @@ PrefabInstance:
     - target: {fileID: 7732157256710981123, guid: 9b8f2801bd16d4d4b8fa8fea156427a4, type: 3}
       propertyPath: m_Name
       value: Particles
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732157256710981123, guid: 9b8f2801bd16d4d4b8fa8fea156427a4, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

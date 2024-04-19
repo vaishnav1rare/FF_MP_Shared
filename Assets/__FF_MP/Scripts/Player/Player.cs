@@ -224,7 +224,10 @@ namespace OneRare.FoodFury.Multiplayer
             base.Despawned(runner, hasState);
             SpawnTeleportOutFx();
             Destroy(_deathExplosionInstance);
-            Destroy(_gameUI.gameObject);
+            if (_gameUI)
+            {
+                Destroy(_gameUI.gameObject);
+            }
             Players.Remove(this);
         }
 
@@ -346,13 +349,11 @@ namespace OneRare.FoodFury.Multiplayer
 
         #region COLLISION HANDLING
 
-        private void OnCollisionEnter(Collision other)
+        private void OnTriggerEnter(Collider other)
         {
-            //kcc.SetGravity(Physics.gravity.y * 20f);
-            //Debug.LogError("HEALTH: " + other.gameObject.name);
             if (other.gameObject.TryGetComponent(out ICollidable collidable))
             {
-                collidable.Collide(this);
+                collidable.Collide(gameObject.GetComponentInParent<Player>());
             }
         }
         private void OnTriggerStay(Collider other)
@@ -381,9 +382,13 @@ namespace OneRare.FoodFury.Multiplayer
 
         public void ReduceHealth()
         {
-            if (Health > 2)
-                Health -= 2;
-            _gameUI.UpdateHealthText(Health);
+            if (Health > 0)
+                Health -= 1;
+            if (_gameUI)
+            {
+                _gameUI.UpdateHealthText(Health);
+            }
+            
         }
 
         #endregion

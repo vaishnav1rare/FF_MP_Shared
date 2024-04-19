@@ -2,13 +2,13 @@ using System;
 using Fusion;
 using Fusion.Addons.SimpleKCC;
 using OneRare.FoodFury.Multiplayer;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovementHandler : NetworkBehaviour
 {
 	[SerializeField] private SimpleKCC kcc;
 	[SerializeField] private TrailRenderer primaryWheel;
-	//[SerializeField] private Rigidbody rigidbody;
 	[Header("---Movement")]
     [SerializeField] private float skidThreshold = 0.002f;
     [SerializeField] private float acceleration;
@@ -29,26 +29,23 @@ public class PlayerMovementHandler : NetworkBehaviour
     [SerializeField] private float driftRotationLerpFactor = 10f;
     [field: SerializeField] public float DriftFactor { get; private set; }
     private float GroundResistance { get; set; }
-    // Start is called before the first frame update
     [field: Header("Networked Properties")]
     [Networked] public float MaxSpeed { get; set; }
     [Networked] public int BoostEndTick { get; set; } = -1;
     [Networked] public float AppliedSpeed { get; set; }
     [Networked] private float SteerAmount { get; set; }
+    
     public NetworkBool IsGrounded { get; set; }
+    
+    public NetworkBool IsAllowedToAccelerate { get; set; }
     private Player _player = null;
     
-    private CapsuleCollider _collider;
     public override void Spawned()
     {
 	    MaxSpeed = maxSpeedNormal;
-	    
     }
 
-    private void Awake()
-    {
-	    _collider = GetComponentInChildren<CapsuleCollider>();
-    }
+   
     public void Initialize(Player player)
     {
 	    _player = player;
@@ -58,42 +55,75 @@ public class PlayerMovementHandler : NetworkBehaviour
     {
 	    Drift();
     }
-
+    private void OnTriggerEnter(Collider other)
+    {
+	    if (other.gameObject.TryGetComponent(out ICollidable collidable) && other.gameObject.layer == LayerMask.NameToLayer("Player"))
+	    {
+		    collidable.Collide(gameObject.GetComponentInParent<Player>());
+	    }
+    }
+    
     public void GroundNormalRotation()
     {
-	    IsGrounded = Physics.SphereCast(_collider.transform.TransformPoint(_collider.center), _collider.radius,
-		    Vector3.down, out var hit, 1f, ~LayerMask.GetMask("Player"));
-
+	    RaycastHit hit;
+	    if (Physics.Raycast(transform.position , -transform.up, out hit, 2f, ~LayerMask.GetMask("Pickup")))
+	    {
+		    IsGrounded = true;
+	    }
+	    
 	    if (IsGrounded)
 	    {
 		    GroundResistance = hit.collider.material.dynamicFriction;
-		    Debug.Log("COL:"+hit.collider.name+"GR: "+GroundResistance);
+		    
 		    model.transform.rotation = Quaternion.Lerp(
 			    model.transform.rotation,
 			    Quaternion.FromToRotation(model.transform.up * 2, hit.normal) * model.transform.rotation,
 			    7.5f * Time.deltaTime);
 	    }
     }
-    
+
+    /*
+    private void OnDrawGizmos()
+    {
+	    Gizmos.color = Color.yellow;
+	    Gizmos.DrawSphere(transform.position + Vector3.forward * 0.5f + Vector3.up * 1, 0.75f);
+    }
+    */
+
     //Move
     private float _inputDeadZoneValue = 0.001f;
     public void Move(NetworkInputData input)
     {
-	    if (input.IsAccelerate)
+	    /*RaycastHit hit;
+	    if (Physics.Raycast(transform.position + Vector3.up * 2f, transform.forward, out hit, 2f, ~LayerMask.GetMask("Pickup")))
+	    {
+			Debug.LogError("HIT BUILDINGS");
+		   AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);
+	    }*/
+	    RaycastHit hit;
+	    
+	    if (Physics.SphereCast(transform.position + Vector3.forward * 0.5f + Vector3.up * 1, 0.75f, transform.forward, out hit, 0.75f, LayerMask.GetMask("Player","CityLayers")))
+	    {
+		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);
+		    IsAllowedToAccelerate = false;
+	    }
+	    else
+	    {
+		    IsAllowedToAccelerate = true;
+	    }
+	    if (input.IsAccelerate && IsAllowedToAccelerate)
 	    {
 		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, MaxSpeed, acceleration * Runner.DeltaTime);
 	    }
-	    else if (input.IsReverse)
+	    else if (input.IsReverse )
 	    {
 		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, -reverseSpeed, acceleration * Runner.DeltaTime);
 	    }
 	    else
 	    {
-		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);
+		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);//Add Acceleration Factor
 	    }
-	   
-	
-	    
+
 	    Vector3 localDirection = new Vector3(0, 0, AppliedSpeed);
 	    Vector3 worldDirection = transform.TransformDirection(localDirection);
 	    kcc.Move(worldDirection * Runner.DeltaTime );
@@ -108,13 +138,15 @@ public class PlayerMovementHandler : NetworkBehaviour
 	    
 	    
     }
-
+    
     //Steer
     
     private bool _canDrive = true;
     private bool _isDrifting;
     public void Steer(NetworkInputData input)
     {
+	    if(!IsAllowedToAccelerate)
+		    return;
 	    var steerTarget = input.Steer * AppliedSpeed/3.5f;;
 			
 	    if (SteerAmount != steerTarget)
@@ -179,6 +211,7 @@ public class PlayerMovementHandler : NetworkBehaviour
 	    }
 		
     }
+    
     //Drift
     private void SetMaxBodyAngle() => maxBodyTileAngle = Mathf.Lerp(10, 40, _currentSpeed01);
     private static Vector3 LerpAxis(Axis axis, Vector3 euler, float tgtVal, float t)

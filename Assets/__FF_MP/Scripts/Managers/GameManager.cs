@@ -121,11 +121,36 @@ namespace OneRare.FoodFury.Multiplayer
             LevelManager lm = Runner.GetLevelManager();
             lm.readyUpManager.UpdateUI(CurrentPlayState, AllPlayers, OnAllPlayersReady);
 
-            if (_restart || Input.GetKeyDown(KeyCode.Escape))
+            if (_restart || Input.GetKeyDown(KeyCode.P))
             {
                 Restart(_restart ? ShutdownReason_GameAlreadyRunning : ShutdownReason.Ok);
                 _restart = false;
             }
+        }
+
+        public void ShutdownOnInput()
+        {
+            int c = SceneManager.sceneCount;
+            for (int i = 0; i < c; i++) {
+                Scene scene = SceneManager.GetSceneAt (i);
+                SceneManager.UnloadSceneAsync (scene);
+                /*if (scene.buildIndex != 0) {
+                    SceneManager.UnloadSceneAsync (scene);
+                }*/
+            }
+
+            SceneManager.LoadScene(0);
+           // Destroy(gameObject);
+		
+
+            GameObject[] gameObjects = FindObjectsOfType<GameObject>();
+            foreach (GameObject GO in gameObjects)
+            {
+                Destroy(GO);
+            }
+            
+            Restart(_restart ? ShutdownReason_GameAlreadyRunning : ShutdownReason.Ok);
+            _restart = false;
         }
 
         private void ResetStats()
