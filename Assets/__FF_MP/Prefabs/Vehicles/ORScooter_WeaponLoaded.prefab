@@ -1911,6 +1911,10 @@ MonoBehaviour:
   - {fileID: 2100000, guid: f5b91044f1aa196439718585f302e93f, type: 2}
   - {fileID: 2100000, guid: c26074b95c8402447931f0e6836c1c24, type: 2}
   - {fileID: 2100000, guid: 68414b27680bf5347af566070e35ac68, type: 2}
+  - {fileID: 2100000, guid: c6acd73918bca9743803d244b3a89e70, type: 2}
+  - {fileID: 2100000, guid: 5fe52952ba4f00e4e87efac293fee40b, type: 2}
+  - {fileID: 2100000, guid: 43d57311027fc4448b80c6a865c86eed, type: 2}
+  - {fileID: 2100000, guid: 64038d0156c2d8f4d8b2b9cbc079a69c, type: 2}
   weaponManager: {fileID: 8921591699136851706}
   part: {fileID: 7024439863158248975}
   orderDistanceTMP: {fileID: 8105850745161758355}

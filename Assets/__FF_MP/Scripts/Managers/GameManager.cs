@@ -18,7 +18,7 @@ namespace OneRare.FoodFury.Multiplayer
         private ForceField _forceField;
 
         [Networked] public PlayState CurrentPlayState { get; set; }
-        [Networked, Capacity(4)] private NetworkArray<int> score => default;
+        [Networked, Capacity(8)] private NetworkArray<int> score => default;
 
         public const byte MAX_SCORE = 3;
         private bool _restart;
@@ -113,7 +113,7 @@ namespace OneRare.FoodFury.Multiplayer
 
         private void Update()
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 7; i++)
             {
                 _forceField.SetPlayer(i, GetPlayerByIndex<Player>(i));
             }

@@ -76,7 +76,7 @@ namespace FusionHelpers
 			await runner.StartGame(new StartGameArgs()
 			{
 				GameMode = mode, 
-				PlayerCount = 4,
+				PlayerCount = 8,
 				SessionName = room,
 				ObjectProvider = gameObject.AddComponent<PooledNetworkObjectProvider>(),
 				SceneManager = sceneManager,
