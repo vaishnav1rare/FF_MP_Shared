@@ -331,7 +331,6 @@ namespace OneRare.FoodFury.Multiplayer
                     ToggleReady();
                 if (input.IsShoot)
                 {
-                    Debug.Log("FIRING");
                     weaponManager.FireWeapon(WeaponManager.WeaponInstallationType.PRIMARY);
                 }
                     
@@ -349,12 +348,18 @@ namespace OneRare.FoodFury.Multiplayer
 
         #region COLLISION HANDLING
 
+        private Vector3 _collidePos = new Vector3();
         private void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.TryGetComponent(out ICollidable collidable))
+            /*if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
             {
-                collidable.Collide(gameObject.GetComponentInParent<Player>());
-            }
+                Debug.LogError("Hit Player");
+                Player player = other.gameObject.GetComponentInParent<Player>();
+                player.Push(gameObject.transform.position);
+                //collidable.Collide(gameObject.GetComponentInParent<Player>());
+                /*_collidePos = other.gameObject.transform.position;
+                Push(_collidePos);#1#
+            }*/
         }
         private void OnTriggerStay(Collider other)
         {
@@ -380,6 +385,8 @@ namespace OneRare.FoodFury.Multiplayer
             player.ReduceHealth();
         }
 
+     
+        
         public void ReduceHealth()
         {
             if (Health > 0)

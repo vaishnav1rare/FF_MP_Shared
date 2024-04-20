@@ -81,7 +81,17 @@ public class PlayerMovementHandler : NetworkBehaviour
 			    7.5f * Time.deltaTime);
 	    }
     }
-
+    public void Push(Vector3 collidePosition)
+    {
+	    Debug.LogError("Hit By Other Player: "+collidePosition);
+	    Vector3 direction = transform.position - collidePosition;
+	    direction.Normalize();
+	    Debug.LogError("Direction: "+direction);
+	    float moveDistance = 70f;
+            
+	    kcc.Rigidbody.MovePosition(kcc.Rigidbody.position + direction * moveDistance * Runner.DeltaTime);
+	    //kcc.Move(direction * moveDistance);
+    }
     /*
     private void OnDrawGizmos()
     {
@@ -94,18 +104,18 @@ public class PlayerMovementHandler : NetworkBehaviour
     private float _inputDeadZoneValue = 0.001f;
     public void Move(NetworkInputData input)
     {
-	    /*RaycastHit hit;
-	    if (Physics.Raycast(transform.position + Vector3.up * 2f, transform.forward, out hit, 2f, ~LayerMask.GetMask("Pickup")))
-	    {
-			Debug.LogError("HIT BUILDINGS");
-		   AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);
-	    }*/
 	    RaycastHit hit;
 	    
-	    if (Physics.SphereCast(transform.position + Vector3.forward * 0.5f + Vector3.up * 1, 0.75f, transform.forward, out hit, 0.75f, LayerMask.GetMask("Player","CityLayers")))
+	    if (Physics.SphereCast(transform.position + Vector3.forward * 0.5f + Vector3.up * 1, 0.75f, transform.forward, out hit, 0.75f, LayerMask.GetMask("CityLayers")))
 	    {
 		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);
 		    IsAllowedToAccelerate = false;
+
+		    /*
+		    PlayerMovementHandler player = hit.collider.gameObject.GetComponentInParent<PlayerMovementHandler>();
+		    Debug.LogError("Hit Player");
+		    if(player != null)
+				player.Push(gameObject.transform.position);*/
 	    }
 	    else
 	    {

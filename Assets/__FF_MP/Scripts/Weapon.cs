@@ -176,7 +176,7 @@ public class Weapon : NetworkBehaviourWithState<Weapon.NetworkState>
 
     public Transform GetExitPoint(int tick)
     {
-        Transform exit = _gunExits[tick% _gunExits.Length];
+        Transform exit = _gunExits[0];
         exit.position += (exit.forward * 3f + exit.up *1);
         return exit;
     }
