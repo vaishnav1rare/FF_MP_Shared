@@ -331,7 +331,8 @@ namespace OneRare.FoodFury.Multiplayer
                     ToggleReady();
                 if (input.IsShoot)
                 {
-                    weaponManager.FireWeapon(WeaponManager.WeaponInstallationType.PRIMARY);
+                    //weaponManager.FireWeapon(WeaponManager.WeaponInstallationType.PRIMARY);
+                    weaponManager.FireRocket(transform.forward, transform.position);
                 }
                     
                 Inputs = input;

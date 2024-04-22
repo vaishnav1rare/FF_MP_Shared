@@ -106,7 +106,7 @@ public class PlayerMovementHandler : NetworkBehaviour
     {
 	    RaycastHit hit;
 	    
-	    if (Physics.SphereCast(transform.position + Vector3.forward * 0.5f + Vector3.up * 1, 0.75f, transform.forward, out hit, 0.75f, LayerMask.GetMask("CityLayers")))
+	    /*if (Physics.SphereCast(transform.position + Vector3.forward * 0.5f + Vector3.up * 1, 0.75f, transform.forward, out hit, 0.75f, LayerMask.GetMask("CityLayers")))
 	    {
 		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);
 		    IsAllowedToAccelerate = false;
@@ -115,13 +115,13 @@ public class PlayerMovementHandler : NetworkBehaviour
 		    PlayerMovementHandler player = hit.collider.gameObject.GetComponentInParent<PlayerMovementHandler>();
 		    Debug.LogError("Hit Player");
 		    if(player != null)
-				player.Push(gameObject.transform.position);*/
+				player.Push(gameObject.transform.position);#1#
 	    }
 	    else
 	    {
 		    IsAllowedToAccelerate = true;
-	    }
-	    if (input.IsAccelerate && IsAllowedToAccelerate)
+	    }*/
+	    if (input.IsAccelerate /*&& IsAllowedToAccelerate*/)
 	    {
 		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, MaxSpeed, acceleration * Runner.DeltaTime);
 	    }
@@ -155,8 +155,8 @@ public class PlayerMovementHandler : NetworkBehaviour
     private bool _isDrifting;
     public void Steer(NetworkInputData input)
     {
-	    if(!IsAllowedToAccelerate)
-		    return;
+	    /*if(!IsAllowedToAccelerate)
+		    return;*/
 	    var steerTarget = input.Steer * AppliedSpeed/3.5f;;
 			
 	    if (SteerAmount != steerTarget)

@@ -14,7 +14,7 @@ public class WeaponManager : NetworkBehaviour
     };
     [SerializeField] private Weapon[] _weapons;
     [SerializeField] private Player _player;
-    
+    public RocketHandler rocketPrefab;
     [Networked]
     public byte selectedPrimaryWeapon { get; set; }
 
@@ -35,7 +35,12 @@ public class WeaponManager : NetworkBehaviour
 
     private byte _activePrimaryWeapon;
     private byte _activeSecondaryWeapon;
+    NetworkObject networkObject;
 
+    public override void Spawned()
+    {
+	    networkObject = GetComponent<NetworkObject>();
+    }
     public override void Render()
     {
 	    ShowAndHideWeapons();
@@ -113,7 +118,98 @@ public class WeaponManager : NetworkBehaviour
 		    }
 	    }
     }
+    TickTimer rocketFireDelay = TickTimer.None;
+    [Header("Aim")]
+    public Transform aimPoint;
+
+    public void FireRocket(Vector3 aimForwardVector, Vector3 cameraPosition)
+    {
+	    //Check that we have not recently fired a grenade. 
+	    if (rocketFireDelay.ExpiredOrNotRunning(Runner))
+	    {
+		    CalculateFireDirection(aimForwardVector, cameraPosition, out Vector3 fireDirection);
+
+		    Runner.Spawn(rocketPrefab, aimPoint.position + fireDirection * 1.5f, Quaternion.LookRotation(fireDirection), Object.InputAuthority, (runner, spawnedRocket) =>
+		    {
+			    spawnedRocket.GetComponent<RocketHandler>().Fire(Object.InputAuthority, networkObject,  "networkPlayer.nickName.ToString()");
+		    });
+
+		    //Start a new timer to avoid grenade spamming
+		    rocketFireDelay = TickTimer.CreateFromSeconds(Runner, 2f);
+	    }
+    }
     
+    [Header("Collision")]
+    public LayerMask collisionLayers;
+    
+    float maxHitDistance = 200;
+     HPHandler CalculateFireDirection(Vector3 aimForwardVector, Vector3 cameraPosition, out Vector3 fireDirection)
+    {
+        LagCompensatedHit hitinfo = new LagCompensatedHit();
+
+        fireDirection = aimForwardVector;
+        float hitDistance = maxHitDistance;
+
+        //Do a raycast from the 3rd person camera
+        /*if (networkPlayer.is3rdPersonCamera)
+        {
+            Runner.LagCompensation.Raycast(cameraPosition, fireDirection, hitDistance, Object.InputAuthority, out hitinfo, collisionLayers, HitOptions.IgnoreInputAuthority | HitOptions.IncludePhysX);
+
+            //Check against other players
+            if (hitinfo.Hitbox != null)
+            {
+                fireDirection = (hitinfo.Point - aimPoint.position).normalized;
+                hitDistance = hitinfo.Distance;
+
+                Debug.DrawRay(cameraPosition, aimForwardVector * hitDistance, new Color(0.4f, 0, 0), 1);
+            }
+            //Check aginst PhysX colliders if we didn't hit a player
+            else if (hitinfo.Collider != null)
+            {
+                fireDirection = (hitinfo.Point - aimPoint.position).normalized;
+                hitDistance = hitinfo.Distance;
+
+                Debug.DrawRay(cameraPosition, aimForwardVector * hitDistance, new Color(0, 0.4f, 0), 1);
+            }
+            else
+            {
+                Debug.DrawRay(cameraPosition, fireDirection * hitDistance, Color.gray, 1);
+
+                fireDirection = ((cameraPosition + fireDirection * hitDistance) - aimPoint.position).normalized;
+            }
+        }*/
+
+        //Reset hit distance
+        hitDistance = maxHitDistance;
+
+        //Check if we hit anything with the fire
+        Runner.LagCompensation.Raycast(aimPoint.position, fireDirection, maxHitDistance, Object.InputAuthority, out hitinfo, collisionLayers, HitOptions.IgnoreInputAuthority | HitOptions.IncludePhysX);
+
+        //Check against other players
+        if (hitinfo.Hitbox != null)
+        {
+            hitDistance = hitinfo.Distance;
+            HPHandler hitHPHandler = null;
+
+            if (Object.HasStateAuthority)
+            {
+                hitHPHandler = hitinfo.Hitbox.transform.root.GetComponent<HPHandler>();
+                Debug.DrawRay(aimPoint.position, fireDirection * hitDistance, Color.red, 1);
+
+                return hitHPHandler;
+            }
+        }
+        //Check aginst PhysX colliders if we didn't hit a player
+        else if (hitinfo.Collider != null)
+        {
+            hitDistance = hitinfo.Distance;
+
+            Debug.DrawRay(aimPoint.position, fireDirection * hitDistance, Color.green, 1);
+        }
+        else Debug.DrawRay(aimPoint.position, fireDirection * hitDistance, Color.black, 1);
+
+        return null;
+    }
     private bool IsWeaponFireAllowed(WeaponInstallationType weaponType)
     {
 	    if (!_player.IsActivated)
