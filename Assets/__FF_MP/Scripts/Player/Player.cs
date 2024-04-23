@@ -325,6 +325,9 @@ namespace OneRare.FoodFury.Multiplayer
 
         void HandleInputs()
         {
+            playerMovementHandler.Steer(Inputs);
+            playerMovementHandler.Move(Inputs);
+            playerMovementHandler.Boost();
             if (GetInput(out NetworkInputData input))
             {
                 if (Object.HasStateAuthority && input.WasPressed(NetworkInputData.BUTTON_TOGGLE_READY, Inputs))
@@ -332,17 +335,14 @@ namespace OneRare.FoodFury.Multiplayer
                 if (input.IsShoot)
                 {
                     //weaponManager.FireWeapon(WeaponManager.WeaponInstallationType.PRIMARY);
-                    weaponManager.FireRocket(transform.forward, transform.position);
+                    weaponManager.FireRocket();
                 }
                     
                 Inputs = input;
             }
             
-            playerMovementHandler.Steer(Inputs);
-            playerMovementHandler.Move(Inputs);
-            
             UpdateDistance();
-            playerMovementHandler.Boost();
+            
         }
 
         #endregion
@@ -350,7 +350,7 @@ namespace OneRare.FoodFury.Multiplayer
         #region COLLISION HANDLING
 
         private Vector3 _collidePos = new Vector3();
-        private void OnTriggerEnter(Collider other)
+        /*private void OnTriggerEnter(Collider other)
         {
             /*if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
             {
@@ -359,9 +359,9 @@ namespace OneRare.FoodFury.Multiplayer
                 player.Push(gameObject.transform.position);
                 //collidable.Collide(gameObject.GetComponentInParent<Player>());
                 /*_collidePos = other.gameObject.transform.position;
-                Push(_collidePos);#1#
-            }*/
-        }
+                Push(_collidePos);#2#
+            }#1#
+        }*/
         private void OnTriggerStay(Collider other)
         {
             if(other.gameObject.layer == LayerMask.NameToLayer("CityLayers"))
