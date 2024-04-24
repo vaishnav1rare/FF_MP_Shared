@@ -169,7 +169,6 @@ public class PlayerMovementHandler : NetworkBehaviour
 	    
 	    if (isCollidingWithCityWall)
 	    {
-		    Debug.LogError($"CA:{collisionAngle}");
 		    if (collisionAngle >= 70)
 		    {
 			    steerTarget = Mathf.Sign(transform.forward.z) - 20 * AppliedSpeed / 15f; 
