@@ -135,7 +135,7 @@ public class WeaponManager : NetworkBehaviour
 	    }
     }
     
-    float maxHitDistance = 200;
+    //float maxHitDistance = 200;
     private bool IsWeaponFireAllowed(WeaponInstallationType weaponType)
     {
 	    if (!_player.IsActivated)

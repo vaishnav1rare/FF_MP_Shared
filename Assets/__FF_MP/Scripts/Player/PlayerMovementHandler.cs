@@ -10,7 +10,7 @@ public class PlayerMovementHandler : NetworkBehaviour
 	[SerializeField] private SimpleKCC kcc;
 	[SerializeField] private TrailRenderer primaryWheel;
 	[Header("---Movement")]
-    [SerializeField] private float skidThreshold = 0.002f;
+    //[SerializeField] private float skidThreshold = 0.002f;
     [SerializeField] private float acceleration;
     [SerializeField] private float reverseSpeed;
     [SerializeField] private float deceleration;
@@ -122,7 +122,7 @@ public class PlayerMovementHandler : NetworkBehaviour
 		    Vector3 incomingVec = hitCityWall.point - transform.position;
 		    Vector3 reflectVec = Vector3.Reflect(incomingVec, hitCityWall.normal);
 		    
-		    collisionAngle = Vector3.Angle(reflectVec, transform.forward);
+		    collisionAngle = Vector3.Angle(reflectVec, direction);
 	    }
 	    else
 	    {
@@ -169,14 +169,14 @@ public class PlayerMovementHandler : NetworkBehaviour
 	    
 	    if (isCollidingWithCityWall)
 	    {
-		    
-		    if (collisionAngle >= 90)
+		    Debug.LogError($"CA:{collisionAngle}");
+		    if (collisionAngle >= 70)
 		    {
-			    steerTarget = 30 * AppliedSpeed / 15f; // Steer right
+			    steerTarget = Mathf.Sign(transform.forward.z) - 20 * AppliedSpeed / 15f; 
 		    }
 		    else
 		    {
-			    steerTarget = -30 * AppliedSpeed / 15f; // Steer left
+			    steerTarget = Mathf.Sign(transform.forward.z) + 20 * AppliedSpeed / 20f; 
 		    }
 	    }
 	    if (SteerAmount != steerTarget)

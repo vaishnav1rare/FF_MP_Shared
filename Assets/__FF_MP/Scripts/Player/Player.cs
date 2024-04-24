@@ -349,7 +349,7 @@ namespace OneRare.FoodFury.Multiplayer
 
         #region COLLISION HANDLING
 
-        private Vector3 _collidePos = new Vector3();
+        //private Vector3 _collidePos = new Vector3();
         /*private void OnTriggerEnter(Collider other)
         {
             /*if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
