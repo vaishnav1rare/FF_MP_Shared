@@ -17,13 +17,14 @@ public class RocketHandler : NetworkBehaviour
     private Player _player;
     public override void Spawned()
     {
-        Debug.LogError("RH: "+transform.position+" <> "+transform.rotation);
+        Debug.Log("RH: "+transform.position+" <> "+transform.rotation);
+        networkObject = GetComponent<NetworkObject>();
     }
     public void Fire(Player player)
     {
         
         maxLiveDurationTickTimer = TickTimer.CreateFromSeconds(Runner, 1.2f);
-        transform.position = player.transform.position;
+        //transform.position = player.transform.position;
         transform.rotation = player.transform.rotation;
     }
 

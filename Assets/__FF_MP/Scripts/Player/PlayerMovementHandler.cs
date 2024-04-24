@@ -81,7 +81,7 @@ public class PlayerMovementHandler : NetworkBehaviour
 			    7.5f * Time.deltaTime);
 	    }
     }
-    public void Push(Vector3 collidePosition)
+    /*public void Push(Vector3 collidePosition)
     {
 	    Debug.LogError("Hit By Other Player: "+collidePosition);
 	    Vector3 direction = transform.position - collidePosition;
@@ -91,52 +91,60 @@ public class PlayerMovementHandler : NetworkBehaviour
             
 	    kcc.Rigidbody.MovePosition(kcc.Rigidbody.position + direction * moveDistance * Runner.DeltaTime);
 	    //kcc.Move(direction * moveDistance);
-    }
-    /*
+    }*/
+    
     private void OnDrawGizmos()
     {
-	    Gizmos.color = Color.yellow;
-	    Gizmos.DrawSphere(transform.position + Vector3.forward * 0.5f + Vector3.up * 1, 0.75f);
+	    Gizmos.color = Color.blue;
+	    Gizmos.DrawSphere(transform.position  + Vector3.up * 1, 1.1f);
     }
-    */
-
-    //Move
+    
     private float _inputDeadZoneValue = 0.001f;
+    private float collisionAngle = 0;
+    private bool isCollidingWithCityWall = false;
+    private Vector3 direction;
     public void Move(NetworkInputData input)
     {
-	    RaycastHit hit;
-	    
-	    /*if (Physics.SphereCast(transform.position + Vector3.forward * 0.5f + Vector3.up * 1, 0.75f, transform.forward, out hit, 0.75f, LayerMask.GetMask("CityLayers")))
+	    if (input.IsReverse)
 	    {
-		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);
-		    IsAllowedToAccelerate = false;
-
-		    /*
-		    PlayerMovementHandler player = hit.collider.gameObject.GetComponentInParent<PlayerMovementHandler>();
-		    Debug.LogError("Hit Player");
-		    if(player != null)
-				player.Push(gameObject.transform.position);#1#
+		    direction = -transform.forward;
 	    }
 	    else
 	    {
-		    IsAllowedToAccelerate = true;
-	    }*/
-	    if (input.IsAccelerate /*&& IsAllowedToAccelerate*/)
+		    direction = transform.forward;
+	    }
+	   
+	    if (Physics.SphereCast(transform.position  + Vector3.up * 1.5f, 1.1f, direction, out RaycastHit hitCityWall, 1f, LayerMask.GetMask("CityLayers", "Player")))
+	    {
+		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, 60f, deceleration * Runner.DeltaTime);
+		    isCollidingWithCityWall = true;
+		    
+		    Vector3 incomingVec = hitCityWall.point - transform.position;
+		    Vector3 reflectVec = Vector3.Reflect(incomingVec, hitCityWall.normal);
+		    
+		    collisionAngle = Vector3.Angle(reflectVec, transform.forward);
+	    }
+	    else
+	    {
+		    isCollidingWithCityWall = false;
+	    }
+
+	    if (input.IsAccelerate && !isCollidingWithCityWall)
 	    {
 		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, MaxSpeed, acceleration * Runner.DeltaTime);
 	    }
-	    else if (input.IsReverse )
+	    else if (input.IsReverse)
 	    {
 		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, -reverseSpeed, acceleration * Runner.DeltaTime);
 	    }
 	    else
 	    {
-		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);//Add Acceleration Factor
+		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, 0, deceleration * Runner.DeltaTime);
 	    }
 
 	    Vector3 localDirection = new Vector3(0, 0, AppliedSpeed);
 	    Vector3 worldDirection = transform.TransformDirection(localDirection);
-	    kcc.Move(worldDirection * Runner.DeltaTime );
+	    kcc.Move(worldDirection * Runner.DeltaTime);
 	    var resistance = 1 - (IsGrounded ? GroundResistance : 0);
 	    if (resistance < 1)
 	    {
@@ -145,7 +153,6 @@ public class PlayerMovementHandler : NetworkBehaviour
 	    /*_currentSpeed = rigidbody.velocity.magnitude;
 	    _currentSpeed01 = _currentSpeed / MaxSpeed;
 	    if (_currentSpeed < _inputDeadZoneValue) _currentSpeed01 = _currentSpeed = 0;*/
-	    
 	    
     }
     
@@ -157,8 +164,21 @@ public class PlayerMovementHandler : NetworkBehaviour
     {
 	    /*if(!IsAllowedToAccelerate)
 		    return;*/
-	    var steerTarget = input.Steer * AppliedSpeed/3.5f;;
-			
+	    
+	    var steerTarget = input.Steer * AppliedSpeed/3.5f;
+	    
+	    if (isCollidingWithCityWall)
+	    {
+		    
+		    if (collisionAngle >= 90)
+		    {
+			    steerTarget = 30 * AppliedSpeed / 15f; // Steer right
+		    }
+		    else
+		    {
+			    steerTarget = -30 * AppliedSpeed / 15f; // Steer left
+		    }
+	    }
 	    if (SteerAmount != steerTarget)
 	    {
 		    var steerLerp = Mathf.Abs(SteerAmount) < Mathf.Abs(steerTarget) ? steerAcceleration : steerDeceleration;

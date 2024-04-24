@@ -415,11 +415,11 @@ namespace OneRare.FoodFury.Multiplayer
                     EndTeleport();
                     break;
                 case Stage.Dead:
-                    _deathExplosionInstance.transform.position = transform.position;
+                    /*_deathExplosionInstance.transform.position = transform.position;
                     _deathExplosionInstance
                         .SetActive(false); // dirty fix to reactivate the death explosion if the particlesystem is still active
                     _deathExplosionInstance.SetActive(true);
-                    visualParent.gameObject.SetActive(false);
+                    visualParent.gameObject.SetActive(false);*/
                     if (Runner.TryGetSingleton(out GameManager gameManager))
                         gameManager.OnTankDeath();
 
