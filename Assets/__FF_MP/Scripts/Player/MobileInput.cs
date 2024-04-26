@@ -1,6 +1,7 @@
 using Fusion;
 using OneRare.FoodFury.Multiplayer;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MobileInput : MonoBehaviour
 {
@@ -32,6 +33,26 @@ public class MobileInput : MonoBehaviour
 			// Calling with destroyGameObject false because we do this in the OnShutdown callback on FusionLauncher
 			runner.Shutdown(false);
 		}
+		
+		int c = SceneManager.sceneCount;
+		for (int i = 0; i < c; i++) {
+			Scene scene = SceneManager.GetSceneAt (i);
+			SceneManager.UnloadSceneAsync (scene);
+			/*if (scene.buildIndex != 0) {
+			    SceneManager.UnloadSceneAsync (scene);
+			}*/
+		}
+
+		SceneManager.LoadScene(0);
+		// Destroy(gameObject);
+		
+
+		GameObject[] gameObjects = FindObjectsOfType<GameObject>();
+		foreach (GameObject GO in gameObjects)
+		{
+			Destroy(GO);
+		}
+
 	}
 
 	private void SetJoy(RectTransform joy, RectTransform knob, bool active, Vector2 center, Vector2 current)

@@ -81,30 +81,27 @@ public class PlayerMovementHandler : NetworkBehaviour
 			    7.5f * Time.deltaTime);
 	    }
     }
-    /*public void Push(Vector3 collidePosition)
-    {
-	    Debug.LogError("Hit By Other Player: "+collidePosition);
-	    Vector3 direction = transform.position - collidePosition;
-	    direction.Normalize();
-	    Debug.LogError("Direction: "+direction);
-	    float moveDistance = 70f;
-            
-	    kcc.Rigidbody.MovePosition(kcc.Rigidbody.position + direction * moveDistance * Runner.DeltaTime);
-	    //kcc.Move(direction * moveDistance);
-    }*/
     
-    private void OnDrawGizmos()
+    /*private void OnDrawGizmos()
     {
+	    
 	    Gizmos.color = Color.blue;
 	    Gizmos.DrawSphere(transform.position  + Vector3.up * 1, 1.1f);
-    }
+	    Gizmos.color = Color.green;
+	    //Gizmos.DrawRay(transform.position  + Vector3.up * 1.5f,  hcwPoint);
+	    Gizmos.color = Color.red;
+	    Gizmos.DrawRay(transform.position + Vector3.up * 1.5f, hcwNormal );
+    }*/
     
     private float _inputDeadZoneValue = 0.001f;
     private float collisionAngle = 0;
     private bool isCollidingWithCityWall = false;
     private Vector3 direction;
+    //private Vector3 hcwPoint;
+    private Vector3 hcwNormal;
     public void Move(NetworkInputData input)
     {
+	   
 	    if (input.IsReverse)
 	    {
 		    direction = -transform.forward;
@@ -113,17 +110,18 @@ public class PlayerMovementHandler : NetworkBehaviour
 	    {
 		    direction = transform.forward;
 	    }
-	   
+	    
+	    
 	    if (Physics.SphereCast(transform.position  + Vector3.up * 1.5f, 1.1f, direction, out RaycastHit hitCityWall, 1f, LayerMask.GetMask("CityLayers", "Player")))
 	    {
 		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, 60f, deceleration * Runner.DeltaTime);
 		    isCollidingWithCityWall = true;
-		    
-		    Vector3 incomingVec = hitCityWall.point - transform.position;
+		    Vector3 incomingVec = hitCityWall.point - (transform.position );
 		    Vector3 reflectVec = Vector3.Reflect(incomingVec, hitCityWall.normal);
-		    
-		    collisionAngle = Vector3.Angle(reflectVec, direction);
+		    hcwNormal = hitCityWall.normal;
+		    collisionAngle = Vector3.Angle(direction, hitCityWall.normal);// - 90;
 	    }
+	    
 	    else
 	    {
 		    isCollidingWithCityWall = false;
@@ -166,17 +164,33 @@ public class PlayerMovementHandler : NetworkBehaviour
 		    return;*/
 	    
 	    var steerTarget = input.Steer * AppliedSpeed/3.5f;
-	    
 	    if (isCollidingWithCityWall)
 	    {
-		    if (collisionAngle >= 70)
+		    if (hcwNormal.z < 0 )
 		    {
-			    steerTarget = Mathf.Sign(transform.forward.z) - 20 * AppliedSpeed / 15f; 
+			    steerTarget = - collisionAngle; 
+		    } 
+			else if (hcwNormal.x > 0){
+				steerTarget =  collisionAngle;
+			}
+			else if ( hcwNormal.x < 0)
+		    {
+			    steerTarget = - collisionAngle; 
+		    }
+			else if (hcwNormal.z > 0 )
+			{
+				steerTarget =	collisionAngle;
+			}
+			
+		   /* AppliedSpeed / 15f;
+		    /*if (collisionAngle >= 70)
+		    {
+			    steerTarget = Mathf.Sign(transform.forward.z) /*- 20 * AppliedSpeed / 15f#1#;
 		    }
 		    else
 		    {
-			    steerTarget = Mathf.Sign(transform.forward.z) + 20 * AppliedSpeed / 20f; 
-		    }
+			    steerTarget = Mathf.Sign(transform.forward.z) /*+ 20 * AppliedSpeed / 20f#1#;
+		    }*/
 	    }
 	    if (SteerAmount != steerTarget)
 	    {

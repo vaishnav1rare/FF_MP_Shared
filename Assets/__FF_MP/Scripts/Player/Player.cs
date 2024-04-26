@@ -138,7 +138,7 @@ namespace OneRare.FoodFury.Multiplayer
             
             if (!IsActivated || !InvulnerabilityTimer.Expired(Runner))
                 return;
-
+           
             if (Runner.TryGetSingleton(out GameManager gameManager))
             {
                 //kcc.ve += impulse / 10.0f; // Magic constant to compensate for not properly dealing with masses
@@ -150,12 +150,16 @@ namespace OneRare.FoodFury.Multiplayer
                 {
                     Life = 0;
                     CurrentStage = Stage.Dead;
+                    if (_gameUI)
+                    {
+                        _gameUI.UpdateHealthText(Life);
+                    }
                     livesTMP.text = Life.ToString();
                     gameObject.SetActive(false);
-                    /*if (Runner.IsSharedModeMasterClient)
+                    if (Runner.IsSharedModeMasterClient)
                     {
                         Runner.Despawn(Object);
-                    }*/
+                    }
                     /*if (gameManager.CurrentPlayState == GameManager.PlayState.LEVEL)
                         lives -= 1;
 
@@ -166,6 +170,10 @@ namespace OneRare.FoodFury.Multiplayer
                 {
                     Life -= (byte)damage;
                     livesTMP.text = Life.ToString();
+                    if (_gameUI)
+                    {
+                        _gameUI.UpdateHealthText(Life);
+                    }
                 }
 
                 //_damageVisuals.CheckHealth(life , MAX_HEALTH);
@@ -223,6 +231,7 @@ namespace OneRare.FoodFury.Multiplayer
         {
             base.Despawned(runner, hasState);
             SpawnTeleportOutFx();
+            Destroy(orderCampassParent);
             Destroy(_deathExplosionInstance);
             if (_gameUI)
             {
@@ -305,6 +314,9 @@ namespace OneRare.FoodFury.Multiplayer
 
         private void UpdateCampass()
         {
+            if(!orderCampassParent)
+                return;
+            
             orderDistanceTMP.text = $"{Mathf.FloorToInt(_orderDistance)}m";
             _activeState = _orderDistance > _orderRange;
             if (orderCampassParent.activeSelf != _activeState) orderCampassParent.SetActive(_activeState);

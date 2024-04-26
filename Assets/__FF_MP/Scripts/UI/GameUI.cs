@@ -64,6 +64,8 @@ public class GameUI : MonoBehaviour
 
 	public void UpdateTime(string time)
 	{
+		if(!raceTimeText)
+			return;
 		raceTimeText.text = time;
 	}
 

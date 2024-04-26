@@ -126,7 +126,7 @@ public class WeaponManager : NetworkBehaviour
 	    
 	    if (rocketFireDelay.ExpiredOrNotRunning(Runner))
 	    {
-		    Runner.Spawn(rocketPrefab, transform.position +transform.up * 1 + transform.forward * 1.5f , transform.rotation, Object.InputAuthority, (Runner, spawnedRocket) =>
+		    Runner.Spawn(rocketPrefab, transform.position +transform.up * 0.2f + transform.forward * 1.5f , transform.rotation, Object.InputAuthority, (Runner, spawnedRocket) =>
 		    {
 			    spawnedRocket.GetComponent<RocketHandler>().Fire(_player);
 		    });
