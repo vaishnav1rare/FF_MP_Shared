@@ -58,7 +58,7 @@ public class RocketHandler : NetworkBehaviour
         {
             impact = Runner.GetPhysicsScene().Raycast(transform.position +transform.up * 0.2f , transform.forward,out var hitinfo, 1, _hitMask.value);
             hitPoint = hitinfo.point;
-            Debug.LogError("HIT: "+LayerMask.LayerToName(hitinfo.transform.gameObject.layer));
+         Debug.LogError("HIT: "+LayerMask.LayerToName(hitinfo.transform.gameObject.layer));
         }
         if (impact)
         {

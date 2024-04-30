@@ -97,8 +97,8 @@ public class PlayerMovementHandler : NetworkBehaviour
     private float collisionAngle = 0;
     private bool isCollidingWithCityWall = false;
     private Vector3 direction;
-    //private Vector3 hcwPoint;
-    private Vector3 hcwNormal;
+    private float steerAway;
+    private float angleToWall;
     public void Move(NetworkInputData input)
     {
 	   
@@ -114,14 +114,18 @@ public class PlayerMovementHandler : NetworkBehaviour
 	    
 	    if (Physics.SphereCast(transform.position  + Vector3.up * 1.5f, 1.1f, direction, out RaycastHit hitCityWall, 1f, LayerMask.GetMask("CityLayers", "Player")))
 	    {
+		    //HelperFunctions.GetGlobalDirection(transform.forward.normalized, 0.9f);
+		    //Debug.LogError("DIR: "+HelperFunctions.GetGlobalDirection(transform.forward.normalized, 0.9f));
 		    AppliedSpeed = Mathf.Lerp(AppliedSpeed, 60f, deceleration * Runner.DeltaTime);
 		    isCollidingWithCityWall = true;
-		    Vector3 incomingVec = hitCityWall.point - (transform.position );
-		    Vector3 reflectVec = Vector3.Reflect(incomingVec, hitCityWall.normal);
-		    hcwNormal = hitCityWall.normal;
-		    collisionAngle = Vector3.Angle(direction, hitCityWall.normal);// - 90;
+		    
+		    Vector3 reflectDirection = Vector3.Reflect(transform.forward, hitCityWall.normal);
+		    Vector3 steerDirection = Vector3.ProjectOnPlane(transform.forward, hitCityWall.normal.normalized);
+		    
+		    angleToWall = Vector3.SignedAngle(transform.forward, reflectDirection, Vector3.up);
+		    steerAway = Mathf.Sign(Vector3.Dot(steerDirection, reflectDirection));
+		    //Debug.LogError( "Dir: "+HelperFunctions.GetGlobalDirection(hitCityWall.normal)+$"SA:{steerAway}, Aw:{angleToWall}, SD:{steerDirection}");
 	    }
-	    
 	    else
 	    {
 		    isCollidingWithCityWall = false;
@@ -160,67 +164,35 @@ public class PlayerMovementHandler : NetworkBehaviour
     private bool _isDrifting;
     public void Steer(NetworkInputData input)
     {
-	    /*if(!IsAllowedToAccelerate)
-		    return;*/
-	    
 	    var steerTarget = input.Steer * AppliedSpeed/3.5f;
-	    if (isCollidingWithCityWall)
-	    {
-		    if (hcwNormal.z < 0 )
-		    {
-			    steerTarget = - collisionAngle; 
-		    } 
-			else if (hcwNormal.x > 0){
-				steerTarget =  collisionAngle;
-			}
-			else if ( hcwNormal.x < 0)
-		    {
-			    steerTarget = - collisionAngle; 
-		    }
-			else if (hcwNormal.z > 0 )
-			{
-				steerTarget =	collisionAngle;
-			}
-			
-		   /* AppliedSpeed / 15f;
-		    /*if (collisionAngle >= 70)
-		    {
-			    steerTarget = Mathf.Sign(transform.forward.z) /*- 20 * AppliedSpeed / 15f#1#;
-		    }
-		    else
-		    {
-			    steerTarget = Mathf.Sign(transform.forward.z) /*+ 20 * AppliedSpeed / 20f#1#;
-		    }*/
-	    }
+	    
 	    if (SteerAmount != steerTarget)
 	    {
 		    var steerLerp = Mathf.Abs(SteerAmount) < Mathf.Abs(steerTarget) ? steerAcceleration : steerDeceleration;
 		    SteerAmount = Mathf.Lerp(SteerAmount, steerTarget, Runner.DeltaTime * steerLerp);
 	    }
-			
-	    
 	    if (_isDrifting)
 	    {
 		    model.localEulerAngles = LerpAxis(Axis.Y, model.localEulerAngles, SteerAmount*0.2f,
 			    driftRotationLerpFactor * Runner.DeltaTime);
 	    }
-			
 	    else
 	    {
 		    model.localEulerAngles = LerpAxis(Axis.Y, model.localEulerAngles, 0, 6 * Runner.DeltaTime);
 	    }
 
+		
 	    if (_canDrive)
 	    {
-		    kcc.AddLookRotation(0,SteerAmount * Runner.DeltaTime);
-		    /*var rot = Quaternion.Euler(
-			    Vector3.Lerp(
-				    rigidbody.rotation.eulerAngles,
-				    rigidbody.rotation.eulerAngles + Vector3.up * SteerAmount,
-				    3 * Runner.DeltaTime)
-		    );
-
-		    rigidbody.MoveRotation(rot);*/
+		    if (!isCollidingWithCityWall)
+		    {
+			    kcc.AddLookRotation(0,SteerAmount * Runner.DeltaTime);
+		    }
+		    else
+		    {
+			    kcc.AddLookRotation(0,  steerAway*0.8f*angleToWall * Runner.DeltaTime);
+		    }
+		    
 	    }
 
 	    HandleTilting(SteerAmount);

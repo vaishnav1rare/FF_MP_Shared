@@ -37,7 +37,7 @@ MonoBehaviour:
     overrideState: 1
     value: 1
   gradingMode:
-    overrideState: 0
+    overrideState: 1
     value: 1
   externalLut:
     overrideState: 0
@@ -1419,7 +1419,7 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: 0.71
+    value: 0.75
   threshold:
     overrideState: 1
     value: 1.12
@@ -1437,7 +1437,7 @@ MonoBehaviour:
     value: 0.51
   color:
     overrideState: 1
-    value: {r: 1, g: 1, b: 1, a: 1}
+    value: {r: 0.9433962, g: 0.85729355, b: 0.51085794, a: 1}
   fastMode:
     overrideState: 1
     value: 1
@@ -1446,8 +1446,8 @@ MonoBehaviour:
     value: {fileID: 0}
     defaultState: 1
   dirtIntensity:
-    overrideState: 1
-    value: 3
+    overrideState: 0
+    value: 4.4
 --- !u!114 &114633265629994344
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -1537,7 +1537,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d65e486e4de6e5448a8fbb43dc8756a0, type: 3}
   m_Name: Grain
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   enabled:
     overrideState: 1
     value: 1
