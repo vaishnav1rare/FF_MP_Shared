@@ -337,6 +337,8 @@ namespace OneRare.FoodFury.Multiplayer
 
         void HandleInputs()
         {
+            if(InputController.fetchInput == false)
+                return;
             playerMovementHandler.Steer(Inputs);
             playerMovementHandler.Move(Inputs);
             playerMovementHandler.Boost();

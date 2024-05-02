@@ -25,7 +25,7 @@ namespace OneRare.FoodFury.Multiplayer
 		private uint _buttonReset;
 		private uint _buttonSample;
 		
-		public static bool fetchInput = true;
+		public static bool fetchInput = false;
 		/// <summary>
 		/// Hook up to the Fusion callbacks so we can handle the input polling
 		/// </summary>

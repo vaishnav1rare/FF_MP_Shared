@@ -151,7 +151,9 @@ namespace OneRare.FoodFury.Multiplayer
             Debug.Log($"LevelManager.OnSceneLoaded({newScene},{loadedScene},{sceneFlags});");
 
             yield return base.OnSceneLoaded(newScene, loadedScene, sceneFlags);
-
+            
+            InputController.fetchInput = false;
+            
             if (newScene.AsIndex == 0)
                 yield break;
 
