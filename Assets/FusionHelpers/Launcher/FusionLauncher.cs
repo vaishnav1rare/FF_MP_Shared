@@ -1,7 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Fusion;
+using Fusion.Addons.SimpleKCC;
 using Fusion.Sockets;
+using OneRare.FoodFury.Multiplayer;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -35,6 +40,8 @@ namespace FusionHelpers
 		private Action<NetworkRunner, ConnectionStatus, string> _connectionCallback;
 		private FusionSession _sessionPrefab;
 
+		Dictionary<int, PlayerRef> mapTokenIDWithNetworkPlayer;
+		
 		public enum ConnectionStatus
 		{
 			Disconnected,
@@ -43,6 +50,11 @@ namespace FusionHelpers
 			Connected,
 			Loading,
 			Loaded
+		}
+
+		private void Awake()
+		{
+			mapTokenIDWithNetworkPlayer = new Dictionary<int, PlayerRef>();
 		}
 
 		public static FusionLauncher Launch(GameMode mode, string room,FusionSession sessionPrefab,
@@ -83,7 +95,63 @@ namespace FusionHelpers
 				Scene = scene
 			});
 		}
+		
 
+		static void HostMigrationResume(NetworkRunner runner) {
+
+			// Get a temporary reference for each NO from the old Host
+			foreach (var resumeNO in runner.GetResumeSnapshotNetworkObjects())
+
+				if (
+					// Extract any NetworkBehavior used to represent the position/rotation of the NetworkObject
+					// this can be either a NetworkTransform or a NetworkRigidBody, for example
+					resumeNO.TryGetBehaviour<SimpleKCC>(out var posRot)) {
+
+					runner.Spawn(resumeNO, position: posRot.transform.position, rotation: posRot.transform.rotation, onBeforeSpawned: (runner, newNO) =>
+					{
+						// One key aspects of the Host Migration is to have a simple way of restoring the old NetworkObjects state
+						// If all state of the old NetworkObject is all what is necessary, just call the NetworkObject.CopyStateFrom
+						newNO.CopyStateFrom(resumeNO);
+
+						// and/or
+
+						// If only partial State is necessary, it is possible to copy it only from specific NetworkBehaviours
+						if (resumeNO.TryGetBehaviour<NetworkBehaviour>(out var myCustomNetworkBehaviour))
+						{
+							newNO.GetComponent<NetworkBehaviour>().CopyStateFrom(myCustomNetworkBehaviour);
+						}
+					});
+				}
+		}
+	
+		
+		public static async Task<FusionLauncher> LaunchMigration(HostMigrationToken hostMigrationToken,FusionSession sessionPrefab,
+			INetworkSceneManager sceneManager,
+			Action<NetworkRunner, ConnectionStatus, string> onConnect )
+		{
+			
+			NetworkRunner runner =  new GameObject("HostMigrationLauncher").AddComponent<NetworkRunner>();
+			runner.AddComponent<FusionLauncher>();
+			runner.name = "HOST MIGRATION";
+			runner.ProvideInput = true;//mode != GameMode.Server;
+			//launcher.InternalLaunchHostMigration(hostMigrationToken,sessionPrefab, sceneManager, onConnect);
+			FusionLauncher launcher = runner.GetComponent<FusionLauncher>();//new GameObject("HostMigrationLauncher").AddComponent<FusionLauncher>();
+
+			StartGameResult result = await runner.StartGame(new StartGameArgs() {
+				// SessionName = SessionName,              // ignored, peer never disconnects from the Photon Cloud
+				// GameMode = gameMode,                    // ignored, Game Mode comes with the HostMigrationToken
+				HostMigrationToken = hostMigrationToken,   // contains all necessary info to restart the Runner
+				HostMigrationResume = HostMigrationResume, // this will be invoked to resume the simulation
+				// other args
+			});
+			if (result.Ok == false) {
+				Debug.LogWarning(result.ShutdownReason);
+			} else {
+				Debug.Log("Done");
+			}
+			Debug.Log($"Host migration started");
+			return launcher;
+		}
 		public void SetConnectionStatus(NetworkRunner runner, ConnectionStatus status, string message)
 		{
 			if (_connectionCallback != null)
@@ -125,15 +193,16 @@ namespace FusionHelpers
 		{
 			Debug.Log($"Player {player} Joined");
 			if (runner.IsServer || runner.IsSharedModeMasterClient) {
-        if(!runner.TryGetSingleton(out FusionSession session) && _sessionPrefab!=null)
-        {
-          Debug.Log($"I am {(runner.IsServer ? "Server":"Master")} and I do not have a session - Spawning Session");
-          session = runner.Spawn(_sessionPrefab);
-        }
-        session.PlayerJoined(player);
+				
+				if(!runner.TryGetSingleton(out FusionSession session) && _sessionPrefab!=null)
+				{
+					Debug.Log($"I am {(runner.IsServer ? "Server":"Master")} and I do not have a session - Spawning Session");
+					session = runner.Spawn(_sessionPrefab);
+				}
+				session.PlayerJoined(player);
 			}
 		}
-
+		
 		public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
 		{
 			if(runner.TryGetSingleton(out FusionSession session))
@@ -173,7 +242,17 @@ namespace FusionHelpers
 		public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
 		public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
 		public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
-		public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+
+		public async void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
+		{
+			Debug.LogError("HOST MIGRATION UNDERWAY");
+			
+			await runner.Shutdown(shutdownReason: ShutdownReason.HostMigration);
+
+			//var newRunner = Instantiate(_runnerPrefab);
+			//Find the network runner handler and start the host migration
+			FindObjectOfType<App>().StartHostMigration(hostMigrationToken);
+		}
 		public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
 
 		public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }

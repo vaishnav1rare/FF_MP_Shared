@@ -178,5 +178,11 @@ namespace OneRare.FoodFury.Multiplayer
 			/*if(intro)
 				MusicPlayer.instance.SetLowPassTranstionDirection( -1f);*/
 		}
+
+		public void StartHostMigration(HostMigrationToken hostMigrationToken)
+		{
+			//FusionLauncher.Launch(_gameMode, room.text, gameManagerPrefab, levelManager, OnConnectionStatusUpdate);
+			FusionLauncher.LaunchMigration(hostMigrationToken, gameManagerPrefab, levelManager, OnConnectionStatusUpdate );
+		}
 	}
 }

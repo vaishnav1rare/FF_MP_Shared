@@ -14,7 +14,7 @@ namespace FusionHelpers
 
 	public abstract class FusionSession : NetworkBehaviour
 	{
-		private const int MAX_PLAYERS = 4;
+		private const int MAX_PLAYERS = 6;
 		
 		[SerializeField] private FusionPlayer _playerPrefab;
 
